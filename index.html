@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8">
+  <title>Lottery Results Analyzer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      padding: 20px;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .input-area {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .input-area input {
+      width: 60px;
+      padding: 8px;
+      margin: 5px;
+      text-align: center;
+      font-size: 16px;
+      border: 1px solid #aaa;
+      border-radius: 5px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #007bff;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    #results {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      background: white;
+      border-radius: 5px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+      background: white;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th {
+      background: #007bff;
+      color: white;
+      padding: 8px;
+    }
+    td {
+      text-align: center;
+      padding: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Lottery Results Analyzer</h1>
+
+  <div class="input-area">
+    <input type="text" id="box1" maxlength="2" placeholder="Box1">
+    <input type="text" id="box2" maxlength="2" placeholder="Box2">
+    <input type="text" id="box3" maxlength="2" placeholder="Box3">
+    <input type="text" id="box4" maxlength="2" placeholder="Box4">
+    <input type="text" id="box5" maxlength="2" placeholder="Box5">
+    <input type="text" id="box6" maxlength="2" placeholder="Box6">
+    <br>
+    <button onclick="analyze()">🔍 විශ්ලේෂණය කරන්න</button>
+  </div>
+
+  <div id="results">
+    <h2>විශ්ලේෂණ ප්‍රතිඵල</h2>
+    <div id="matches"></div>
+  </div>
+
+  <h2>සියලු ලොතරැයි ප්‍රතිඵල</h2>
+  <table id="dataTable">
+    <thead>
+      <tr>
+        <th>අංකය</th>
+        <th>දිනය</th>
+        <th>කේතය</th>
+        <th>අවසන් අංක 2</th>
+        <th>අංක 6</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    let lotteryData = [];
+
+    // JSON ගොනුව load කරගැනීම
+    fetch("lottery_records.json")
+      .then(res => res.json())
+      .then(data => {
+        lotteryData = data;
+        renderTable();
+      })
+      .catch(err => console.error("JSON Load Error:", err));
+
+    function renderTable() {
+      const tbody = document.querySelector("#dataTable tbody");
+      tbody.innerHTML = "";
+      lotteryData.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${row._idx}</td>
+          <td>${row.date}</td>
+          <td>${row.code}</td>
+          <td>${row.last2}</td>
+          <td>${row.digits6}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function analyze() {
+      const inputs = [];
+      for (let i = 1; i <= 6; i++) {
+        const val = document.getElementById("box" + i).value.trim();
+        if (val === "") {
+          alert("සියලුම Box පුරවන්න!");
+          return;
+        }
+        inputs.push(val);
+      }
+
+      const offsets = [1, 2, 3, 1, 4, 6];
+      let resultHTML = "";
+
+      inputs.forEach((val, idx) => {
+        const match = lotteryData.find(row => row.last2 === val);
+        if (match) {
+          const aboveIdx = match._idx - offsets[idx];
+          const above = lotteryData.find(r => r._idx === aboveIdx);
+          resultHTML += `
+            <p><b>Box${idx + 1}</b> → ${val} : ${match.date} (${match.code})</p>
+          `;
+          if (above) {
+            resultHTML += `<p style="margin-left:20px;">↳ පිළිවෙලින් පෙර (${offsets[idx]}) → ${above.date} (${above.code})</p>`;
+          }
+        } else {
+          resultHTML += `<p><b>Box${idx + 1}</b> → ${val} : 🚫 ගැලපීමක් නැත</p>`;
+        }
+      });
+
+      document.getElementById("matches").innerHTML = resultHTML;
+    }
+  </script>
+
+</body>
+</html>
