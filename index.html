@@ -1,167 +1,286 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="si">
 <head>
-  <meta charset="UTF-8">
-  <title>Lottery Results Analyzer</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f8f9fa;
-      padding: 20px;
-      color: #333;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .input-area {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .input-area input {
-      width: 60px;
-      padding: 8px;
-      margin: 5px;
-      text-align: center;
-      font-size: 16px;
-      border: 1px solid #aaa;
-      border-radius: 5px;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      background: #007bff;
-      border: none;
-      color: white;
-      border-radius: 5px;
-      margin-top: 10px;
-    }
-    button:hover {
-      background: #0056b3;
-    }
-    #results {
-      margin-top: 20px;
-      padding: 15px;
-      border: 1px solid #ddd;
-      background: white;
-      border-radius: 5px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 30px;
-      background: white;
-    }
-    table, th, td {
-      border: 1px solid #ccc;
-    }
-    th {
-      background: #007bff;
-      color: white;
-      padding: 8px;
-    }
-    td {
-      text-align: center;
-      padding: 6px;
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lottery Results Analyzer — Full Matches + Offsets</title>
+<style>
+:root{--bg:#f6f8fb;--card:#ffffff;--text:#0f172a;--muted:#475569;--accent:#0ea5a4;--accent2:#7c3aed;--border:#e6eef8}
+*{box-sizing:border-box} body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial}
+.header{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;padding:16px 18px}
+.container{max-width:1180px;margin:18px auto;padding:0 14px}
+.h1{font-weight:800;font-size:20px}
+.small{font-size:13px;color:#e2e8f0}
+.card{background:var(--card);border-radius:12px;border:1px solid var(--border);padding:14px;box-shadow:0 6px 20px rgba(2,6,23,.06)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.input{width:86px;padding:10px;border-radius:10px;border:1px solid #e5e7eb;text-align:center;font-weight:700}
+.btn{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
+.btn.secondary{background:#fff;color:var(--accent);border:1px solid #c7f0ef}
+.kpi{background:#f8fafc;border:1px solid #eef2ff;border-radius:10px;padding:10px 12px;min-width:150px}
+.kpi .v{font-weight:800;font-size:18px}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{border-bottom:1px solid #f1f5f9;padding:8px 8px;text-align:left}
+th{background:#fbfdff;position:sticky;top:0}
+.pill{background:#eef2ff;border:1px solid #dbeafe;color:#1e3a8a;padding:3px 8px;border-radius:999px;font-weight:700}
+.badge{background:#ecfeff;color:#0e7490;border:1px solid #cffafe;padding:2px 8px;border-radius:999px;font-weight:700}
+.section-title{font-weight:800}
+.footer{color:#64748b;font-size:12px;text-align:center;margin:12px 0}
+.details{margin-top:8px}
+hr{border:none;border-top:1px solid #f1f5f9;margin:12px 0}
+@media (max-width:800px){.row{flex-direction:column;align-items:stretch}.input{width:100%}}
+</style>
 </head>
 <body>
-
-  <h1>Lottery Results Analyzer</h1>
-
-  <div class="input-area">
-    <input type="text" id="box1" maxlength="2" placeholder="Box1">
-    <input type="text" id="box2" maxlength="2" placeholder="Box2">
-    <input type="text" id="box3" maxlength="2" placeholder="Box3">
-    <input type="text" id="box4" maxlength="2" placeholder="Box4">
-    <input type="text" id="box5" maxlength="2" placeholder="Box5">
-    <input type="text" id="box6" maxlength="2" placeholder="Box6">
-    <br>
-    <button onclick="analyze()">🔍 විශ්ලේෂණය කරන්න</button>
+<header class="header">
+  <div class="container" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+    <div>
+      <div class="h1">Lottery Results Analyzer — Full Matches + Offsets</div>
+      <div class="small">Loads external JSON · Multiple matches per box · Sinhala UI</div>
+    </div>
+    <div style="text-align:right">
+      <div id="clock" style="font-weight:800"></div>
+      <div class="small">Rows: <span id="rowCount">0</span></div>
+    </div>
   </div>
+</header>
 
-  <div id="results">
-    <h2>විශ්ලේෂණ ප්‍රතිඵල</h2>
-    <div id="matches"></div>
-  </div>
+<main class="container">
+  <section class="card">
+    <div class="row" style="justify-content:space-between">
+      <div>
+        <div class="section-title">අවසාන අංක යුගල 6ක් ඇතුළත් කරන්න</div>
+        <div style="color:#64748b;font-size:13px">Offsets: Box1↟1, Box2↟2, Box3↟3, Box4↟1, Box5↟4, Box6↟6</div>
+      </div>
+      <div class="row">
+        <input id="b1" class="input" maxlength="2" placeholder="46">
+        <input id="b2" class="input" maxlength="2" placeholder="42">
+        <input id="b3" class="input" maxlength="2" placeholder="49">
+        <input id="b4" class="input" maxlength="2" placeholder="55">
+        <input id="b5" class="input" maxlength="2" placeholder="36">
+        <input id="b6" class="input" maxlength="2" placeholder="44">
+        <button id="analyze" class="btn">🔎 විශ්ලේෂණය</button>
+        <button id="reset" class="btn secondary">Reset</button>
+      </div>
+    </div>
+    <hr>
+    <div class="row">
+      <div class="kpi"><div class="small">Total Rows</div><div class="v" id="kpi-rows">0</div></div>
+      <div class="kpi"><div class="small">Total Matches (all boxes)</div><div class="v" id="kpi-matches">0</div></div>
+      <div class="kpi"><div class="small">Boxes with Matches</div><div class="v" id="kpi-hitboxes">0</div></div>
+    </div>
+  </section>
 
-  <h2>සියලු ලොතරැයි ප්‍රතිඵල</h2>
-  <table id="dataTable">
-    <thead>
-      <tr>
-        <th>අංකය</th>
-        <th>දිනය</th>
-        <th>කේතය</th>
-        <th>අවසන් අංක 2</th>
-        <th>අංක 6</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <section class="card" style="margin-top:12px">
+    <div class="section-title">ප්‍රතිඵල</div>
+    <div id="results" class="details"></div>
+  </section>
 
-  <script>
-    let lotteryData = [];
+  <section class="card" style="margin-top:12px">
+    <div class="section-title">සම්පූර්ණ දත්ත වගුව</div>
+    <div style="color:#64748b;font-size:13px;margin-bottom:8px">JSON සිට load කරන ලදී. වගුවේ පිළිවෙලම “ඉහළ/පහළ” සම්බන්ධතාවය (offset) හඳුනාගැනීමට භාවිතා කරයි.</div>
+    <div class="table-wrap">
+      <table id="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>දිනය</th>
+            <th>Code</th>
+            <th>Letter</th>
+            <th>Digits6</th>
+            <th>Last2</th>
+            <th>Raw</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
 
-    // JSON ගොනුව load කරගැනීම
-    fetch("lottery_records.json")
-      .then(res => res.json())
-      .then(data => {
-        lotteryData = data;
-        renderTable();
-      })
-      .catch(err => console.error("JSON Load Error:", err));
+  <div class="footer">© Xtreme Lottery Explorer · JSON-powered · Client-side only</div>
+</main>
 
-    function renderTable() {
-      const tbody = document.querySelector("#dataTable tbody");
-      tbody.innerHTML = "";
-      lotteryData.forEach(row => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${row._idx}</td>
-          <td>${row.date}</td>
-          <td>${row.code}</td>
-          <td>${row.last2}</td>
-          <td>${row.digits6}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
+<script>
+// live clock
+function tick(){ document.getElementById('clock').textContent = new Date().toLocaleString(); }
+setInterval(tick, 1000); tick();
 
-    function analyze() {
-      const inputs = [];
-      for (let i = 1; i <= 6; i++) {
-        const val = document.getElementById("box" + i).value.trim();
-        if (val === "") {
-          alert("සියලුම Box පුරවන්න!");
-          return;
-        }
-        inputs.push(val);
-      }
+// Utility
+function cleanPair(v){ return (v||'').toString().replace(/\D+/g,'').slice(-2) || null; }
 
-      const offsets = [1, 2, 3, 1, 4, 6];
-      let resultHTML = "";
+// Offsets per your spec
+const OFFSETS = [1,2,3,1,4,6];
 
-      inputs.forEach((val, idx) => {
-        const match = lotteryData.find(row => row.last2 === val);
-        if (match) {
-          const aboveIdx = match._idx - offsets[idx];
-          const above = lotteryData.find(r => r._idx === aboveIdx);
-          resultHTML += `
-            <p><b>Box${idx + 1}</b> → ${val} : ${match.date} (${match.code})</p>
-          `;
-          if (above) {
-            resultHTML += `<p style="margin-left:20px;">↳ පිළිවෙලින් පෙර (${offsets[idx]}) → ${above.date} (${above.code})</p>`;
-          }
+// Data
+let RECORDS = [];     // loaded JSON (array of rows)
+// We'll add a runtime order index so "above" = i - offset works exactly with what you see in the table.
+let ORDERED = [];     // same array reference order as rendered
+
+// Load JSON (must be in same folder as this html)
+fetch('lottery_records.json')
+  .then(r=>r.json())
+  .then(data=>{
+    // If file is an array: use as-is.
+    // If file is an object with a key (e.g., {lottery_records:[...]}) handle that too.
+    RECORDS = Array.isArray(data) ? data : (Array.isArray(data.lottery_records) ? data.lottery_records : []);
+    // Normalize types: stringify fields we rely on
+    RECORDS = RECORDS.map((r, idx) => ({
+      ...r,
+      _row: idx, // runtime index
+      last2: r.last2 == null ? null : String(r.last2),
+      code: r.code == null ? null : String(r.code),
+      date: r.date == null ? null : String(r.date),
+      raw: r.raw == null ? '' : String(r.raw),
+      letter: r.letter == null ? null : String(r.letter),
+      digits6: r.digits6 == null ? null : String(r.digits6),
+      _idx: r._idx ?? (idx+1)
+    }));
+    ORDERED = RECORDS.slice(); // keep current order as table order
+    renderTable();
+    document.getElementById('rowCount').textContent = RECORDS.length;
+    document.getElementById('kpi-rows').textContent = RECORDS.length;
+  })
+  .catch(err=>{
+    console.error(err);
+    alert('JSON load error: lottery_records.json not found or invalid.');
+  });
+
+function renderTable(){
+  const tb = document.getElementById('tbody');
+  tb.innerHTML = '';
+  ORDERED.forEach(r=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${r._idx ?? (r._row+1)}</td>
+      <td>${r.date ?? '-'}</td>
+      <td>${r.code ?? '-'}</td>
+      <td>${r.letter ?? '-'}</td>
+      <td>${r.digits6 ?? '-'}</td>
+      <td><span class="pill">${r.last2 ?? '-'}</span></td>
+      <td>${(r.raw||'').slice(0,160)}</td>
+    `;
+    tb.appendChild(tr);
+  });
+}
+
+// Analyze logic (FULL MATCH LISTS for each box)
+document.getElementById('analyze').addEventListener('click', ()=>{
+  const boxes = [1,2,3,4,5,6].map(i => cleanPair(document.getElementById('b'+i).value));
+  const results = document.getElementById('results');
+  results.innerHTML = '';
+
+  let totalMatches = 0;
+  let boxesWithHits = 0;
+
+  boxes.forEach((pair, idx) => {
+    if(!pair){ return; }
+    const offset = OFFSETS[idx];
+
+    // Collect ALL matches where last2 === pair
+    const matches = [];
+    for(let i=0;i<ORDERED.length;i++){
+      const r = ORDERED[i];
+      if((r.last2||'') === pair){
+        const j = i - offset;               // above row by offset
+        if(j >= 0){
+          const above = ORDERED[j];
+          matches.push({
+            n: matches.length+1,
+            found_index: i,
+            found_date: r.date,
+            found_code: r.code,
+            found_last2: r.last2,
+            above_index: j,
+            above_date: above?.date ?? null,
+            above_code: above?.code ?? null,
+            above_last2: above?.last2 ?? null
+          });
         } else {
-          resultHTML += `<p><b>Box${idx + 1}</b> → ${val} : 🚫 ගැලපීමක් නැත</p>`;
+          // still register the found occurrence (no above)
+          matches.push({
+            n: matches.length+1,
+            found_index: i,
+            found_date: r.date,
+            found_code: r.code,
+            found_last2: r.last2,
+            above_index: null,
+            above_date: null,
+            above_code: null,
+            above_last2: null
+          });
         }
-      });
-
-      document.getElementById("matches").innerHTML = resultHTML;
+      }
     }
-  </script>
 
+    if(matches.length>0){ boxesWithHits++; }
+    totalMatches += matches.length;
+
+    // Build UI block per box
+    const wrap = document.createElement('div');
+    wrap.className = 'card';
+    wrap.style.marginTop = '10px';
+
+    let html = `
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <div><span class="badge">BOX ${idx+1}</span> &nbsp; Pair: <span class="pill">${pair}</span> &nbsp; Offset: <span class="pill">↟${offset}</span></div>
+        <div class="small" style="color:#475569">Matches: <b>${matches.length}</b></div>
+      </div>
+    `;
+
+    if(matches.length){
+      html += `
+        <div class="table-wrap" style="margin-top:8px">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Found Date</th>
+                <th>Found Code</th>
+                <th>Found Last2</th>
+                <th>Above Date (↟${offset})</th>
+                <th>Above Code</th>
+                <th>Above Last2</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+      matches.forEach(m=>{
+        html += `
+          <tr>
+            <td>${m.n}</td>
+            <td>${m.found_date ?? '-'}</td>
+            <td>${m.found_code ?? '-'}</td>
+            <td><span class="pill">${m.found_last2 ?? '-'}</span></td>
+            <td>${m.above_date ?? '-'}</td>
+            <td>${m.above_code ?? '-'}</td>
+            <td><span class="pill">${m.above_last2 ?? '-'}</span></td>
+          </tr>
+        `;
+      });
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+    } else {
+      html += `<div class="small" style="margin-top:6px;color:#64748b">No matches found for <b>${pair}</b>.</div>`;
+    }
+
+    wrap.innerHTML = html;
+    results.appendChild(wrap);
+  });
+
+  document.getElementById('kpi-matches').textContent = totalMatches;
+  document.getElementById('kpi-hitboxes').textContent = boxesWithHits;
+});
+
+// Reset
+document.getElementById('reset').addEventListener('click', ()=>{
+  [1,2,3,4,5,6].forEach(i=>document.getElementById('b'+i).value='');
+  document.getElementById('results').innerHTML = '';
+  document.getElementById('kpi-matches').textContent = '0';
+  document.getElementById('kpi-hitboxes').textContent = '0';
+});
+</script>
 </body>
 </html>
