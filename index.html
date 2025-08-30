@@ -1,286 +1,796 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="si">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lottery Results Analyzer — Full Matches + Offsets</title>
-<style>
-:root{--bg:#f6f8fb;--card:#ffffff;--text:#0f172a;--muted:#475569;--accent:#0ea5a4;--accent2:#7c3aed;--border:#e6eef8}
-*{box-sizing:border-box} body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial}
-.header{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;padding:16px 18px}
-.container{max-width:1180px;margin:18px auto;padding:0 14px}
-.h1{font-weight:800;font-size:20px}
-.small{font-size:13px;color:#e2e8f0}
-.card{background:var(--card);border-radius:12px;border:1px solid var(--border);padding:14px;box-shadow:0 6px 20px rgba(2,6,23,.06)}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.input{width:86px;padding:10px;border-radius:10px;border:1px solid #e5e7eb;text-align:center;font-weight:700}
-.btn{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
-.btn.secondary{background:#fff;color:var(--accent);border:1px solid #c7f0ef}
-.kpi{background:#f8fafc;border:1px solid #eef2ff;border-radius:10px;padding:10px 12px;min-width:150px}
-.kpi .v{font-weight:800;font-size:18px}
-.table-wrap{overflow:auto}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{border-bottom:1px solid #f1f5f9;padding:8px 8px;text-align:left}
-th{background:#fbfdff;position:sticky;top:0}
-.pill{background:#eef2ff;border:1px solid #dbeafe;color:#1e3a8a;padding:3px 8px;border-radius:999px;font-weight:700}
-.badge{background:#ecfeff;color:#0e7490;border:1px solid #cffafe;padding:2px 8px;border-radius:999px;font-weight:700}
-.section-title{font-weight:800}
-.footer{color:#64748b;font-size:12px;text-align:center;margin:12px 0}
-.details{margin-top:8px}
-hr{border:none;border-top:1px solid #f1f5f9;margin:12px 0}
-@media (max-width:800px){.row{flex-direction:column;align-items:stretch}.input{width:100%}}
-</style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lottery Results Analyzer — Full Matches + Offsets</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #f6f8fb;
+            --card: #ffffff;
+            --text: #0f172a;
+            --muted: #475569;
+            --accent: #0ea5a4;
+            --accent2: #7c3aed;
+            --border: #e6eef8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding-bottom: 20px;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            color: #fff;
+            padding: 16px 18px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .container {
+            max-width: 1180px;
+            margin: 18px auto;
+            padding: 0 14px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .app-title {
+            font-weight: 800;
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .app-subtitle {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .header-info {
+            text-align: right;
+        }
+
+        #clock {
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 20px;
+            box-shadow: 0 6px 20px rgba(2, 6, 23, 0.06);
+            margin-bottom: 16px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(2, 6, 23, 0.1);
+        }
+
+        .section-title {
+            font-weight: 800;
+            font-size: 18px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            color: var(--accent);
+        }
+
+        .section-subtitle {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        /* Input and Button Styles */
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin: 16px 0;
+        }
+
+        .input {
+            width: 86px;
+            padding: 12px;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            text-align: center;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(14, 165, 164, 0.2);
+            outline: none;
+        }
+
+        .btn {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 18px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #0d9493;
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn.secondary {
+            background: #fff;
+            color: var(--accent);
+            border: 2px solid #c7f0ef;
+        }
+
+        .btn.secondary:hover {
+            background: #f0fdfb;
+        }
+
+        /* KPI Styles */
+        .kpi-container {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 16px 0;
+        }
+
+        .kpi {
+            background: #f8fafc;
+            border: 1px solid #eef2ff;
+            border-radius: 12px;
+            padding: 16px;
+            flex: 1;
+            min-width: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .kpi:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .kpi .label {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        .kpi .value {
+            font-weight: 800;
+            font-size: 24px;
+            color: var(--accent);
+        }
+
+        /* Table Styles */
+        .table-container {
+            overflow: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin: 16px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th, td {
+            border-bottom: 1px solid #f1f5f9;
+            padding: 12px 16px;
+            text-align: left;
+        }
+
+        th {
+            background: #fbfdff;
+            position: sticky;
+            top: 0;
+            font-weight: 700;
+            color: var(--muted);
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        /* Badge Styles */
+        .pill {
+            background: #eef2ff;
+            border: 1px solid #dbeafe;
+            color: #1e3a8a;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .badge {
+            background: #ecfeff;
+            color: #0e7490;
+            border: 1px solid #cffafe;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+        }
+
+        .badge i {
+            font-size: 12px;
+        }
+
+        /* Results Section */
+        .result-card {
+            background: var(--card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 16px;
+            margin-bottom: 12px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        /* Footer */
+        .footer {
+            color: var(--muted);
+            font-size: 12px;
+            text-align: center;
+            margin: 24px 0 12px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .input-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .input {
+                width: 100%;
+            }
+            
+            .kpi-container {
+                flex-direction: column;
+            }
+            
+            .kpi {
+                min-width: 100%;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .header-info {
+                text-align: left;
+                margin-top: 12px;
+            }
+            
+            .app-title {
+                font-size: 18px;
+            }
+            
+            th, td {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+        }
+
+        /* Animation Utilities */
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+
+        .slide-in {
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Loading Animation */
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(14, 165, 164, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--text);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
+        }
+
+        @keyframes toastIn {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes toastOut {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(100px); opacity: 0; }
+        }
+
+        /* Toggle Switch */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--accent);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+    </style>
 </head>
 <body>
-<header class="header">
-  <div class="container" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-    <div>
-      <div class="h1">Lottery Results Analyzer — Full Matches + Offsets</div>
-      <div class="small">Loads external JSON · Multiple matches per box · Sinhala UI</div>
-    </div>
-    <div style="text-align:right">
-      <div id="clock" style="font-weight:800"></div>
-      <div class="small">Rows: <span id="rowCount">0</span></div>
-    </div>
-  </div>
-</header>
-
-<main class="container">
-  <section class="card">
-    <div class="row" style="justify-content:space-between">
-      <div>
-        <div class="section-title">අවසාන අංක යුගල 6ක් ඇතුළත් කරන්න</div>
-        <div style="color:#64748b;font-size:13px">Offsets: Box1↟1, Box2↟2, Box3↟3, Box4↟1, Box5↟4, Box6↟6</div>
-      </div>
-      <div class="row">
-        <input id="b1" class="input" maxlength="2" placeholder="46">
-        <input id="b2" class="input" maxlength="2" placeholder="42">
-        <input id="b3" class="input" maxlength="2" placeholder="49">
-        <input id="b4" class="input" maxlength="2" placeholder="55">
-        <input id="b5" class="input" maxlength="2" placeholder="36">
-        <input id="b6" class="input" maxlength="2" placeholder="44">
-        <button id="analyze" class="btn">🔎 විශ්ලේෂණය</button>
-        <button id="reset" class="btn secondary">Reset</button>
-      </div>
-    </div>
-    <hr>
-    <div class="row">
-      <div class="kpi"><div class="small">Total Rows</div><div class="v" id="kpi-rows">0</div></div>
-      <div class="kpi"><div class="small">Total Matches (all boxes)</div><div class="v" id="kpi-matches">0</div></div>
-      <div class="kpi"><div class="small">Boxes with Matches</div><div class="v" id="kpi-hitboxes">0</div></div>
-    </div>
-  </section>
-
-  <section class="card" style="margin-top:12px">
-    <div class="section-title">ප්‍රතිඵල</div>
-    <div id="results" class="details"></div>
-  </section>
-
-  <section class="card" style="margin-top:12px">
-    <div class="section-title">සම්පූර්ණ දත්ත වගුව</div>
-    <div style="color:#64748b;font-size:13px;margin-bottom:8px">JSON සිට load කරන ලදී. වගුවේ පිළිවෙලම “ඉහළ/පහළ” සම්බන්ධතාවය (offset) හඳුනාගැනීමට භාවිතා කරයි.</div>
-    <div class="table-wrap">
-      <table id="table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>දිනය</th>
-            <th>Code</th>
-            <th>Letter</th>
-            <th>Digits6</th>
-            <th>Last2</th>
-            <th>Raw</th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
-    </div>
-  </section>
-
-  <div class="footer">© Xtreme Lottery Explorer · JSON-powered · Client-side only</div>
-</main>
-
-<script>
-// live clock
-function tick(){ document.getElementById('clock').textContent = new Date().toLocaleString(); }
-setInterval(tick, 1000); tick();
-
-// Utility
-function cleanPair(v){ return (v||'').toString().replace(/\D+/g,'').slice(-2) || null; }
-
-// Offsets per your spec
-const OFFSETS = [1,2,3,1,4,6];
-
-// Data
-let RECORDS = [];     // loaded JSON (array of rows)
-// We'll add a runtime order index so "above" = i - offset works exactly with what you see in the table.
-let ORDERED = [];     // same array reference order as rendered
-
-// Load JSON (must be in same folder as this html)
-fetch('lottery_records.json')
-  .then(r=>r.json())
-  .then(data=>{
-    // If file is an array: use as-is.
-    // If file is an object with a key (e.g., {lottery_records:[...]}) handle that too.
-    RECORDS = Array.isArray(data) ? data : (Array.isArray(data.lottery_records) ? data.lottery_records : []);
-    // Normalize types: stringify fields we rely on
-    RECORDS = RECORDS.map((r, idx) => ({
-      ...r,
-      _row: idx, // runtime index
-      last2: r.last2 == null ? null : String(r.last2),
-      code: r.code == null ? null : String(r.code),
-      date: r.date == null ? null : String(r.date),
-      raw: r.raw == null ? '' : String(r.raw),
-      letter: r.letter == null ? null : String(r.letter),
-      digits6: r.digits6 == null ? null : String(r.digits6),
-      _idx: r._idx ?? (idx+1)
-    }));
-    ORDERED = RECORDS.slice(); // keep current order as table order
-    renderTable();
-    document.getElementById('rowCount').textContent = RECORDS.length;
-    document.getElementById('kpi-rows').textContent = RECORDS.length;
-  })
-  .catch(err=>{
-    console.error(err);
-    alert('JSON load error: lottery_records.json not found or invalid.');
-  });
-
-function renderTable(){
-  const tb = document.getElementById('tbody');
-  tb.innerHTML = '';
-  ORDERED.forEach(r=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${r._idx ?? (r._row+1)}</td>
-      <td>${r.date ?? '-'}</td>
-      <td>${r.code ?? '-'}</td>
-      <td>${r.letter ?? '-'}</td>
-      <td>${r.digits6 ?? '-'}</td>
-      <td><span class="pill">${r.last2 ?? '-'}</span></td>
-      <td>${(r.raw||'').slice(0,160)}</td>
-    `;
-    tb.appendChild(tr);
-  });
-}
-
-// Analyze logic (FULL MATCH LISTS for each box)
-document.getElementById('analyze').addEventListener('click', ()=>{
-  const boxes = [1,2,3,4,5,6].map(i => cleanPair(document.getElementById('b'+i).value));
-  const results = document.getElementById('results');
-  results.innerHTML = '';
-
-  let totalMatches = 0;
-  let boxesWithHits = 0;
-
-  boxes.forEach((pair, idx) => {
-    if(!pair){ return; }
-    const offset = OFFSETS[idx];
-
-    // Collect ALL matches where last2 === pair
-    const matches = [];
-    for(let i=0;i<ORDERED.length;i++){
-      const r = ORDERED[i];
-      if((r.last2||'') === pair){
-        const j = i - offset;               // above row by offset
-        if(j >= 0){
-          const above = ORDERED[j];
-          matches.push({
-            n: matches.length+1,
-            found_index: i,
-            found_date: r.date,
-            found_code: r.code,
-            found_last2: r.last2,
-            above_index: j,
-            above_date: above?.date ?? null,
-            above_code: above?.code ?? null,
-            above_last2: above?.last2 ?? null
-          });
-        } else {
-          // still register the found occurrence (no above)
-          matches.push({
-            n: matches.length+1,
-            found_index: i,
-            found_date: r.date,
-            found_code: r.code,
-            found_last2: r.last2,
-            above_index: null,
-            above_date: null,
-            above_code: null,
-            above_last2: null
-          });
-        }
-      }
-    }
-
-    if(matches.length>0){ boxesWithHits++; }
-    totalMatches += matches.length;
-
-    // Build UI block per box
-    const wrap = document.createElement('div');
-    wrap.className = 'card';
-    wrap.style.marginTop = '10px';
-
-    let html = `
-      <div class="row" style="justify-content:space-between;align-items:center">
-        <div><span class="badge">BOX ${idx+1}</span> &nbsp; Pair: <span class="pill">${pair}</span> &nbsp; Offset: <span class="pill">↟${offset}</span></div>
-        <div class="small" style="color:#475569">Matches: <b>${matches.length}</b></div>
-      </div>
-    `;
-
-    if(matches.length){
-      html += `
-        <div class="table-wrap" style="margin-top:8px">
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Found Date</th>
-                <th>Found Code</th>
-                <th>Found Last2</th>
-                <th>Above Date (↟${offset})</th>
-                <th>Above Code</th>
-                <th>Above Last2</th>
-              </tr>
-            </thead>
-            <tbody>
-      `;
-      matches.forEach(m=>{
-        html += `
-          <tr>
-            <td>${m.n}</td>
-            <td>${m.found_date ?? '-'}</td>
-            <td>${m.found_code ?? '-'}</td>
-            <td><span class="pill">${m.found_last2 ?? '-'}</span></td>
-            <td>${m.above_date ?? '-'}</td>
-            <td>${m.above_code ?? '-'}</td>
-            <td><span class="pill">${m.above_last2 ?? '-'}</span></td>
-          </tr>
-        `;
-      });
-      html += `
-            </tbody>
-          </table>
+    <header class="header">
+        <div class="container header-content">
+            <div>
+                <div class="app-title"><i class="fas fa-chart-line"></i> Lottery Results Analyzer</div>
+                <div class="app-subtitle">Full Matches + Offsets • JSON Powered • Sinhala UI</div>
+            </div>
+            <div class="header-info">
+                <div id="clock" style="font-weight:800"></div>
+                <div class="app-subtitle">Rows: <span id="rowCount">0</span></div>
+            </div>
         </div>
-      `;
-    } else {
-      html += `<div class="small" style="margin-top:6px;color:#64748b">No matches found for <b>${pair}</b>.</div>`;
-    }
+    </header>
 
-    wrap.innerHTML = html;
-    results.appendChild(wrap);
-  });
+    <main class="container">
+        <section class="card">
+            <div class="section-title"><i class="fas fa-keyboard"></i> අවසාන අංක යුගල 6ක් ඇතුළත් කරන්න</div>
+            <div class="section-subtitle">Offsets: Box1↟1, Box2↟2, Box3↟3, Box4↟1, Box5↟4, Box6↟6</div>
+            
+            <div class="input-group">
+                <input id="b1" class="input" maxlength="2" placeholder="46" type="number">
+                <input id="b2" class="input" maxlength="2" placeholder="42" type="number">
+                <input id="b3" class="input" maxlength="2" placeholder="49" type="number">
+                <input id="b4" class="input" maxlength="2" placeholder="55" type="number">
+                <input id="b5" class="input" maxlength="2" placeholder="36" type="number">
+                <input id="b6" class="input" maxlength="2" placeholder="44" type="number">
+            </div>
+            
+            <div class="input-group">
+                <button id="analyze" class="btn"><i class="fas fa-search"></i> විශ්ලේෂණය</button>
+                <button id="reset" class="btn secondary"><i class="fas fa-redo"></i> Reset</button>
+            </div>
+            
+            <div class="kpi-container">
+                <div class="kpi">
+                    <div class="label">Total Rows</div>
+                    <div class="value" id="kpi-rows">0</div>
+                </div>
+                <div class="kpi">
+                    <div class="label">Total Matches</div>
+                    <div class="value" id="kpi-matches">0</div>
+                </div>
+                <div class="kpi">
+                    <div class="label">Boxes with Matches</div>
+                    <div class="value" id="kpi-hitboxes">0</div>
+                </div>
+            </div>
+        </section>
 
-  document.getElementById('kpi-matches').textContent = totalMatches;
-  document.getElementById('kpi-hitboxes').textContent = boxesWithHits;
-});
+        <section class="card">
+            <div class="section-title"><i class="fas fa-list-ul"></i> ප්‍රතිඵල</div>
+            <div id="results" class="details"></div>
+        </section>
 
-// Reset
-document.getElementById('reset').addEventListener('click', ()=>{
-  [1,2,3,4,5,6].forEach(i=>document.getElementById('b'+i).value='');
-  document.getElementById('results').innerHTML = '';
-  document.getElementById('kpi-matches').textContent = '0';
-  document.getElementById('kpi-hitboxes').textContent = '0';
-});
-</script>
+        <section class="card">
+            <div class="section-title"><i class="fas fa-table"></i> සම්පූර්ණ දත්ත වගුව</div>
+            <div class="section-subtitle">JSON සිට load කරන ලදී. වගුවේ පිළිවෙලම "ඉහළ/පහළ" සම්බන්ධතාවය (offset) හඳුනාගැනීමට භාවිතා කරයි.</div>
+            
+            <div class="table-container">
+                <table id="table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>දිනය</th>
+                            <th>Code</th>
+                            <th>Letter</th>
+                            <th>Digits6</th>
+                            <th>Last2</th>
+                            <th>Raw</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <div class="footer">© Xtreme Lottery Explorer • JSON-powered • Client-side only</div>
+    </main>
+
+    <script>
+        // Live clock
+        function updateClock() { 
+            document.getElementById('clock').textContent = new Date().toLocaleString('si-SI'); 
+        }
+        setInterval(updateClock, 1000); 
+        updateClock();
+
+        // Utility functions
+        function cleanPair(v) { 
+            return (v || '').toString().replace(/\D+/g, '').slice(-2) || null; 
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Offsets per your spec
+        const OFFSETS = [1, 2, 3, 1, 4, 6];
+
+        // Data
+        let RECORDS = [];
+        let ORDERED = [];
+
+        // Load JSON data
+        function loadData() {
+            const loadingToast = document.createElement('div');
+            loadingToast.className = 'toast';
+            loadingToast.innerHTML = '<div class="loader"></div> <span>Loading lottery data...</span>';
+            document.body.appendChild(loadingToast);
+            
+            fetch('lottery_records.json')
+                .then(response => response.json())
+                .then(data => {
+                    RECORDS = Array.isArray(data) ? data : (Array.isArray(data.lottery_records) ? data.lottery_records : []);
+                    
+                    // Normalize data
+                    RECORDS = RECORDS.map((r, idx) => ({
+                        ...r,
+                        _row: idx,
+                        last2: r.last2 == null ? null : String(r.last2),
+                        code: r.code == null ? null : String(r.code),
+                        date: r.date == null ? null : String(r.date),
+                        raw: r.raw == null ? '' : String(r.raw),
+                        letter: r.letter == null ? null : String(r.letter),
+                        digits6: r.digits6 == null ? null : String(r.digits6),
+                        _idx: r._idx ?? (idx + 1)
+                    }));
+                    
+                    ORDERED = RECORDS.slice();
+                    renderTable();
+                    
+                    document.getElementById('rowCount').textContent = RECORDS.length;
+                    document.getElementById('kpi-rows').textContent = RECORDS.length;
+                    
+                    loadingToast.remove();
+                    showToast('Data loaded successfully!', 'success');
+                })
+                .catch(err => {
+                    console.error(err);
+                    loadingToast.remove();
+                    showToast('Error loading JSON data', 'error');
+                });
+        }
+
+        // Render table function
+        function renderTable() {
+            const tbody = document.getElementById('tbody');
+            tbody.innerHTML = '';
+            
+            ORDERED.forEach(r => {
+                const tr = document.createElement('tr');
+                tr.className = 'fade-in';
+                tr.innerHTML = `
+                    <td>${r._idx ?? (r._row + 1)}</td>
+                    <td>${r.date ?? '-'}</td>
+                    <td>${r.code ?? '-'}</td>
+                    <td>${r.letter ?? '-'}</td>
+                    <td>${r.digits6 ?? '-'}</td>
+                    <td><span class="pill">${r.last2 ?? '-'}</span></td>
+                    <td>${(r.raw || '').slice(0, 80)}${(r.raw || '').length > 80 ? '...' : ''}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Analyze function
+        document.getElementById('analyze').addEventListener('click', () => {
+            const boxes = [1, 2, 3, 4, 5, 6].map(i => cleanPair(document.getElementById('b' + i).value));
+            const results = document.getElementById('results');
+            results.innerHTML = '';
+            
+            let totalMatches = 0;
+            let boxesWithHits = 0;
+            
+            // Validate input
+            const emptyBoxes = boxes.filter(b => !b).length;
+            if (emptyBoxes === 6) {
+                showToast('Please enter at least one pair', 'error');
+                return;
+            }
+            
+            boxes.forEach((pair, idx) => {
+                if (!pair) return;
+                
+                const offset = OFFSETS[idx];
+                const matches = [];
+                
+                for (let i = 0; i < ORDERED.length; i++) {
+                    const r = ORDERED[i];
+                    if ((r.last2 || '') === pair) {
+                        const j = i - offset;
+                        
+                        if (j >= 0) {
+                            const above = ORDERED[j];
+                            matches.push({
+                                n: matches.length + 1,
+                                found_index: i,
+                                found_date: r.date,
+                                found_code: r.code,
+                                found_last2: r.last2,
+                                above_index: j,
+                                above_date: above?.date ?? null,
+                                above_code: above?.code ?? null,
+                                above_last2: above?.last2 ?? null
+                            });
+                        } else {
+                            matches.push({
+                                n: matches.length + 1,
+                                found_index: i,
+                                found_date: r.date,
+                                found_code: r.code,
+                                found_last2: r.last2,
+                                above_index: null,
+                                above_date: null,
+                                above_code: null,
+                                above_last2: null
+                            });
+                        }
+                    }
+                }
+                
+                if (matches.length > 0) boxesWithHits++;
+                totalMatches += matches.length;
+                
+                // Create result card
+                const card = document.createElement('div');
+                card.className = 'result-card';
+                
+                let html = `
+                    <div class="result-header">
+                        <div>
+                            <span class="badge"><i class="fas fa-cube"></i> BOX ${idx + 1}</span>
+                            <span class="pill" style="margin-left: 8px;">${pair}</span>
+                            <span class="pill" style="background: #f0fdf4; border-color: #bbf7d0; color: #166534;">
+                                <i class="fas fa-arrow-up"></i> ${offset}
+                            </span>
+                        </div>
+                        <div style="color: #475569; font-size: 14px;">
+                            Matches: <b>${matches.length}</b>
+                        </div>
+                    </div>
+                `;
+                
+                if (matches.length) {
+                    html += `
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Found Date</th>
+                                        <th>Found Code</th>
+                                        <th>Found Last2</th>
+                                        <th>Above Date (↟${offset})</th>
+                                        <th>Above Code</th>
+                                        <th>Above Last2</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+                    
+                    matches.forEach(m => {
+                        html += `
+                            <tr>
+                                <td>${m.n}</td>
+                                <td>${m.found_date ?? '-'}</td>
+                                <td>${m.found_code ?? '-'}</td>
+                                <td><span class="pill">${m.found_last2 ?? '-'}</span></td>
+                                <td>${m.above_date ?? '-'}</td>
+                                <td>${m.above_code ?? '-'}</td>
+                                <td><span class="pill">${m.above_last2 ?? '-'}</span></td>
+                            </tr>
+                        `;
+                    });
+                    
+                    html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div style="text-align: center; padding: 20px; color: #64748b;">
+                            <i class="fas fa-search" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
+                            No matches found for <b>${pair}</b>
+                        </div>
+                    `;
+                }
+                
+                card.innerHTML = html;
+                results.appendChild(card);
+            });
+            
+            document.getElementById('kpi-matches').textContent = totalMatches;
+            document.getElementById('kpi-hitboxes').textContent = boxesWithHits;
+            
+            if (totalMatches > 0) {
+                showToast(`Analysis complete. Found ${totalMatches} matches across ${boxesWithHits} boxes.`, 'success');
+            } else {
+                showToast('No matches found for the entered pairs', 'info');
+            }
+            
+            // Smooth scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Reset function
+        document.getElementById('reset').addEventListener('click', () => {
+            [1, 2, 3, 4, 5, 6].forEach(i => {
+                document.getElementById('b' + i).value = '';
+            });
+            
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('kpi-matches').textContent = '0';
+            document.getElementById('kpi-hitboxes').textContent = '0';
+            
+            showToast('Form has been reset', 'info');
+        });
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            
+            // Add input validation
+            const inputs = document.querySelectorAll('.input');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    this.value = this.value.replace(/\D/g, '').slice(0, 2);
+                });
+            });
+        });
+    </script>
 </body>
 </html>
