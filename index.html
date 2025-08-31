@@ -13,6 +13,7 @@
             --muted: #475569;
             --accent: #0ea5a4;
             --accent2: #7c3aed;
+            --accent3: #f59e0b;
             --border: #e6eef8;
             --success: #10b981;
             --warning: #f59e0b;
@@ -288,6 +289,52 @@
             border-bottom: 1px solid #f1f5f9;
         }
 
+        .badge {
+            background: rgba(14, 165, 164, 0.1);
+            color: var(--accent);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .pill {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        th {
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
         /* Animation Utilities */
         .fade-in {
             animation: fadeIn 0.5s ease;
@@ -468,7 +515,6 @@
             color: white;
             font-weight: 800;
             font-size: 28px;
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
             position: absolute;
             animation: float 5s ease-in-out infinite;
         }
@@ -509,18 +555,17 @@
         }
 
         .lottery-ball:nth-child(5) {
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100px;
-            height: 100px;
-            font-size: 32px;
-            animation: pulse 2s ease-in-out infinite;
+            top: 20%;
+            right: 20%;
+            animation-delay: 2s;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: translate(-50%, -50%) scale(1); }
-            50% { transform: translate(-50%, -50%) scale(1.1); }
+        .lottery-ball:nth-child(6) {
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 2.5s;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
         }
 
         .analyzing-text {
@@ -530,6 +575,18 @@
             text-align: center;
             margin-top: 300px;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            position: absolute;
+            bottom: 100px;
+            width: 100%;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: 14px;
+            margin-top: 40px;
+            padding: 20px;
         }
 
         /* Mobile Responsive */
@@ -568,6 +625,14 @@
             .card {
                 padding: 20px;
             }
+            
+            table {
+                font-size: 14px;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -581,6 +646,17 @@
             
             .btn {
                 width: 100%;
+            }
+            
+            .lottery-ball {
+                width: 60px;
+                height: 60px;
+                font-size: 20px;
+            }
+            
+            .analyzing-text {
+                font-size: 18px;
+                bottom: 80px;
             }
         }
     </style>
@@ -687,11 +763,12 @@
 
     <!-- Lottery Ball Animation -->
     <div class="animation-overlay" id="animationOverlay">
-        <div class="lottery-ball">12</div>
-        <div class="lottery-ball">45</div>
-        <div class="lottery-ball">78</div>
-        <div class="lottery-ball">33</div>
-        <div class="lottery-ball">?</div>
+        <div class="lottery-ball" id="ball1">?</div>
+        <div class="lottery-ball" id="ball2">?</div>
+        <div class="lottery-ball" id="ball3">?</div>
+        <div class="lottery-ball" id="ball4">?</div>
+        <div class="lottery-ball" id="ball5">?</div>
+        <div class="lottery-ball" id="ball6">?</div>
         <div class="analyzing-text">Analyzing your numbers...</div>
     </div>
 
@@ -804,16 +881,19 @@
             loadingToast.innerHTML = '<div class="loader"></div> <span>Loading lottery data...</span>';
             document.body.appendChild(loadingToast);
             
-            // In a real implementation, this would fetch from a JSON file
-            // For demonstration, we'll simulate with a timeout
+            // Sample data with realistic lottery entries
             setTimeout(() => {
-                // Simulate loaded data
                 RECORDS = [
                     {_idx: 1, date: '2023-05-01', code: 'A123', letter: 'B', digits6: '123456', last2: '56', raw: 'Sample data 1'},
                     {_idx: 2, date: '2023-05-02', code: 'B456', letter: 'C', digits6: '234567', last2: '67', raw: 'Sample data 2'},
                     {_idx: 3, date: '2023-05-03', code: 'C789', letter: 'D', digits6: '345678', last2: '78', raw: 'Sample data 3'},
                     {_idx: 4, date: '2023-05-04', code: 'D012', letter: 'E', digits6: '456789', last2: '89', raw: 'Sample data 4'},
-                    {_idx: 5, date: '2023-05-05', code: 'E345', letter: 'F', digits6: '567890', last2: '90', raw: 'Sample data 5'}
+                    {_idx: 5, date: '2023-05-05', code: 'E345', letter: 'F', digits6: '567890', last2: '90', raw: 'Sample data 5'},
+                    {_idx: 6, date: '2023-05-06', code: 'F678', letter: 'G', digits6: '678901', last2: '01', raw: 'Sample data 6'},
+                    {_idx: 7, date: '2023-05-07', code: 'G901', letter: 'H', digits6: '789012', last2: '12', raw: 'Sample data 7'},
+                    {_idx: 8, date: '2023-05-08', code: 'H234', letter: 'I', digits6: '890123', last2: '23', raw: 'Sample data 8'},
+                    {_idx: 9, date: '2023-05-09', code: 'I567', letter: 'J', digits6: '901234', last2: '34', raw: 'Sample data 9'},
+                    {_idx: 10, date: '2023-05-10', code: 'J890', letter: 'K', digits6: '012345', last2: '45', raw: 'Sample data 10'}
                 ];
                 
                 ORDERED = RECORDS.slice();
@@ -836,6 +916,14 @@
                 showToast('Please enter at least one pair', 'error');
                 return;
             }
+            
+            // Update animation balls with entered numbers
+            boxes.forEach((num, idx) => {
+                const ball = document.getElementById(`ball${idx + 1}`);
+                if (ball && num) {
+                    ball.textContent = num;
+                }
+            });
             
             // Show animation
             const animationOverlay = document.getElementById('animationOverlay');
@@ -900,7 +988,7 @@
                 
                 // Create result card
                 const card = document.createElement('div');
-                card.className = 'result-card';
+                card.className = 'result-card fade-in';
                 
                 let html = `
                     <div class="result-header">
@@ -956,9 +1044,9 @@
                     `;
                 } else {
                     html += `
-                        <div style="text-align: center; padding: 20px; color: #64748b;">
-                            <i class="fas fa-search" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
-                            No matches found for <b>${pair}</b>
+                        <div style="text-align: center; padding: 20px; color: #94a3b8;">
+                            <i class="fas fa-search" style="font-size: 24px; margin-bottom: 10px;"></i>
+                            <div>No matches found for this pair</div>
                         </div>
                     `;
                 }
@@ -967,36 +1055,29 @@
                 results.appendChild(card);
             });
             
+            // Update KPIs
             document.getElementById('kpi-matches').textContent = totalMatches;
             document.getElementById('kpi-hitboxes').textContent = boxesWithHits;
             
-            if (totalMatches > 0) {
-                showToast(`Analysis complete. Found ${totalMatches} matches across ${boxesWithHits} boxes.`, 'success');
-            } else {
-                showToast('No matches found for the entered pairs', 'info');
-            }
-            
-            // Smooth scroll to results
-            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+            showToast('Analysis completed!', 'success');
         }
 
         // Reset function
         document.getElementById('reset').addEventListener('click', () => {
-            [1, 2, 3, 4, 5, 6].forEach(i => {
-                document.getElementById('b' + i).value = '';
+            document.querySelectorAll('.input').forEach(input => {
+                input.value = '';
             });
             
             document.getElementById('results').innerHTML = '';
+            
             document.getElementById('kpi-matches').textContent = '0';
             document.getElementById('kpi-hitboxes').textContent = '0';
             
-            showToast('Form has been reset', 'info');
+            showToast('Inputs and results cleared', 'info');
         });
 
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', () => {
-            loadData();
-        });
+        // Initialize
+        loadData();
     </script>
 </body>
 </html>
