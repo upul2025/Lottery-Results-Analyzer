@@ -3,371 +3,1045 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Lottery Results Analyzer — Mobile Friendly</title>
+  <title>Lottery Results Analyzer — Professional Edition</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    :root{
-      --bg:#0f1720;
-      --card:#0b1220;
-      --muted:#94a3b8;
-      --accent:#ff6b6b;
+    :root {
+      --bg: #0f1720;
+      --card: #0b1220;
+      --muted: #94a3b8;
+      --accent: #ff6b6b;
+      --accent-dark: #e05a5a;
       --glass: rgba(255,255,255,0.04);
-      --radius:14px;
-      --max-width:980px;
+      --radius: 14px;
+      --max-width: 980px;
+      --success: #4ade80;
+      --warning: #fbbf24;
     }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
+    
+    * { 
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      margin: 0;
       font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
       background: linear-gradient(180deg,#071022 0%, #0f1720 100%);
       color: #e6eef8;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      padding:20px;
-      display:flex;
-      justify-content:center;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      position: relative;
     }
 
-    .app{
-      width:100%;
-      max-width:var(--max-width);
+    .app {
+      width: 100%;
+      max-width: var(--max-width);
+      position: relative;
+      z-index: 1;
     }
 
-    header{
-      display:flex;
-      gap:12px;
-      align-items:center;
-      margin-bottom:16px;
+    /* Header Styles */
+    .app-header {
+      text-align: center;
+      margin-bottom: 24px;
+      padding: 20px 0;
+      position: relative;
     }
-    header h1{
-      font-size:20px;
-      margin:0;
-      line-height:1;
-      letter-spacing:0.2px;
+    
+    .app-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), #ff8a80);
+      border-radius: 2px;
     }
-    header p{ margin:0; color:var(--muted); font-size:13px; }
+    
+    .app-header h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+      background: linear-gradient(90deg, #e6eef8, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+    }
+    
+    .app-header p {
+      margin: 0; 
+      color: var(--muted); 
+      font-size: 14px;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
 
-    .card{
+    /* Card Styles */
+    .card {
       background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-      border-radius:var(--radius);
-      padding:14px;
+      border-radius: var(--radius);
+      padding: 20px;
       box-shadow: 0 6px 18px rgba(2,6,23,0.6);
       border: 1px solid rgba(255,255,255,0.03);
-      margin-bottom:14px;
+      margin-bottom: 20px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(2,6,23,0.8);
     }
 
-    /* Input grid */
-    .inputs{
-      display:grid;
-      grid-template-columns: repeat(6,1fr);
-      gap:10px;
+    /* Input Section */
+    .input-section {
+      position: relative;
     }
-    .inputs input{
-      width:100%;
-      padding:12px 10px;
-      border-radius:10px;
-      border:1px solid rgba(255,255,255,0.06);
+    
+    .inputs-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .input-box {
+      position: relative;
+    }
+    
+    .input-box input {
+      width: 100%;
+      padding: 16px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.06);
       background: rgba(255,255,255,0.02);
       color: #e6eef8;
-      font-size:16px;
-      text-align:center;
-      outline:none;
+      font-size: 18px;
+      text-align: center;
+      outline: none;
+      transition: all 0.3s ease;
+      font-weight: 600;
     }
-    .controls{
-      display:flex;
-      gap:10px;
-      margin-top:12px;
-      align-items:center;
-      flex-wrap:wrap;
+    
+    .input-box input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(255,107,107,0.2);
+      background: rgba(255,255,255,0.05);
     }
-    .btn{
-      background: linear-gradient(90deg,var(--accent), #ff8a80);
-      border:none;
-      color:#071022;
-      padding:10px 14px;
-      border-radius:10px;
-      font-weight:600;
-      cursor:pointer;
+    
+    .input-box label {
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--card);
+      padding: 0 8px;
+      font-size: 12px;
+      color: var(--muted);
+      z-index: 1;
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      background: linear-gradient(90deg, var(--accent), #ff8a80);
+      border: none;
+      color: #071022;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
       box-shadow: 0 6px 18px rgba(255,107,107,0.12);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .btn:active{ transform: translateY(1px) }
-    .small{
-      font-size:13px;
-      color:var(--muted);
-      background:transparent;
-      border:1px dashed rgba(255,255,255,0.03);
-      padding:8px 10px;
-      border-radius:8px;
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(255,107,107,0.25);
     }
-
-    /* Results area */
-    #resultsHeader{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      margin-bottom:10px;
+    
+    .btn:active {
+      transform: translateY(0);
     }
-    #matches{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
+    
+    .btn-secondary {
+      font-size: 13px;
+      color: var(--muted);
+      background: transparent;
+      border: 1px dashed rgba(255,255,255,0.1);
+      padding: 10px 14px;
+      border-radius: 8px;
+      box-shadow: none;
     }
-
-    /* Box card */
-    .box-card{
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius:12px;
-      padding:12px;
-      border:1px solid rgba(255,255,255,0.03);
-      display:block;
-    }
-    .box-title{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:8px;
-      margin-bottom:8px;
-    }
-    .box-title h3{
-      margin:0; font-size:15px;
-    }
-    .match-list{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-
-    /* each match row */
-    .match{
-      display:flex;
-      gap:12px;
-      align-items:center;
-      background: linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
-      padding:10px;
-      border-radius:10px;
-      border:1px solid rgba(255,255,255,0.02);
-      flex-wrap:wrap;
-    }
-    .match .meta{
-      min-width:120px;
-      font-size:13px;
-      color:var(--muted);
-    }
-    .match .meta b{ color:#fff; display:block; font-size:14px }
-    .match .below{
-      padding:8px 10px;
-      border-radius:8px;
-      background: rgba(255,255,255,0.02);
-      border:1px solid rgba(255,255,255,0.02);
-      font-size:13px;
-      color:var(--muted);
-    }
-    .no-match{
-      color:var(--muted);
-      font-size:14px;
-      padding:10px;
-    }
-
-    /* responsive table showing all records (scrollable horizontally on mobile) */
-    .table-wrap{
-      overflow:auto;
-      border-radius:10px;
-      margin-top:10px;
-      border:1px solid rgba(255,255,255,0.03);
-    }
-    table{
-      width:100%;
-      border-collapse:collapse;
-      min-width:680px;
-    }
-    th,td{
-      padding:10px 8px;
-      text-align:center;
-      font-size:13px;
-      border-bottom:1px dashed rgba(255,255,255,0.02);
-    }
-    th{
+    
+    .btn-secondary:hover {
       background: rgba(255,255,255,0.03);
-      color:var(--muted);
-      font-weight:600;
+      color: #e6eef8;
+    }
+    
+    .json-info {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    /* small screens adjustments */
-    @media (max-width:760px){
-      .inputs{ grid-template-columns: repeat(3,1fr); }
-      header h1{ font-size:18px; }
-      .match .meta{ min-width:100px; font-size:12px }
-      .match .below{ font-size:12px; }
+    /* Keypad */
+    .keypad-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--card);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 16px;
+      z-index: 1000;
+      transform: translateY(100%);
+      transition: transform 0.4s ease;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
     }
-    @media (max-width:420px){
-      .inputs{ grid-template-columns: repeat(2,1fr); gap:8px; }
-      .controls{ flex-direction:column; align-items:stretch; }
-      .btn{ width:100% }
+    
+    .keypad-container.visible {
+      transform: translateY(0);
+    }
+    
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    
+    .keypad-btn {
+      padding: 14px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #e6eef8;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .keypad-btn:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    
+    .keypad-btn:active {
+      transform: scale(0.95);
+    }
+    
+    .keypad-clear {
+      grid-column: span 2;
+      background: rgba(255,107,107,0.2);
+      color: var(--accent);
+    }
+    
+    .keypad-close {
+      background: rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Results Section */
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    
+    .results-header h2 {
+      margin: 0;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .results-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Box Card */
+    .box-card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,0.03);
+      animation: fadeIn 0.5s ease;
+    }
+    
+    .box-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    
+    .box-header h3 {
+      margin: 0;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .box-badge {
+      background: var(--accent);
+      color: #071022;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+    
+    .match-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Match Item */
+    .match-item {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      background: linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.02);
+      flex-wrap: wrap;
+      animation: slideIn 0.4s ease;
+    }
+    
+    .match-meta {
+      min-width: 120px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    
+    .match-meta b {
+      color: #fff;
+      display: block;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    
+    .match-content {
+      flex: 1;
+    }
+    
+    .match-digits {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    
+    .match-full {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    
+    .match-below {
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.02);
+      font-size: 13px;
+      color: var(--muted);
+      min-width: 140px;
+    }
+    
+    .no-match {
+      color: var(--muted);
+      font-size: 14px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    /* Table */
+    .table-container {
+      overflow: auto;
+      border-radius: 10px;
+      margin-top: 10px;
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 680px;
+    }
+    
+    th, td {
+      padding: 12px 10px;
+      text-align: center;
+      font-size: 14px;
+      border-bottom: 1px dashed rgba(255,255,255,0.02);
+    }
+    
+    th {
+      background: rgba(255,255,255,0.03);
+      color: var(--muted);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+    
+    tr:hover {
+      background: rgba(255,255,255,0.01);
+    }
+
+    /* Footer */
+    .app-footer {
+      text-align: center;
+      margin-top: 30px;
+      padding: 20px 0;
+      color: var(--muted);
+      font-size: 13px;
+      border-top: 1px solid rgba(255,255,255,0.03);
+    }
+
+    /* Animation Elements */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(7, 16, 34, 0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s ease;
+    }
+    
+    .overlay.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .lottery-machine {
+      width: 300px;
+      height: 120px;
+      background: var(--card);
+      border-radius: 16px;
+      border: 2px solid var(--accent);
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+    
+    .lottery-balls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      height: 100%;
+    }
+    
+    .ball {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(145deg, #ff8a80, var(--accent));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: bold;
+      font-size: 18px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      animation: ballRoll 1s infinite linear;
+      opacity: 0;
+    }
+    
+    .loading-text {
+      color: #fff;
+      margin-top: 20px;
+      font-size: 16px;
+      text-align: center;
+    }
+    
+    .progress-bar {
+      width: 240px;
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      margin-top: 16px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), #ff8a80);
+      border-radius: 2px;
+      transition: width 6s linear;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideIn {
+      from { 
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes ballRoll {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-20px); }
+      60% { transform: translateY(-10px); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .inputs-grid { 
+        grid-template-columns: repeat(3, 1fr); 
+      }
+      
+      .app-header h1 { 
+        font-size: 24px; 
+      }
+      
+      .match-meta { 
+        min-width: 100px; 
+        font-size: 12px;
+      }
+      
+      .match-below { 
+        font-size: 12px; 
+      }
+      
+      .keypad {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      
+      .keypad-clear {
+        grid-column: span 2;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .inputs-grid { 
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 10px;
+      }
+      
+      .controls { 
+        flex-direction: column; 
+        align-items: stretch; 
+      }
+      
+      .btn { 
+        width: 100%; 
+        justify-content: center;
+      }
+      
+      .json-info {
+        margin-left: 0;
+        justify-content: center;
+      }
+      
+      .match-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .match-below {
+        width: 100%;
+      }
+      
+      .keypad {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      
+      .keypad-clear {
+        grid-column: span 1;
+      }
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <header>
-      <div>
-        <h1>Lottery Results Analyzer</h1>
-        <p>ඔබ ඇතුළත් කරන last-2 අංක සඳහා සියලු ගැලපීම් සහ ඒවාට අනුරූප පහළ draw-වල ප්‍රතිඵල පෙන්වයි (ජංගම හිතෛශී).</p>
-      </div>
+    <!-- Header -->
+    <header class="app-header">
+      <h1><i class="fas fa-chart-line"></i> Lottery Results Analyzer</h1>
+      <p>ඔබ ඇතුළත් කරන last-2 අංක සඳහා සියලු ගැලපීම් සහ ඒවාට අනුරූප පහළ draw-වල ප්‍රතිඵල පෙන්වයි</p>
     </header>
 
+    <!-- Input Section -->
+    <section class="card input-section">
+      <div class="inputs-grid" id="inputGrid">
+        <div class="input-box">
+          <label for="box1">Box 1</label>
+          <input id="box1" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
+        </div>
+        <div class="input-box">
+          <label for="box2">Box 2</label>
+          <input id="box2" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
+        </div>
+        <div class="input-box">
+          <label for="box3">Box 3</label>
+          <input id="box3" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
+        </div>
+        <div class="input-box">
+          <label for="box4">Box 4</label>
+          <input id="box4" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
+        </div>
+        <div class="input-box">
+          <label for="box5">Box 5</label>
+          <input id="box5" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
+        </div>
+        <div class="input-box">
+          <label for="box6">Box 6</label>
+          <input id="box6" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="analyzeBtn">
+          <i class="fas fa-search"></i> විශ්ලේෂණය කරන්න
+        </button>
+        <button class="btn btn-secondary" id="resetBtn">
+          <i class="fas fa-undo"></i> හිස් කරන්න
+        </button>
+        <button class="btn btn-secondary" id="keypadToggle">
+          <i class="fas fa-keyboard"></i> යතුරු පුවරුව
+        </button>
+        <div class="json-info">
+          <i class="fas fa-database"></i> JSON: <code>lottery_records.json</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results Section -->
     <section class="card">
-      <div class="inputs" id="inputGrid">
-        <input id="box1" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="Box 1">
-        <input id="box2" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="Box 2">
-        <input id="box3" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="Box 3">
-        <input id="box4" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="Box 4">
-        <input id="box5" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="Box 5">
-        <input id="box6" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="Box 6">
+      <div class="results-header">
+        <h2><i class="fas fa-poll"></i> විශ්ලේෂණ ප්‍රතිඵල</h2>
+        <div class="results-info">සියලු ගැලපීම් සහ පහළ draw</div>
       </div>
 
-      <div class="controls" style="margin-top:12px;">
-        <button class="btn" id="analyzeBtn">🔍 විශ්ලේෂණය කරන්න</button>
-        <button class="small" id="resetBtn">♻️ හිස් කරන්න</button>
-        <div style="flex:1"></div>
-        <div style="color:var(--muted); font-size:13px">JSON: <code style="color:#cbd5e1">lottery_records.json</code></div>
+      <div id="matches" class="results-container">
+        <div class="no-match">
+          <i class="fas fa-info-circle"></i> වක්‍රී-පද්ධතිය සූදානම් — අගයන් ඇතුළත් කර "විශ්ලේෂණය කරන්න" ඔබන්න.
+        </div>
       </div>
     </section>
 
-    <section id="resultsArea">
-      <div id="resultsHeader" style="margin-top:6px;">
-        <h2 style="margin:0; font-size:16px">විශ්ලේෂණ ප්‍රතිඵල</h2>
-        <div style="color:var(--muted); font-size:13px">සියලු ගැලපීම් සහ පහළ draw</div>
-      </div>
-
-      <div id="matches" class="card">
-        <div class="no-match">වක්‍රී-පද්ධතිය සූදානම් — අගයන් ඇතුළත් කර "විශ්ලේෂණය කරන්න" ඔබන්න.</div>
-      </div>
-    </section>
-
-    <section class="card" style="margin-top:10px;">
-      <h3 style="margin:0 0 8px 0">සියලු ලොතරැයි ප්‍රතිඵල (Raw JSON Table)</h3>
-      <div class="table-wrap">
+    <!-- Data Table -->
+    <section class="card">
+      <h3 style="margin: 0 0 12px 0; display: flex; align-items: center; gap: 8px;">
+        <i class="fas fa-table"></i> සියලු ලොතරැයි ප්‍රතිඵල (Raw JSON Table)
+      </h3>
+      <div class="table-container">
         <table id="dataTable" aria-label="All lottery records">
           <thead>
-            <tr><th>#</th><th>දිනය</th><th>කේතය</th><th>අවසන් 2</th><th>6 අංක</th></tr>
+            <tr>
+              <th>#</th>
+              <th>දිනය</th>
+              <th>කේතය</th>
+              <th>අවසන් 2</th>
+              <th>6 අංක</th>
+            </tr>
           </thead>
           <tbody></tbody>
         </table>
       </div>
     </section>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>© 2023 Lottery Results Analyzer | Professional Edition</p>
+    </footer>
+  </div>
+
+  <!-- Keypad -->
+  <div class="keypad-container" id="keypad">
+    <div class="keypad">
+      <button class="keypad-btn" data-value="1">1</button>
+      <button class="keypad-btn" data-value="2">2</button>
+      <button class="keypad-btn" data-value="3">3</button>
+      <button class="keypad-btn" data-value="4">4</button>
+      <button class="keypad-btn" data-value="5">5</button>
+      <button class="keypad-btn" data-value="6">6</button>
+      <button class="keypad-btn" data-value="7">7</button>
+      <button class="keypad-btn" data-value="8">8</button>
+      <button class="keypad-btn" data-value="9">9</button>
+      <button class="keypad-btn" data-value="0">0</button>
+      <button class="keypad-btn keypad-clear" id="keypadClear">
+        <i class="fas fa-backspace"></i> Clear
+      </button>
+      <button class="keypad-btn keypad-close" id="keypadClose">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Animation Overlay -->
+  <div class="overlay" id="animationOverlay">
+    <div class="lottery-machine">
+      <div class="lottery-balls" id="lotteryBalls">
+        <div class="ball" style="animation-delay: 0.1s"></div>
+        <div class="ball" style="animation-delay: 0.2s"></div>
+        <div class="ball" style="animation-delay: 0.3s"></div>
+        <div class="ball" style="animation-delay: 0.4s"></div>
+        <div class="ball" style="animation-delay: 0.5s"></div>
+        <div class="ball" style="animation-delay: 0.6s"></div>
+      </div>
+    </div>
+    <div class="loading-text" id="loadingText">විශ්ලේෂණය ආරම්භ වෙමින්...</div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
   </div>
 
   <script>
-    // main data holder
+    // Main data holder
     let lotteryData = [];
+    let currentInputIndex = 0;
+    const inputs = Array.from({length: 6}, (_, i) => document.getElementById(`box${i+1}`));
+    
+    // Configuration: offsets per box
+    const offsets = [1, 2, 3, 1, 4, 6];
 
-    // configuration: offsets per box (same as before; adjust if you want)
-    const offsets = [1,2,3,1,4,6];
+    // Initialize the application
+    function initApp() {
+      setupEventListeners();
+      loadJSONData();
+      showKeypad();
+    }
 
-    // load JSON
-    fetch("lottery_records.json")
-      .then(r => r.json())
-      .then(data => {
-        lotteryData = data.map((d, i) => ({
-          ...d,
-          last2: String(d.last2).padStart(2,"0"),
-          _parsedDate: d.date ? new Date(d.date) : null,
-          _idx: i
-        })).sort((a,b) => {
-          if (!a._parsedDate || !b._parsedDate) return 0;
-          return a._parsedDate - b._parsedDate; // පරණ → නව
+    // Set up event listeners
+    function setupEventListeners() {
+      // Input focus events
+      inputs.forEach((input, index) => {
+        input.addEventListener('focus', () => {
+          currentInputIndex = index;
+          highlightCurrentInput();
         });
-
-        // reassign indices after sort
-        lotteryData.forEach((r, i) => r._idx = i);
-
-        renderTable();
-      })
-      .catch(err => {
-        console.error("Error loading JSON:", err);
-        document.querySelector("#matches").innerHTML = '<div class="no-match">lottery_records.json load කිරීමේදී දෝෂයක් — Console බලන්න.</div>';
+        
+        input.addEventListener('click', () => {
+          currentInputIndex = index;
+          highlightCurrentInput();
+          showKeypad();
+        });
       });
+      
+      // Button events
+      document.getElementById('analyzeBtn').addEventListener('click', analyzeNumbers);
+      document.getElementById('resetBtn').addEventListener('click', resetInputs);
+      document.getElementById('keypadToggle').addEventListener('click', toggleKeypad);
+      document.getElementById('keypadClose').addEventListener('click', hideKeypad);
+      document.getElementById('keypadClear').addEventListener('click', clearCurrentInput);
+      
+      // Keypad number buttons
+      document.querySelectorAll('.keypad-btn[data-value]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const value = e.target.getAttribute('data-value');
+          addDigitToInput(value);
+        });
+      });
+      
+      // Allow Enter key to trigger analysis
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          analyzeNumbers();
+        }
+      });
+    }
 
-    // render raw table
-    function renderTable(){
+    // Load JSON data
+    function loadJSONData() {
+      fetch("lottery_records.json")
+        .then(r => r.json())
+        .then(data => {
+          lotteryData = data.map((d, i) => ({
+            ...d,
+            last2: String(d.last2).padStart(2, "0"),
+            _parsedDate: d.date ? new Date(d.date) : null,
+            _idx: i
+          })).sort((a, b) => {
+            if (!a._parsedDate || !b._parsedDate) return 0;
+            return a._parsedDate - b._parsedDate;
+          });
+
+          // Reassign indices after sort
+          lotteryData.forEach((r, i) => r._idx = i);
+          renderTable();
+        })
+        .catch(err => {
+          console.error("Error loading JSON:", err);
+          document.querySelector("#matches").innerHTML = 
+            '<div class="no-match"><i class="fas fa-exclamation-circle"></i> lottery_records.json load කිරීමේදී දෝෂයක්</div>';
+        });
+    }
+
+    // Render data table
+    function renderTable() {
       const tbody = document.querySelector("#dataTable tbody");
       tbody.innerHTML = "";
-      lotteryData.forEach((r,i) => {
+      lotteryData.forEach((r, i) => {
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${i+1}</td><td>${r.date ?? "-"}</td><td>${r.code ?? "-"}</td><td>${r.last2 ?? "-"}</td><td>${r.digits6 ?? "-"}</td>`;
+        tr.innerHTML = `
+          <td>${i+1}</td>
+          <td>${r.date ?? "-"}</td>
+          <td>${r.code ?? "-"}</td>
+          <td>${r.last2 ?? "-"}</td>
+          <td>${r.digits6 ?? "-"}</td>
+        `;
         tbody.appendChild(tr);
       });
     }
 
-    // helpers
-    function getInputValues(){
+    // Get input values
+    function getInputValues() {
       const vals = [];
-      for(let i=1;i<=6;i++){
-        const v = document.getElementById("box"+i).value.trim();
-        if(v === "") return null; // require all filled (same as previous behaviour)
-        vals.push(String(v).padStart(2,"0"));
+      for (let i = 1; i <= 6; i++) {
+        const v = document.getElementById("box" + i).value.trim();
+        if (v === "") return null;
+        vals.push(String(v).padStart(2, "0"));
       }
       return vals;
     }
 
-    function buildResults(inputs){
-      // for each input, find ALL matches (could be multiple years)
+    // Add digit to current input
+    function addDigitToInput(digit) {
+      const currentInput = inputs[currentInputIndex];
+      if (currentInput.value.length < 2) {
+        currentInput.value += digit;
+        
+        // Auto move to next input
+        if (currentInput.value.length === 2 && currentInputIndex < 5) {
+          currentInputIndex++;
+          highlightCurrentInput();
+        }
+      }
+    }
+
+    // Clear current input
+    function clearCurrentInput() {
+      inputs[currentInputIndex].value = "";
+    }
+
+    // Reset all inputs
+    function resetInputs() {
+      inputs.forEach(input => {
+        input.value = "";
+      });
+      currentInputIndex = 0;
+      highlightCurrentInput();
+      document.getElementById("matches").innerHTML = 
+        '<div class="no-match"><i class="fas fa-info-circle"></i> වක්‍රී-පද්ධතිය සූදානම් — අගයන් ඇතුළත් කර "විශ්ලේෂණය කරන්න" ඔබන්න.</div>';
+    }
+
+    // Highlight current input
+    function highlightCurrentInput() {
+      inputs.forEach((input, index) => {
+        if (index === currentInputIndex) {
+          input.style.borderColor = "var(--accent)";
+          input.style.boxShadow = "0 0 0 2px rgba(255,107,107,0.2)";
+          input.style.background = "rgba(255,255,255,0.05)";
+        } else {
+          input.style.borderColor = "rgba(255,255,255,0.06)";
+          input.style.boxShadow = "none";
+          input.style.background = "rgba(255,255,255,0.02)";
+        }
+      });
+    }
+
+    // Toggle keypad visibility
+    function toggleKeypad() {
+      const keypad = document.getElementById('keypad');
+      keypad.classList.toggle('visible');
+    }
+
+    // Show keypad
+    function showKeypad() {
+      document.getElementById('keypad').classList.add('visible');
+    }
+
+    // Hide keypad
+    function hideKeypad() {
+      document.getElementById('keypad').classList.remove('visible');
+    }
+
+    // Analyze numbers with animation
+    function analyzeNumbers() {
+      const inputValues = getInputValues();
+      if (!inputValues) {
+        alert("සියලුම Box පෙරහන් කරන්න (6) — අවශ්‍යයි.");
+        return;
+      }
+
+      // Show animation overlay
+      const overlay = document.getElementById('animationOverlay');
+      const progressFill = document.getElementById('progressFill');
+      const lotteryBalls = document.getElementById('lotteryBalls');
+      const loadingText = document.getElementById('loadingText');
+      
+      overlay.classList.add('visible');
+      progressFill.style.width = '0%';
+      
+      // Reset balls
+      lotteryBalls.innerHTML = '';
+      for (let i = 0; i < 6; i++) {
+        const ball = document.createElement('div');
+        ball.className = 'ball';
+        ball.style.animationDelay = `${i * 0.1}s`;
+        ball.style.opacity = '0';
+        lotteryBalls.appendChild(ball);
+      }
+      
+      // Start animation sequence
+      setTimeout(() => {
+        progressFill.style.width = '100%';
+        
+        // Show balls with delay
+        const balls = document.querySelectorAll('.ball');
+        balls.forEach((ball, index) => {
+          setTimeout(() => {
+            ball.style.opacity = '1';
+            ball.textContent = inputValues[index];
+            loadingText.textContent = `අංක ${index + 1} විශ්ලේෂණය කිරීම...`;
+          }, index * 800);
+        });
+        
+        // Complete animation after 6 seconds
+        setTimeout(() => {
+          overlay.classList.remove('visible');
+          showResults(inputValues);
+        }, 6000);
+      }, 100);
+    }
+
+    // Show analysis results
+    function showResults(inputs) {
       const container = document.createElement("div");
-      container.style.display = "flex";
-      container.style.flexDirection = "column";
-      container.style.gap = "12px";
+      container.className = "results-container";
 
       inputs.forEach((val, idx) => {
         const boxCard = document.createElement("div");
         boxCard.className = "box-card";
 
-        const title = document.createElement("div");
-        title.className = "box-title";
-        title.innerHTML = `<h3>Box ${idx+1} — <span style="color:var(--accent)">${val}</span></h3>
-                           <div style="font-size:13px;color:var(--muted)">offset: ${offsets[idx]}</div>`;
-        boxCard.appendChild(title);
+        const header = document.createElement("div");
+        header.className = "box-header";
+        header.innerHTML = `
+          <h3>
+            <i class="fas fa-cube"></i> Box ${idx+1}
+            <span style="color:var(--accent)">${val}</span>
+          </h3>
+          <div class="box-badge">offset: ${offsets[idx]}</div>
+        `;
+        boxCard.appendChild(header);
 
         const matches = lotteryData
           .filter(r => r.last2 === val)
           .map(r => ({...r}));
 
-        if(matches.length === 0){
-          const no = document.createElement("div");
-          no.className = "no-match";
-          no.textContent = "ගැලපීමක් නොමිලේ.";
-          boxCard.appendChild(no);
+        if (matches.length === 0) {
+          const noMatch = document.createElement("div");
+          noMatch.className = "no-match";
+          noMatch.innerHTML = `<i class="fas fa-times-circle"></i> ගැලපීමක් නොමිලේ.`;
+          boxCard.appendChild(noMatch);
         } else {
           const list = document.createElement("div");
           list.className = "match-list";
 
           matches.forEach(m => {
             const row = document.createElement("div");
-            row.className = "match";
+            row.className = "match-item";
 
             const meta = document.createElement("div");
-            meta.className = "meta";
-            meta.innerHTML = `<b>${m.date ?? "-"}</b><span style="color:var(--muted)">${m.code ?? "-"}</span><div style="margin-top:6px;color:var(--muted);font-size:12px">index: ${m._idx}</div>`;
+            meta.className = "match-meta";
+            meta.innerHTML = `
+              <b>${m.date ?? "-"}</b>
+              <span>${m.code ?? "-"}</span>
+              <div style="margin-top:6px;color:var(--muted);font-size:12px">
+                <i class="fas fa-hashtag"></i> index: ${m._idx}
+              </div>
+            `;
 
-            const center = document.createElement("div");
-            center.style.flex = "1";
-            center.innerHTML = `<div style="font-size:15px"><strong>last2:</strong> ${m.last2}</div>
-                                <div style="color:var(--muted);font-size:13px;margin-top:6px">6-digit: ${m.digits6 ?? "-"}</div>`;
+            const content = document.createElement("div");
+            content.className = "match-content";
+            content.innerHTML = `
+              <div class="match-digits">
+                <i class="fas fa-hashtag"></i> last2: <strong>${m.last2}</strong>
+              </div>
+              <div class="match-full">
+                <i class="fas fa-list-ol"></i> 6-digit: ${m.digits6 ?? "-"}
+              </div>
+            `;
 
             const lookIndex = m._idx + offsets[idx];
             const belowDiv = document.createElement("div");
-            belowDiv.className = "below";
+            belowDiv.className = "match-below";
 
-            if(lookIndex < lotteryData.length){
+            if (lookIndex < lotteryData.length) {
               const below = lotteryData[lookIndex];
-              belowDiv.innerHTML = `<div style="font-weight:600">${below.date ?? "-"}</div><div style="font-size:13px;color:var(--muted)">${below.code ?? "-"} — last2: ${below.last2 ?? "-"}</div>`;
+              belowDiv.innerHTML = `
+                <div style="font-weight:600">
+                  <i class="fas fa-calendar-alt"></i> ${below.date ?? "-"}
+                </div>
+                <div style="font-size:13px;color:var(--muted)">
+                  ${below.code ?? "-"} — last2: ${below.last2 ?? "-"}
+                </div>
+              `;
             } else {
-              belowDiv.textContent = "පහළ draw දත්ත නොමැත";
+              belowDiv.innerHTML = `
+                <i class="fas fa-exclamation-triangle"></i> පහළ draw දත්ත නොමැත
+              `;
             }
 
             row.appendChild(meta);
-            row.appendChild(center);
+            row.appendChild(content);
             row.appendChild(belowDiv);
-
             list.appendChild(row);
           });
 
@@ -377,35 +1051,12 @@
         container.appendChild(boxCard);
       });
 
-      return container;
+      document.getElementById("matches").innerHTML = "";
+      document.getElementById("matches").appendChild(container);
     }
 
-    // events
-    document.getElementById("analyzeBtn").addEventListener("click", () => {
-      const inputs = getInputValues();
-      if(!inputs){
-        alert("සියලුම Box පෙරහන් කරන්න (6) — අවශ්‍යයි.");
-        return;
-      }
-
-      const resultsNode = buildResults(inputs);
-      const matches = document.getElementById("matches");
-      matches.innerHTML = "";
-      matches.appendChild(resultsNode);
-
-      // scroll to results (mobile friendly)
-      window.scrollTo({ top: matches.getBoundingClientRect().top + window.scrollY - 20, behavior: 'smooth' });
-    });
-
-    document.getElementById("resetBtn").addEventListener("click", () => {
-      for(let i=1;i<=6;i++) document.getElementById("box"+i).value = "";
-      document.getElementById("matches").innerHTML = '<div class="no-match">වක්‍රී-පද්ධතිය සූදානම් — අගයන් ඇතුළත් කර "විශ්ලේෂණය කරන්න" ඔබන්න.</div>';
-    });
-
-    // small nicety: allow pressing Enter on last input to trigger analyze
-    document.getElementById("box6").addEventListener("keydown", (e)=>{
-      if(e.key === "Enter") document.getElementById("analyzeBtn").click();
-    });
+    // Initialize the app when DOM is loaded
+    document.addEventListener('DOMContentLoaded', initApp);
   </script>
 </body>
 </html>
