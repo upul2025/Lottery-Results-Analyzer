@@ -1,1041 +1,152 @@
 <!DOCTYPE html>
 <html lang="si">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Lottery Results Analyzer — Full Matches + Offsets</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --bg: #f6f8fb;
-            --card: #ffffff;
-            --text: #0f172a;
-            --muted: #475569;
-            --accent: #0ea5a4;
-            --accent2: #7c3aed;
-            --accent3: #f59e0b;
-            --border: #e6eef8;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --input-bg: #f8fafc;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-            background: linear-gradient(135deg, #f0f4ff 0%, #e6eef8 100%);
-            color: var(--text);
-            line-height: 1.6;
-            padding-bottom: 20px;
-            min-height: 100vh;
-        }
-
-        /* Header Styles */
-        .header {
-            background: linear-gradient(90deg, var(--accent), var(--accent2));
-            color: #fff;
-            padding: 18px 0;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 20px auto;
-            padding: 0 16px;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .app-title {
-            font-weight: 800;
-            font-size: 22px;
-            margin-bottom: 6px;
-        }
-
-        .app-subtitle {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.85);
-        }
-
-        .header-info {
-            text-align: right;
-        }
-
-        #clock {
-            font-weight: 800;
-            font-size: 15px;
-        }
-
-        /* Card Styles */
-        .card {
-            background: var(--card);
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            padding: 24px;
-            box-shadow: 0 8px 30px rgba(2, 6, 23, 0.1);
-            margin-bottom: 20px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--accent), var(--accent2));
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(2, 6, 23, 0.15);
-        }
-
-        .section-title {
-            font-weight: 800;
-            font-size: 20px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--accent);
-        }
-
-        .section-title i {
-            color: var(--accent);
-            background: rgba(14, 165, 164, 0.1);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .section-subtitle {
-            color: var(--muted);
-            font-size: 14px;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-
-        /* Input and Button Styles */
-        .input-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin: 20px 0;
-        }
-
-        .input-row {
-            display: contents;
-        }
-
-        .input-wrapper {
-            position: relative;
-        }
-
-        .input {
-            width: 100%;
-            padding: 16px;
-            border-radius: 16px;
-            border: 2px solid #e5e7eb;
-            text-align: center;
-            font-weight: 700;
-            font-size: 18px;
-            transition: all 0.3s ease;
-            background: var(--input-bg);
-            color: var(--text);
-        }
-
-        .input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 4px rgba(14, 165, 164, 0.2);
-            outline: none;
-        }
-
-        .input-label {
-            display: block;
-            text-align: center;
-            font-size: 13px;
-            color: var(--muted);
-            margin-top: 8px;
-            font-weight: 600;
-        }
-
-        .btn-container {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            margin: 20px 0 10px;
-        }
-
-        .btn {
-            background: linear-gradient(to right, var(--accent), var(--accent2));
-            color: #fff;
-            border: none;
-            border-radius: 16px;
-            padding: 16px 28px;
-            font-weight: 700;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: all 0.3s ease;
-            min-width: 160px;
-            box-shadow: 0 4px 12px rgba(14, 165, 164, 0.3);
-        }
-
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 16px rgba(14, 165, 164, 0.4);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn.secondary {
-            background: #fff;
-            color: var(--accent);
-            border: 2px solid #c7f0ef;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-
-        .btn.secondary:hover {
-            background: #f0fdfb;
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-        }
-
-        /* KPI Styles */
-        .kpi-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin: 24px 0;
-        }
-
-        .kpi {
-            background: linear-gradient(135deg, #f8fafc 0%, #f0f4ff 100%);
-            border: 1px solid #eef2ff;
-            border-radius: 16px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-
-        .kpi:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .kpi .label {
-            font-size: 14px;
-            color: var(--muted);
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        .kpi .value {
-            font-weight: 800;
-            font-size: 28px;
-            color: var(--accent);
-        }
-
-        /* Results Section */
-        .result-card {
-            background: var(--card);
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            padding: 20px;
-            margin-bottom: 16px;
-            animation: fadeIn 0.5s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .result-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .badge {
-            background: rgba(14, 165, 164, 0.1);
-            color: var(--accent);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 14px;
-        }
-
-        .pill {
-            background: #f1f5f9;
-            color: #475569;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .table-container {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 10px 12px;
-            text-align: left;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        th {
-            font-weight: 700;
-            font-size: 13px;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        tr:hover {
-            background: #f8fafc;
-        }
-
-        /* Animation Utilities */
-        .fade-in {
-            animation: fadeIn 0.5s ease;
-        }
-
-        /* Loading Animation */
-        .loader {
-            display: inline-block;
-            width: 24px;
-            height: 24px;
-            border: 3px solid rgba(14, 165, 164, 0.3);
-            border-radius: 50%;
-            border-top-color: var(--accent);
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--text);
-            color: white;
-            padding: 14px 22px;
-            border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            z-index: 1000;
-            animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
-            max-width: 320px;
-        }
-
-        @keyframes toastIn {
-            from { transform: translateY(100px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        @keyframes toastOut {
-            from { transform: translateY(0); opacity: 1; }
-            to { transform: translateY(100px); opacity: 0; }
-        }
-
-        /* Number Pad Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .number-pad {
-            background: white;
-            border-radius: 20px;
-            padding: 24px;
-            width: 300px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            transform: translateY(20px);
-            transition: transform 0.3s ease;
-        }
-
-        .modal-overlay.active .number-pad {
-            transform: translateY(0);
-        }
-
-        .number-pad-display {
-            background: var(--input-bg);
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            border: 2px solid #e5e7eb;
-            min-height: 70px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .number-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-        }
-
-        .number-btn {
-            background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 16px;
-            font-size: 20px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .number-btn:active {
-            background: var(--accent);
-            color: white;
-            border-color: var(--accent);
-        }
-
-        .action-btn {
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 16px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            grid-column: span 2;
-        }
-
-        .clear-btn {
-            background: var(--danger);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 16px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        /* Lottery Ball Animation */
-        .animation-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.5s ease;
-        }
-
-        .animation-overlay.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .lottery-ball {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 800;
-            font-size: 28px;
-            position: absolute;
-            animation: float 5s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            25% { transform: translateY(-20px) rotate(5deg); }
-            50% { transform: translateY(0) rotate(0deg); }
-            75% { transform: translateY(20px) rotate(-5deg); }
-        }
-
-        .lottery-ball:nth-child(1) {
-            top: 20%;
-            left: 20%;
-            animation-delay: 0s;
-            background: linear-gradient(135deg, #0ea5a4, #0d9488);
-        }
-
-        .lottery-ball:nth-child(2) {
-            top: 30%;
-            right: 25%;
-            animation-delay: 0.5s;
-            background: linear-gradient(135deg, #7c3aed, #6366f1);
-        }
-
-        .lottery-ball:nth-child(3) {
-            bottom: 25%;
-            left: 30%;
-            animation-delay: 1s;
-            background: linear-gradient(135deg, #10b981, #059669);
-        }
-
-        .lottery-ball:nth-child(4) {
-            bottom: 15%;
-            right: 20%;
-            animation-delay: 1.5s;
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-        }
-
-        .lottery-ball:nth-child(5) {
-            top: 20%;
-            right: 20%;
-            animation-delay: 2s;
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-        }
-
-        .lottery-ball:nth-child(6) {
-            bottom: 20%;
-            left: 20%;
-            animation-delay: 2.5s;
-            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-        }
-
-        .analyzing-text {
-            color: white;
-            font-size: 24px;
-            font-weight: 700;
-            text-align: center;
-            margin-top: 300px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-            position: absolute;
-            bottom: 100px;
-            width: 100%;
-        }
-
-        /* Footer */
-        .footer {
-            text-align: center;
-            color: var(--muted);
-            font-size: 14px;
-            margin-top: 40px;
-            padding: 20px;
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .container {
-                padding: 0 12px;
-            }
-            
-            .header-content {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .header-info {
-                text-align: left;
-                margin-top: 12px;
-            }
-            
-            .app-title {
-                font-size: 20px;
-            }
-            
-            .input-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .kpi-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .btn {
-                min-width: 140px;
-                padding: 14px 20px;
-            }
-            
-            .card {
-                padding: 20px;
-            }
-            
-            table {
-                font-size: 14px;
-            }
-            
-            th, td {
-                padding: 8px 10px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .input-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .btn-container {
-                flex-direction: column;
-            }
-            
-            .btn {
-                width: 100%;
-            }
-            
-            .lottery-ball {
-                width: 60px;
-                height: 60px;
-                font-size: 20px;
-            }
-            
-            .analyzing-text {
-                font-size: 18px;
-                bottom: 80px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Lottery Results Analyzer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      padding: 20px;
+      color: #333;
+    }
+    h1 { text-align: center; margin-bottom: 20px; }
+    .input-area { text-align: center; margin-bottom: 20px; }
+    .input-area input {
+      width: 60px; padding: 8px; margin: 5px; text-align: center;
+      font-size: 16px; border: 1px solid #aaa; border-radius: 5px;
+    }
+    button {
+      padding: 10px 20px; font-size: 16px; cursor: pointer;
+      background: #007bff; border: none; color: white; border-radius: 5px;
+      margin-top: 10px;
+    }
+    button:hover { background: #0056b3; }
+    #results { margin-top: 20px; padding: 15px; border: 1px solid #ddd; background: white; border-radius: 5px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 30px; background: white; }
+    table, th, td { border: 1px solid #ccc; }
+    th { background: #007bff; color: white; padding: 8px; }
+    td { text-align: center; padding: 6px; }
+    .note { color: #555; font-size: 14px; margin-top: 8px; text-align:center; }
+  </style>
 </head>
 <body>
-    <header class="header">
-        <div class="container header-content">
-            <div>
-                <div class="app-title"><i class="fas fa-chart-line"></i> Lottery Results Analyzer</div>
-                <div class="app-subtitle">Full Matches + Offsets • JSON Powered • Sinhala UI</div>
-            </div>
-            <div class="header-info">
-                <div id="clock" style="font-weight:800"></div>
-                <div class="app-subtitle">Rows: <span id="rowCount">0</span></div>
-            </div>
-        </div>
-    </header>
 
-    <main class="container">
-        <section class="card">
-            <div class="section-title"><i class="fas fa-keyboard"></i> අවසාන අංක යුගල 6ක් ඇතුළත් කරන්න</div>
-            <div class="section-subtitle">Offsets: Box1 +1, Box2 +2, Box3 +3, Box4 +1, Box5 +4, Box6 +6</div>
-            
-            <div class="input-container">
-                <div class="input-row">
-                    <div class="input-wrapper">
-                        <input id="b1" class="input" maxlength="2" placeholder="00" type="text" inputmode="numeric" readonly>
-                        <span class="input-label">Box 1 (+1)</span>
-                    </div>
-                    <div class="input-wrapper">
-                        <input id="b2" class="input" maxlength="2" placeholder="00" type="text" inputmode="numeric" readonly>
-                        <span class="input-label">Box 2 (+2)</span>
-                    </div>
-                    <div class="input-wrapper">
-                        <input id="b3" class="input" maxlength="2" placeholder="00" type="text" inputmode="numeric" readonly>
-                        <span class="input-label">Box 3 (+3)</span>
-                    </div>
-                </div>
-                <div class="input-row">
-                    <div class="input-wrapper">
-                        <input id="b4" class="input" maxlength="2" placeholder="00" type="text" inputmode="numeric" readonly>
-                        <span class="input-label">Box 4 (+1)</span>
-                    </div>
-                    <div class="input-wrapper">
-                        <input id="b5" class="input" maxlength="2" placeholder="00" type="text" inputmode="numeric" readonly>
-                        <span class="input-label">Box 5 (+4)</span>
-                    </div>
-                    <div class="input-wrapper">
-                        <input id="b6" class="input" maxlength="2" placeholder="00" type="text" inputmode="numeric" readonly>
-                        <span class="input-label">Box 6 (+6)</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="btn-container">
-                <button id="analyze" class="btn"><i class="fas fa-search"></i> විශ්ලේෂණය</button>
-                <button id="reset" class="btn secondary"><i class="fas fa-redo"></i> Reset</button>
-            </div>
-            
-            <div class="kpi-container">
-                <div class="kpi">
-                    <div class="label">Total Rows</div>
-                    <div class="value" id="kpi-rows">0</div>
-                </div>
-                <div class="kpi">
-                    <div class="label">Total Matches</div>
-                    <div class="value" id="kpi-matches">0</div>
-                </div>
-                <div class="kpi">
-                    <div class="label">Boxes with Matches</div>
-                    <div class="value" id="kpi-hitboxes">0</div>
-                </div>
-            </div>
-        </section>
+  <h1>Lottery Results Analyzer</h1>
 
-        <section class="card">
-            <div class="section-title"><i class="fas fa-list-ul"></i> ප්‍රතිඵල</div>
-            <div id="results" class="details"></div>
-        </section>
+  <div class="input-area">
+    <input type="text" id="box1" maxlength="2" placeholder="Box1">
+    <input type="text" id="box2" maxlength="2" placeholder="Box2">
+    <input type="text" id="box3" maxlength="2" placeholder="Box3">
+    <input type="text" id="box4" maxlength="2" placeholder="Box4">
+    <input type="text" id="box5" maxlength="2" placeholder="Box5">
+    <input type="text" id="box6" maxlength="2" placeholder="Box6">
+    <br>
+    <button onclick="analyze()">🔍 විශ්ලේෂණය කරන්න</button>
+    <div class="note">ඔබ උපුටා දැක්වූ last2 අගයන් (අවසාන 2 අංක) ඇතුළත් කරන්න — විස්තරාත්මක වශයෙන් පහළට (පසුව) බැලේ.</div>
+  </div>
 
-        <div class="footer">© Xtreme Lottery Explorer • JSON-powered • Client-side only</div>
-    </main>
+  <div id="results">
+    <h2>විශ්ලේෂණ ප්‍රතිඵල</h2>
+    <div id="matches"></div>
+  </div>
 
-    <!-- Number Pad Modal -->
-    <div class="modal-overlay" id="numberPadModal">
-        <div class="number-pad">
-            <div class="number-pad-display" id="numberDisplay">00</div>
-            <div class="number-grid">
-                <button class="number-btn" data-number="1">1</button>
-                <button class="number-btn" data-number="2">2</button>
-                <button class="number-btn" data-number="3">3</button>
-                <button class="number-btn" data-number="4">4</button>
-                <button class="number-btn" data-number="5">5</button>
-                <button class="number-btn" data-number="6">6</button>
-                <button class="number-btn" data-number="7">7</button>
-                <button class="number-btn" data-number="8">8</button>
-                <button class="number-btn" data-number="9">9</button>
-                <button class="clear-btn" id="clearBtn">C</button>
-                <button class="number-btn" data-number="0">0</button>
-                <button class="action-btn" id="confirmBtn">Confirm</button>
-            </div>
-        </div>
-    </div>
+  <h2>සියලු ලොතරැයි ප්‍රතිඵල</h2>
+  <table id="dataTable">
+    <thead>
+      <tr>
+        <th>අංකය</th>
+        <th>දිනය</th>
+        <th>කේතය</th>
+        <th>අවසන් අංක 2</th>
+        <th>අංක 6</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-    <!-- Lottery Ball Animation -->
-    <div class="animation-overlay" id="animationOverlay">
-        <div class="lottery-ball" id="ball1">?</div>
-        <div class="lottery-ball" id="ball2">?</div>
-        <div class="lottery-ball" id="ball3">?</div>
-        <div class="lottery-ball" id="ball4">?</div>
-        <div class="lottery-ball" id="ball5">?</div>
-        <div class="lottery-ball" id="ball6">?</div>
-        <div class="analyzing-text">Analyzing your numbers...</div>
-    </div>
+  <script>
+    let lotteryData = [];
 
-    <script>
-        // Live clock
-        function updateClock() { 
-            document.getElementById('clock').textContent = new Date().toLocaleString('si-SI'); 
+    // JSON ගොනුව load කරගැනීම
+    fetch("lottery_records.json")
+      .then(res => res.json())
+      .then(data => {
+        // ensure last2 are strings and parse dates
+        lotteryData = data.map(d => ({
+          ...d,
+          last2: String(d.last2).padStart(2, "0"),
+          _parsedDate: d.date ? new Date(d.date) : null
+        }));
+
+        // sort by date ascending (පෙරදිනය → පසුවදිනය). 이렇게 하면 "පහළට" බලන විට array තුල ඉදිරියට යන නිවැරදි අනුපිළිවෙල ලැබේ.
+        lotteryData.sort((a, b) => {
+          if (!a._parsedDate || !b._parsedDate) return 0;
+          return a._parsedDate - b._parsedDate;
+        });
+
+        renderTable();
+      })
+      .catch(err => {
+        console.error("JSON Load Error:", err);
+        document.querySelector("#matches").innerText = "JSON ගොනුව load කිරීමේ දෝෂයක් විය.";
+      });
+
+    function renderTable() {
+      const tbody = document.querySelector("#dataTable tbody");
+      tbody.innerHTML = "";
+      lotteryData.forEach((row, i) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${row._idx ?? (i+1)}</td>
+          <td>${row.date ?? ""}</td>
+          <td>${row.code ?? ""}</td>
+          <td>${row.last2 ?? ""}</td>
+          <td>${row.digits6 ?? ""}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function analyze() {
+      const inputs = [];
+      for (let i = 1; i <= 6; i++) {
+        const raw = document.getElementById("box" + i).value.trim();
+        if (raw === "") {
+          alert("සියලුම Box පුරවන්න!");
+          return;
         }
-        setInterval(updateClock, 1000); 
-        updateClock();
+        // normalize to two digits (e.g., "7" -> "07")
+        const val = raw.padStart(2, "0");
+        inputs.push(val);
+      }
 
-        // Utility functions
-        function cleanPair(v) { 
-            return (v || '').toString().replace(/\D+/g, '').slice(-2) || null; 
+      // offsets: number of draws to look *after* the matched draw (පහළට බලන offset)
+      const offsets = [1, 2, 3, 1, 4, 6];
+      let resultHTML = "";
+
+      inputs.forEach((val, idx) => {
+        // find the index in the sorted array
+        const matchIndex = lotteryData.findIndex(r => String(r.last2).padStart(2,"0") === val);
+        if (matchIndex !== -1) {
+          const match = lotteryData[matchIndex];
+          resultHTML += `<p><b>Box${idx + 1}</b> → ${val} : ${match.date || "දිනක් නොමැති"} (${match.code || "-"})</p>`;
+
+          const lookIndex = matchIndex + offsets[idx];
+          if (lookIndex < lotteryData.length) {
+            const below = lotteryData[lookIndex];
+            resultHTML += `<p style="margin-left:20px;">↳ පහළට (${offsets[idx]}) → ${below.date || ""} (${below.code || ""}) — last2: ${below.last2 || ""}</p>`;
+          } else {
+            resultHTML += `<p style="margin-left:20px;">↳ පහළට (${offsets[idx]}) සඳහා දත්ත නොමැත (තවත් වඩා පසුව දිනයක් නොමැත)</p>`;
+          }
+        } else {
+          resultHTML += `<p><b>Box${idx + 1}</b> → ${val} : 🚫 ගැලපීමක් නැත</p>`;
         }
+      });
 
-        function showToast(message, type = 'info') {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `
-                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
-                <span>${message}</span>
-            `;
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
-        }
+      document.getElementById("matches").innerHTML = resultHTML;
+    }
+  </script>
 
-        // Offsets
-        const OFFSETS = [1, 2, 3, 1, 4, 6];
-
-        // Data
-        let RECORDS = [];
-        let ORDERED = [];
-
-        // Number Pad functionality
-        let currentInput = null;
-        let currentValue = '';
-
-        const numberPadModal = document.getElementById('numberPadModal');
-        const numberDisplay = document.getElementById('numberDisplay');
-        const numberButtons = document.querySelectorAll('.number-btn');
-        const clearBtn = document.getElementById('clearBtn');
-        const confirmBtn = document.getElementById('confirmBtn');
-        const inputs = document.querySelectorAll('.input');
-
-        // Open number pad when input is clicked
-        inputs.forEach(input => {
-            input.addEventListener('click', function() {
-                currentInput = this;
-                currentValue = this.value || '';
-                numberDisplay.textContent = currentValue.padStart(2, '0');
-                numberPadModal.classList.add('active');
-            });
-        });
-
-        // Number buttons
-        numberButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                if (currentValue.length < 2) {
-                    currentValue += this.getAttribute('data-number');
-                    numberDisplay.textContent = currentValue.padStart(2, '0');
-                }
-            });
-        });
-
-        // Clear button
-        clearBtn.addEventListener('click', function() {
-            currentValue = '';
-            numberDisplay.textContent = '00';
-        });
-
-        // Confirm button
-        confirmBtn.addEventListener('click', function() {
-            if (currentInput) {
-                currentInput.value = currentValue;
-                
-                // Move to next input if available
-                const currentId = currentInput.id;
-                const currentIndex = parseInt(currentId.replace('b', '')) - 1;
-                
-                if (currentIndex < 5) {
-                    const nextInput = document.getElementById(`b${currentIndex + 2}`);
-                    nextInput.focus();
-                }
-                
-                closeNumberPad();
-            }
-        });
-
-        // Close number pad when clicking outside
-        numberPadModal.addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeNumberPad();
-            }
-        });
-
-        function closeNumberPad() {
-            numberPadModal.classList.remove('active');
-            currentInput = null;
-            currentValue = '';
-        }
-
-        // Load JSON data
-        function loadData() {
-            const loadingToast = document.createElement('div');
-            loadingToast.className = 'toast';
-            loadingToast.innerHTML = '<div class="loader"></div> <span>Loading lottery data...</span>';
-            document.body.appendChild(loadingToast);
-            
-            // Sample data with realistic lottery entries
-            setTimeout(() => {
-                // This would be replaced with actual data loading from a JSON file
-                // For demonstration, we'll use the example data you provided
-                RECORDS = [
-                    {_idx: 1, date: '2025-08-30', code: 'A244546', letter: 'A', digits6: '244546', last2: '46', raw: 'A 2 4 4 5 4 6'},
-                    {_idx: 2, date: '2025-08-29', code: 'W265642', letter: 'W', digits6: '265642', last2: '42', raw: 'W 2 6 5 6 4 2'},
-                    {_idx: 3, date: '2025-08-28', code: 'E156549', letter: 'E', digits6: '156549', last2: '49', raw: 'E 1 5 6 5 4 9'},
-                    {_idx: 4, date: '2025-08-27', code: 'T555455', letter: 'T', digits6: '555455', last2: '55', raw: 'T 5 5 5 4 5 5'},
-                    {_idx: 5, date: '2025-08-26', code: 'R145536', letter: 'R', digits6: '145536', last2: '36', raw: 'R 1 4 5 5 3 6'},
-                    {_idx: 6, date: '2025-08-25', code: 'Y465544', letter: 'Y', digits6: '465544', last2: '44', raw: 'Y 4 6 5 5 4 4'},
-                    // Add more historical data here
-                    {_idx: 7, date: '2025-08-24', code: 'U123456', letter: 'U', digits6: '123456', last2: '56', raw: 'U 1 2 3 4 5 6'},
-                    {_idx: 8, date: '2025-08-23', code: 'I654321', letter: 'I', digits6: '654321', last2: '21', raw: 'I 6 5 4 3 2 1'},
-                    {_idx: 9, date: '2025-08-22', code: 'O112233', letter: 'O', digits6: '112233', last2: '33', raw: 'O 1 1 2 2 3 3'},
-                    {_idx: 10, date: '2025-08-21', code: 'P445566', letter: 'P', digits6: '445566', last2: '66', raw: 'P 4 4 5 5 6 6'},
-                    {_idx: 11, date: '2025-08-20', code: 'A123123', letter: 'A', digits6: '123123', last2: '23', raw: 'A 1 2 3 1 2 3'},
-                    {_idx: 12, date: '2025-08-19', code: 'B456456', letter: 'B', digits6: '456456', last2: '56', raw: 'B 4 5 6 4 5 6'},
-                    {_idx: 13, date: '2025-08-18', code: 'C789789', letter: 'C', digits6: '789789', last2: '89', raw: 'C 7 8 9 7 8 9'},
-                    {_idx: 14, date: '2025-08-17', code: 'D147258', letter: 'D', digits6: '147258', last2: '58', raw: 'D 1 4 7 2 5 8'},
-                    {_idx: 15, date: '2025-08-16', code: 'E369258', letter: 'E', digits6: '369258', last2: '58', raw: 'E 3 6 9 2 5 8'},
-                    {_idx: 16, date: '2025-08-15', code: 'F555555', letter: 'F', digits6: '555555', last2: '55', raw: 'F 5 5 5 5 5 5'},
-                    {_idx: 17, date: '2025-08-14', code: 'G111111', letter: 'G', digits6: '111111', last2: '11', raw: 'G 1 1 1 1 1 1'},
-                    {_idx: 18, date: '2025-08-13', code: 'H999999', letter: 'H', digits6: '999999', last2: '99', raw: 'H 9 9 9 9 9 9'},
-                    {_idx: 19, date: '2025-08-12', code: 'J121212', letter: 'J', digits6: '121212', last2: '12', raw: 'J 1 2 1 2 1 2'},
-                    {_idx: 20, date: '2025-08-11', code: 'K343434', letter: 'K', digits6: '343434', last2: '34', raw: 'K 3 4 3 4 3 4'}
-                ];
-                
-                ORDERED = RECORDS.slice();
-                
-                document.getElementById('rowCount').textContent = RECORDS.length;
-                document.getElementById('kpi-rows').textContent = RECORDS.length;
-                
-                loadingToast.remove();
-                showToast('Data loaded successfully!', 'success');
-            }, 1500);
-        }
-
-        // Analyze function
-        document.getElementById('analyze').addEventListener('click', () => {
-            const boxes = [1, 2, 3, 4, 5, 6].map(i => cleanPair(document.getElementById('b' + i).value));
-            
-            // Validate input
-            const emptyBoxes = boxes.filter(b => !b).length;
-            if (emptyBoxes === 6) {
-                showToast('Please enter at least one pair', 'error');
-                return;
-            }
-            
-            // Update animation balls with entered numbers
-            boxes.forEach((num, idx) => {
-                const ball = document.getElementById(`ball${idx + 1}`);
-                if (ball && num) {
-                    ball.textContent = num;
-                }
-            });
-            
-            // Show animation
-            const animationOverlay = document.getElementById('animationOverlay');
-            animationOverlay.classList.add('active');
-            
-            // Analyze after animation
-            setTimeout(() => {
-                animationOverlay.classList.remove('active');
-                performAnalysis(boxes);
-            }, 3000);
-        });
-        
-        function performAnalysis(boxes) {
-            const results = document.getElementById('results');
-            results.innerHTML = '';
-            
-            let totalMatches = 0;
-            let boxesWithMatches = 0;
-            
-            boxes.forEach((target, idx) => {
-                if (!target) return;
-                
-                const offset = OFFSETS[idx];
-                const matches = RECORDS.filter(r => r.last2 === target);
-                
-                if (matches.length > 0) {
-                    totalMatches += matches.length;
-                    boxesWithMatches++;
-                    
-                    // Find the record at the specified offset
-                    const offsetRecords = matches.map(match => {
-                        const matchIndex = ORDERED.findIndex(r => r._idx === match._idx);
-                        const offsetIndex = matchIndex + offset;
-                        
-                        if (offsetIndex >= 0 && offsetIndex < ORDERED.length) {
-                            return ORDERED[offsetIndex];
-                        }
-                        return null;
-                    }).filter(r => r !== null);
-                    
-                    // Create result card
-                    const card = document.createElement('div');
-                    card.className = 'result-card fade-in';
-                    
-                    card.innerHTML = `
-                        <div class="result-header">
-                            <div class="badge">Box ${idx + 1} (+${offset})</div>
-                            <div class="pill">${matches.length} matches</div>
-                        </div>
-                        <div class="table-container">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Target</th>
-                                        <th>+${offset} Offset</th>
-                                        <th>Full Number</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${matches.map((match, i) => `
-                                        <tr>
-                                            <td>${match.date}</td>
-                                            <td><strong>${match.last2}</strong></td>
-                                            <td><strong>${offsetRecords[i] ? offsetRecords[i].last2 : 'N/A'}</strong></td>
-                                            <td>${offsetRecords[i] ? offsetRecords[i].raw : 'N/A'}</td>
-                                        </tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>
-                        </div>
-                    `;
-                    
-                    results.appendChild(card);
-                }
-            });
-            
-            // Update KPIs
-            document.getElementById('kpi-matches').textContent = totalMatches;
-            document.getElementById('kpi-hitboxes').textContent = boxesWithMatches;
-            
-            if (totalMatches === 0) {
-                results.innerHTML = '<div class="result-card fade-in"><div class="result-header"><div class="badge">No Matches Found</div></div><p>No matching records found for the entered numbers. Try different numbers or check the data.</p></div>';
-            }
-        }
-        
-        // Reset function
-        document.getElementById('reset').addEventListener('click', () => {
-            document.querySelectorAll('.input').forEach(input => {
-                input.value = '';
-            });
-            
-            document.getElementById('results').innerHTML = '';
-            document.getElementById('kpi-matches').textContent = '0';
-            document.getElementById('kpi-hitboxes').textContent = '0';
-        });
-        
-        // Initialize the app
-        loadData();
-    </script>
 </body>
 </html>
