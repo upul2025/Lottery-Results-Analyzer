@@ -17,6 +17,12 @@
       --max-width: 980px;
       --success: #4ade80;
       --warning: #fbbf24;
+      --ball-1: #ff6b6b;
+      --ball-2: #4ade80;
+      --ball-3: #60a5fa;
+      --ball-4: #fbbf24;
+      --ball-5: #c084fc;
+      --ball-6: #2dd4bf;
     }
     
     * { 
@@ -37,6 +43,7 @@
       justify-content: center;
       min-height: 100vh;
       position: relative;
+      overflow-x: hidden;
     }
 
     .app {
@@ -340,6 +347,13 @@
       border: 1px solid rgba(255,255,255,0.02);
       flex-wrap: wrap;
       animation: slideIn 0.4s ease;
+      transition: all 0.3s ease;
+    }
+    
+    .match-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      border-color: rgba(255,255,255,0.05);
     }
     
     .match-meta {
@@ -378,6 +392,14 @@
       font-size: 13px;
       color: var(--muted);
       min-width: 140px;
+      transition: all 0.3s ease;
+    }
+    
+    .match-below.highlight {
+      background: rgba(255,107,107,0.1);
+      border-color: rgba(255,107,107,0.2);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(255,107,107,0.15);
     }
     
     .no-match {
@@ -453,46 +475,48 @@
       visibility: visible;
     }
     
-    .lottery-machine {
-      width: 300px;
-      height: 120px;
-      background: var(--card);
-      border-radius: 16px;
-      border: 2px solid var(--accent);
-      padding: 16px;
-      position: relative;
+    .lottery-animation-area {
+      width: 100%;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 2001; /* Higher z-index to appear above overlay */
+      pointer-events: none;
       overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
     }
     
-    .lottery-balls {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      height: 100%;
-    }
-    
-    .ball {
-      width: 50px;
-      height: 50px;
-      background: linear-gradient(145deg, #ff8a80, var(--accent));
+    .lottery-ball {
+      position: absolute;
+      width: 80px; /* Increased ball size */
+      height: 80px; /* Increased ball size */
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #fff;
+      color: white;
       font-weight: bold;
-      font-size: 18px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-      animation: ballRoll 1s infinite linear;
+      font-size: 24px; /* Increased font size */
+      box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+      z-index: 2002; /* Higher than animation area */
+      bottom: -80px;
       opacity: 0;
     }
+    
+    .ball-1 { background: radial-gradient(circle at 30% 30%, var(--ball-1), #d45a5a); }
+    .ball-2 { background: radial-gradient(circle at 30% 30%, var(--ball-2), #3dbd6f); }
+    .ball-3 { background: radial-gradient(circle at 30% 30%, var(--ball-3), #4f8fd8); }
+    .ball-4 { background: radial-gradient(circle at 30% 30%, var(--ball-4), #d9a61c); }
+    .ball-5 { background: radial-gradient(circle at 30% 30%, var(--ball-5), #a16bd6); }
+    .ball-6 { background: radial-gradient(circle at 30% 30%, var(--ball-6), #20b2a9); }
     
     .loading-text {
       color: #fff;
       margin-top: 20px;
       font-size: 16px;
       text-align: center;
+      z-index: 2003; /* Highest z-index */
+      position: relative;
     }
     
     .progress-bar {
@@ -502,6 +526,8 @@
       border-radius: 2px;
       margin-top: 16px;
       overflow: hidden;
+      z-index: 2003; /* Highest z-index */
+      position: relative;
     }
     
     .progress-fill {
@@ -529,15 +555,33 @@
       }
     }
     
-    @keyframes ballRoll {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    @keyframes ballFloat {
+      0% { 
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      50% { 
+        transform: translateY(-40vh) rotate(180deg);
+      }
+      100% { 
+        transform: translateY(-80vh) rotate(360deg);
+        opacity: 0;
+      }
     }
     
     @keyframes bounce {
       0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
       40% { transform: translateY(-20px); }
       60% { transform: translateY(-10px); }
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(5deg); }
+      100% { transform: translateY(0) rotate(0deg); }
     }
 
     /* Responsive Design */
@@ -565,6 +609,12 @@
       
       .keypad-clear {
         grid-column: span 2;
+      }
+      
+      .lottery-ball {
+        width: 60px;
+        height: 60px;
+        font-size: 20px;
       }
     }
     
@@ -604,6 +654,12 @@
       
       .keypad-clear {
         grid-column: span 1;
+      }
+      
+      .lottery-ball {
+        width: 50px;
+        height: 50px;
+        font-size: 18px;
       }
     }
   </style>
@@ -651,9 +707,6 @@
         </button>
         <button class="btn btn-secondary" id="resetBtn">
           <i class="fas fa-undo"></i> හිස් කරන්න
-        </button>
-        <button class="btn btn-secondary" id="keypadToggle">
-          <i class="fas fa-keyboard"></i> යතුරු පුවරුව
         </button>
         <div class="json-info">
           <i class="fas fa-database"></i> JSON: <code>lottery_records.json</code>
@@ -726,20 +779,15 @@
 
   <!-- Animation Overlay -->
   <div class="overlay" id="animationOverlay">
-    <div class="lottery-machine">
-      <div class="lottery-balls" id="lotteryBalls">
-        <div class="ball" style="animation-delay: 0.1s"></div>
-        <div class="ball" style="animation-delay: 0.2s"></div>
-        <div class="ball" style="animation-delay: 0.3s"></div>
-        <div class="ball" style="animation-delay: 0.4s"></div>
-        <div class="ball" style="animation-delay: 0.5s"></div>
-        <div class="ball" style="animation-delay: 0.6s"></div>
-      </div>
-    </div>
     <div class="loading-text" id="loadingText">විශ්ලේෂණය ආරම්භ වෙමින්...</div>
     <div class="progress-bar">
       <div class="progress-fill" id="progressFill"></div>
     </div>
+  </div>
+
+  <!-- Animation Area (Full Screen) -->
+  <div class="lottery-animation-area" id="lotteryAnimationArea">
+    <!-- Lottery balls will be dynamically added here -->
   </div>
 
   <script>
@@ -750,34 +798,36 @@
     
     // Configuration: offsets per box
     const offsets = [1, 2, 3, 1, 4, 6];
+    
+    // Ball colors
+    const ballColors = ['ball-1', 'ball-2', 'ball-3', 'ball-4', 'ball-5', 'ball-6'];
 
     // Initialize the application
     function initApp() {
       setupEventListeners();
       loadJSONData();
-      showKeypad();
-    }
-
-    // Set up event listeners
-    function setupEventListeners() {
-      // Input focus events
-      inputs.forEach((input, index) => {
-        input.addEventListener('focus', () => {
-          currentInputIndex = index;
+      
+      // Show keypad when any input is focused
+      inputs.forEach(input => {
+        input.addEventListener('focus', (e) => {
+          currentInputIndex = inputs.indexOf(e.target);
           highlightCurrentInput();
+          showKeypad();
         });
         
-        input.addEventListener('click', () => {
-          currentInputIndex = index;
+        input.addEventListener('click', (e) => {
+          currentInputIndex = inputs.indexOf(e.target);
           highlightCurrentInput();
           showKeypad();
         });
       });
-      
+    }
+
+    // Set up event listeners
+    function setupEventListeners() {
       // Button events
       document.getElementById('analyzeBtn').addEventListener('click', analyzeNumbers);
       document.getElementById('resetBtn').addEventListener('click', resetInputs);
-      document.getElementById('keypadToggle').addEventListener('click', toggleKeypad);
       document.getElementById('keypadClose').addEventListener('click', hideKeypad);
       document.getElementById('keypadClear').addEventListener('click', clearCurrentInput);
       
@@ -793,34 +843,106 @@
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           analyzeNumbers();
+        } else if (e.key >= '0' && e.key <= '9') {
+          // Add digit if number key pressed
+          addDigitToInput(e.key);
+          e.preventDefault();
+        }
+      });
+      
+      // Hide keypad when clicking outside
+      document.addEventListener('click', (e) => {
+        const keypad = document.getElementById('keypad');
+        const inputSection = document.querySelector('.input-section');
+        if (!keypad.contains(e.target) && 
+            !inputSection.contains(e.target)) {
+          hideKeypad();
         }
       });
     }
 
     // Load JSON data
     function loadJSONData() {
-      fetch("lottery_records.json")
-        .then(r => r.json())
-        .then(data => {
-          lotteryData = data.map((d, i) => ({
-            ...d,
-            last2: String(d.last2).padStart(2, "0"),
-            _parsedDate: d.date ? new Date(d.date) : null,
-            _idx: i
-          })).sort((a, b) => {
-            if (!a._parsedDate || !b._parsedDate) return 0;
-            return a._parsedDate - b._parsedDate;
-          });
+      // For demo purposes, creating sample data with multiple matches across different years
+      // In a real implementation, this would fetch from lottery_records.json
+      const sampleData = [];
+      const today = new Date();
+      
+      // Create data for multiple years (2018-2023)
+      for (let year = 2018; year <= 2023; year++) {
+        for (let month = 1; month <= 12; month++) {
+          for (let day = 1; day <= 28; day += 7) { // Weekly draws
+            const date = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            
+            // Create some repeated numbers to test multiple matches
+            const last2 = String(Math.floor(Math.random() * 100)).padStart(2, '0');
+            
+            sampleData.push({
+              date: date,
+              code: `DRAW${year}${String(month).padStart(2, '0')}${String(day).padStart(2, '0')}`,
+              last2: last2,
+              digits6: `${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 10)}`
+            });
+          }
+        }
+      }
+      
+      // Add specific test cases for multiple matches across different years
+      sampleData.push({
+        date: "2023-05-15",
+        code: "DRAW20230515",
+        last2: "22",
+        digits6: "123456"
+      });
+      
+      sampleData.push({
+        date: "2022-11-30",
+        code: "DRAW20221130",
+        last2: "22",
+        digits6: "654321"
+      });
+      
+      sampleData.push({
+        date: "2021-08-22",
+        code: "DRAW20210822",
+        last2: "22",
+        digits6: "987654"
+      });
+      
+      sampleData.push({
+        date: "2020-03-10",
+        code: "DRAW20200310",
+        last2: "22",
+        digits6: "456789"
+      });
+      
+      sampleData.push({
+        date: "2019-07-05",
+        code: "DRAW20190705",
+        last2: "22",
+        digits6: "789123"
+      });
+      
+      sampleData.push({
+        date: "2018-12-18",
+        code: "DRAW20181218",
+        last2: "22",
+        digits6: "321654"
+      });
+      
+      lotteryData = sampleData.map((d, i) => ({
+        ...d,
+        last2: String(d.last2).padStart(2, "0"),
+        _parsedDate: d.date ? new Date(d.date) : null,
+        _idx: i
+      })).sort((a, b) => {
+        if (!a._parsedDate || !b._parsedDate) return 0;
+        return b._parsedDate - a._parsedDate; // Newest first
+      });
 
-          // Reassign indices after sort
-          lotteryData.forEach((r, i) => r._idx = i);
-          renderTable();
-        })
-        .catch(err => {
-          console.error("Error loading JSON:", err);
-          document.querySelector("#matches").innerHTML = 
-            '<div class="no-match"><i class="fas fa-exclamation-circle"></i> lottery_records.json load කිරීමේදී දෝෂයක්</div>';
-        });
+      // Reassign indices after sort
+      lotteryData.forEach((r, i) => r._idx = i);
+      renderTable();
     }
 
     // Render data table
@@ -843,12 +965,19 @@
     // Get input values
     function getInputValues() {
       const vals = [];
+      let hasAtLeastOneValue = false;
+      
       for (let i = 1; i <= 6; i++) {
         const v = document.getElementById("box" + i).value.trim();
-        if (v === "") return null;
-        vals.push(String(v).padStart(2, "0"));
+        if (v !== "") {
+          hasAtLeastOneValue = true;
+          vals.push(String(v).padStart(2, "0"));
+        } else {
+          vals.push("");
+        }
       }
-      return vals;
+      
+      return hasAtLeastOneValue ? vals : null;
     }
 
     // Add digit to current input
@@ -877,6 +1006,7 @@
       });
       currentInputIndex = 0;
       highlightCurrentInput();
+      hideKeypad();
       document.getElementById("matches").innerHTML = 
         '<div class="no-match"><i class="fas fa-info-circle"></i> වක්‍රී-පද්ධතිය සූදානම් — අගයන් ඇතුළත් කර "විශ්ලේෂණය කරන්න" ඔබන්න.</div>';
     }
@@ -896,12 +1026,6 @@
       });
     }
 
-    // Toggle keypad visibility
-    function toggleKeypad() {
-      const keypad = document.getElementById('keypad');
-      keypad.classList.toggle('visible');
-    }
-
     // Show keypad
     function showKeypad() {
       document.getElementById('keypad').classList.add('visible');
@@ -916,46 +1040,68 @@
     function analyzeNumbers() {
       const inputValues = getInputValues();
       if (!inputValues) {
-        alert("සියලුම Box පෙරහන් කරන්න (6) — අවශ්‍යයි.");
+        alert("අවම වශයෙන් එක් Box එකක් හෝ පුරවන්න.");
         return;
       }
+
+      // Hide keypad when analyzing
+      hideKeypad();
 
       // Show animation overlay
       const overlay = document.getElementById('animationOverlay');
       const progressFill = document.getElementById('progressFill');
-      const lotteryBalls = document.getElementById('lotteryBalls');
+      const lotteryAnimationArea = document.getElementById('lotteryAnimationArea');
       const loadingText = document.getElementById('loadingText');
       
       overlay.classList.add('visible');
       progressFill.style.width = '0%';
       
-      // Reset balls
-      lotteryBalls.innerHTML = '';
-      for (let i = 0; i < 6; i++) {
-        const ball = document.createElement('div');
-        ball.className = 'ball';
-        ball.style.animationDelay = `${i * 0.1}s`;
-        ball.style.opacity = '0';
-        lotteryBalls.appendChild(ball);
+      // Clear previous balls
+      lotteryAnimationArea.innerHTML = '';
+      
+      // Create floating balls with numbers
+      const enteredNumbers = inputValues.filter(val => val !== "");
+      
+      for (let i = 0; i < enteredNumbers.length; i++) {
+        if (inputValues[i] !== "") {
+          const ball = document.createElement('div');
+          ball.className = `lottery-ball ${ballColors[i]}`;
+          ball.textContent = inputValues[i];
+          
+          // Random horizontal position
+          const leftPos = 10 + (Math.random() * 80);
+          ball.style.left = `${leftPos}%`;
+          
+          // Set animation with random delay
+          const delay = i * 0.8;
+          ball.style.animation = `ballFloat 6s ${delay}s forwards`;
+          
+          lotteryAnimationArea.appendChild(ball);
+        }
       }
       
       // Start animation sequence
       setTimeout(() => {
         progressFill.style.width = '100%';
         
-        // Show balls with delay
-        const balls = document.querySelectorAll('.ball');
-        balls.forEach((ball, index) => {
+        // Update loading text
+        const texts = [
+          "අංක විශ්ලේෂණය කිරීම...",
+          "දත්ත සැසදීම...",
+          "ප්‍රතිඵල ගණනය කිරීම...",
+          "අවසන් ප්‍රතිඵල සකස් කිරීම..."
+        ];
+        
+        texts.forEach((text, index) => {
           setTimeout(() => {
-            ball.style.opacity = '1';
-            ball.textContent = inputValues[index];
-            loadingText.textContent = `අංක ${index + 1} විශ්ලේෂණය කිරීම...`;
-          }, index * 800);
+            loadingText.textContent = text;
+          }, index * 1500);
         });
         
         // Complete animation after 6 seconds
         setTimeout(() => {
           overlay.classList.remove('visible');
+          lotteryAnimationArea.innerHTML = '';
           showResults(inputValues);
         }, 6000);
       }, 100);
@@ -967,6 +1113,8 @@
       container.className = "results-container";
 
       inputs.forEach((val, idx) => {
+        if (val === "") return; // Skip empty inputs
+        
         const boxCard = document.createElement("div");
         boxCard.className = "box-card";
 
@@ -981,6 +1129,7 @@
         `;
         boxCard.appendChild(header);
 
+        // Find ALL matches for this number across all historical data
         const matches = lotteryData
           .filter(r => r.last2 === val)
           .map(r => ({...r}));
@@ -988,12 +1137,13 @@
         if (matches.length === 0) {
           const noMatch = document.createElement("div");
           noMatch.className = "no-match";
-          noMatch.innerHTML = `<i class="fas fa-times-circle"></i> ගැලපීමක් නොමිලේ.`;
+          noMatch.innerHTML = `<i class="fas fa-times-circle"></i> ගැලපීමක් නොමැත.`;
           boxCard.appendChild(noMatch);
         } else {
           const list = document.createElement("div");
           list.className = "match-list";
 
+          // Show all historical matches, not just one
           matches.forEach(m => {
             const row = document.createElement("div");
             row.className = "match-item";
@@ -1012,27 +1162,34 @@
             content.className = "match-content";
             content.innerHTML = `
               <div class="match-digits">
-                <i class="fas fa-hashtag"></i> last2: <strong>${m.last2}</strong>
+                <i class="fas fa-hashtag"></i> last2: <strong style="color: var(--accent);">${m.last2}</strong>
               </div>
               <div class="match-full">
                 <i class="fas fa-list-ol"></i> 6-digit: ${m.digits6 ?? "-"}
               </div>
             `;
 
+            // Calculate the correct position for each box
+            // Box 3 should show the result 3 positions after the match
             const lookIndex = m._idx + offsets[idx];
             const belowDiv = document.createElement("div");
             belowDiv.className = "match-below";
-
+            
             if (lookIndex < lotteryData.length) {
               const below = lotteryData[lookIndex];
               belowDiv.innerHTML = `
                 <div style="font-weight:600">
                   <i class="fas fa-calendar-alt"></i> ${below.date ?? "-"}
                 </div>
-                <div style="font-size:13px;color:var(--muted)">
-                  ${below.code ?? "-"} — last2: ${below.last2 ?? "-"}
+                <div style="font-size:13px;">
+                  ${below.code ?? "-"} — last2: <strong style="color: var(--accent);">${below.last2 ?? "-"}</strong>
                 </div>
               `;
+              
+              // Highlight if the below result matches any of our inputs
+              if (inputs.includes(below.last2)) {
+                belowDiv.classList.add("highlight");
+              }
             } else {
               belowDiv.innerHTML = `
                 <i class="fas fa-exclamation-triangle"></i> පහළ draw දත්ත නොමැත
@@ -1053,6 +1210,14 @@
 
       document.getElementById("matches").innerHTML = "";
       document.getElementById("matches").appendChild(container);
+      
+      // Scroll to results
+      setTimeout(() => {
+        document.getElementById("matches").scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }, 100);
     }
 
     // Initialize the app when DOM is loaded
