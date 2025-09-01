@@ -488,19 +488,20 @@
     
     .lottery-ball {
       position: absolute;
-      width: 80px; /* Increased ball size */
-      height: 80px; /* Increased ball size */
+      width: 90px; /* Increased ball size */
+      height: 90px; /* Increased ball size */
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
       font-weight: bold;
-      font-size: 24px; /* Increased font size */
+      font-size: 28px; /* Increased font size */
       box-shadow: 0 6px 15px rgba(0,0,0,0.4);
       z-index: 2002; /* Higher than animation area */
-      bottom: -80px;
+      bottom: -90px;
       opacity: 0;
+      border: 3px solid white; /* White outline */
     }
     
     .ball-1 { background: radial-gradient(circle at 30% 30%, var(--ball-1), #d45a5a); }
@@ -612,9 +613,9 @@
       }
       
       .lottery-ball {
-        width: 60px;
-        height: 60px;
-        font-size: 20px;
+        width: 70px;
+        height: 70px;
+        font-size: 24px;
       }
     }
     
@@ -657,9 +658,9 @@
       }
       
       .lottery-ball {
-        width: 50px;
-        height: 50px;
-        font-size: 18px;
+        width: 60px;
+        height: 60px;
+        font-size: 20px;
       }
     }
   </style>
@@ -877,11 +878,17 @@
             // Create some repeated numbers to test multiple matches
             const last2 = String(Math.floor(Math.random() * 100)).padStart(2, '0');
             
+            // Generate English character (A-Z)
+            const englishChar = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+            
+            // Generate 6-digit number
+            const digits6 = `${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 10)}`;
+            
             sampleData.push({
               date: date,
-              code: `DRAW${year}${String(month).padStart(2, '0')}${String(day).padStart(2, '0')}`,
+              code: englishChar, // Using English character as code
               last2: last2,
-              digits6: `${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 10)}`
+              digits6: digits6
             });
           }
         }
@@ -890,44 +897,44 @@
       // Add specific test cases for multiple matches across different years
       sampleData.push({
         date: "2023-05-15",
-        code: "DRAW20230515",
+        code: "S",
+        last2: "22",
+        digits6: "455270"
+      });
+      
+      sampleData.push({
+        date: "2022-11-30",
+        code: "B",
         last2: "22",
         digits6: "123456"
       });
       
       sampleData.push({
-        date: "2022-11-30",
-        code: "DRAW20221130",
-        last2: "22",
-        digits6: "654321"
-      });
-      
-      sampleData.push({
         date: "2021-08-22",
-        code: "DRAW20210822",
+        code: "K",
         last2: "22",
-        digits6: "987654"
+        digits6: "789012"
       });
       
       sampleData.push({
         date: "2020-03-10",
-        code: "DRAW20200310",
+        code: "L",
         last2: "22",
-        digits6: "456789"
+        digits6: "345678"
       });
       
       sampleData.push({
         date: "2019-07-05",
-        code: "DRAW20190705",
+        code: "M",
         last2: "22",
-        digits6: "789123"
+        digits6: "901234"
       });
       
       sampleData.push({
         date: "2018-12-18",
-        code: "DRAW20181218",
+        code: "P",
         last2: "22",
-        digits6: "321654"
+        digits6: "567890"
       });
       
       lotteryData = sampleData.map((d, i) => ({
@@ -956,7 +963,7 @@
           <td>${r.date ?? "-"}</td>
           <td>${r.code ?? "-"}</td>
           <td>${r.last2 ?? "-"}</td>
-          <td>${r.digits6 ?? "-"}</td>
+          <td>${r.code} ${r.digits6.match(/.{1}/g).join(' ') ?? "-"}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -1059,25 +1066,23 @@
       // Clear previous balls
       lotteryAnimationArea.innerHTML = '';
       
-      // Create floating balls with numbers
-      const enteredNumbers = inputValues.filter(val => val !== "");
-      
-      for (let i = 0; i < enteredNumbers.length; i++) {
-        if (inputValues[i] !== "") {
-          const ball = document.createElement('div');
-          ball.className = `lottery-ball ${ballColors[i]}`;
-          ball.textContent = inputValues[i];
-          
-          // Random horizontal position
-          const leftPos = 10 + (Math.random() * 80);
-          ball.style.left = `${leftPos}%`;
-          
-          // Set animation with random delay
-          const delay = i * 0.8;
-          ball.style.animation = `ballFloat 6s ${delay}s forwards`;
-          
-          lotteryAnimationArea.appendChild(ball);
-        }
+      // Create floating balls with numbers or "?" for empty boxes
+      for (let i = 0; i < 6; i++) {
+        const ball = document.createElement('div');
+        ball.className = `lottery-ball ${ballColors[i]}`;
+        
+        // Show "?" for empty boxes, numbers for filled boxes
+        ball.textContent = inputValues[i] !== "" ? inputValues[i] : "?";
+        
+        // Position balls evenly across the screen
+        const leftPos = 10 + (i * (80/5));
+        ball.style.left = `${leftPos}%`;
+        
+        // Set animation with delay based on position
+        const delay = i * 0.8;
+        ball.style.animation = `ballFloat 6s ${delay}s forwards`;
+        
+        lotteryAnimationArea.appendChild(ball);
       }
       
       // Start animation sequence
@@ -1137,7 +1142,7 @@
         if (matches.length === 0) {
           const noMatch = document.createElement("div");
           noMatch.className = "no-match";
-          noMatch.innerHTML = `<i class="fas fa-times-circle"></i> ගැලපීමක් නොමැත.`;
+          noMatch.innerHTML = `<i class="fas fa-times-circle"></i> ගැලපීමක් නොමිලේ.`;
           boxCard.appendChild(noMatch);
         } else {
           const list = document.createElement("div");
@@ -1165,7 +1170,7 @@
                 <i class="fas fa-hashtag"></i> last2: <strong style="color: var(--accent);">${m.last2}</strong>
               </div>
               <div class="match-full">
-                <i class="fas fa-list-ol"></i> 6-digit: ${m.digits6 ?? "-"}
+                <i class="fas fa-list-ol"></i> 6-digit: ${m.code} ${m.digits6.match(/.{1}/g).join(' ') ?? "-"}
               </div>
             `;
 
