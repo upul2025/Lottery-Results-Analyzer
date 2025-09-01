@@ -862,116 +862,68 @@
       });
     }
 
-    // Load JSON data
+    // Load JSON data from external file
     function loadJSONData() {
-      // For demo purposes, creating sample data with multiple matches across different years
-      // In a real implementation, this would fetch from lottery_records.json
-      const sampleData = [];
-      
-      // Add specific test cases for multiple matches across different years
-      sampleData.push({
-        date: "2023-05-15",
-        code: "S",
-        last2: "22",
-        digits6: "455270"
-      });
-      
-      sampleData.push({
-        date: "2023-04-10",
-        code: "W",
-        last2: "15",
-        digits6: "155743"
-      });
-      
-      sampleData.push({
-        date: "2023-03-12",
-        code: "H",
-        last2: "70",
-        digits6: "246571"
-      });
-      
-      sampleData.push({
-        date: "2022-11-30",
-        code: "B",
-        last2: "22",
-        digits6: "123456"
-      });
-      
-      sampleData.push({
-        date: "2022-10-25",
-        code: "K",
-        last2: "45",
-        digits6: "789012"
-      });
-      
-      sampleData.push({
-        date: "2022-09-18",
-        code: "L",
-        last2: "33",
-        digits6: "345678"
-      });
-      
-      sampleData.push({
-        date: "2021-08-22",
-        code: "M",
-        last2: "22",
-        digits6: "901234"
-      });
-      
-      sampleData.push({
-        date: "2021-07-15",
-        code: "P",
-        last2: "67",
-        digits6: "567890"
-      });
-      
-      sampleData.push({
-        date: "2021-06-10",
-        code: "T",
-        last2: "89",
-        digits6: "234567"
-      });
-      
-      sampleData.push({
-        date: "2020-03-10",
-        code: "R",
-        last2: "22",
-        digits6: "456789"
-      });
-      
-      sampleData.push({
-        date: "2019-07-05",
-        code: "D",
-        last2: "22",
-        digits6: "789123"
-      });
-      
-      sampleData.push({
-        date: "2018-12-18",
-        code: "F",
-        last2: "22",
-        digits6: "321654"
-      });
-      
-      lotteryData = sampleData.map((d, i) => ({
-        ...d,
-        last2: String(d.last2).padStart(2, "0"),
-        _parsedDate: d.date ? new Date(d.date) : null,
-        _idx: i
-      })).sort((a, b) => {
-        if (!a._parsedDate || !b._parsedDate) return 0;
-        return b._parsedDate - a._parsedDate; // Newest first
-      });
-
-      // Reassign indices after sort
-      lotteryData.forEach((r, i) => r._idx = i);
-      renderTable();
+      fetch('lottery_records.json')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Process the data to match our expected format
+          lotteryData = data.map((item, index) => {
+            // Extract date, code, digits6, and last2 from the JSON structure
+            const date = item.date || '';
+            const code = item.letter || item.code || '';
+            const digits6 = item.digits6 || '';
+            const last2 = item.last2 || '';
+            
+            return {
+              date: date,
+              code: code,
+              digits6: digits6,
+              last2: String(last2).padStart(2, "0"),
+              _parsedDate: date ? new Date(date) : null,
+              _idx: index
+            };
+          }).sort((a, b) => {
+            // Sort by date, newest first
+            if (!a._parsedDate || !b._parsedDate) return 0;
+            return b._parsedDate - a._parsedDate;
+          });
+          
+          // Reassign indices after sort
+          lotteryData.forEach((r, i) => r._idx = i);
+          renderTable();
+        })
+        .catch(error => {
+          console.error('Error loading JSON data:', error);
+          alert('දත්ත ලබා ගැනීමේ දෝෂයක්: ' + error.message);
+          
+          // Fallback to empty data if JSON loading fails
+          lotteryData = [];
+          renderTable();
+        });
     }
 
     // Render data table
     function renderTable() {
       const tbody = document.querySelector("#dataTable tbody");
       tbody.innerHTML = "";
+      
+      if (lotteryData.length === 0) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td colspan="5" style="text-align: center; padding: 20px; color: var(--muted);">
+            <i class="fas fa-exclamation-triangle"></i> දත්ත ලබා ගැනීමට නොහැකි විය
+          </td>
+        `;
+        tbody.appendChild(tr);
+        return;
+      }
+      
       lotteryData.forEach((r, i) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
@@ -979,7 +931,7 @@
           <td>${r.date ?? "-"}</td>
           <td>${r.code ?? "-"}</td>
           <td>${r.last2 ?? "-"}</td>
-          <td>${r.code} ${r.digits6.match(/.{1}/g).join(' ') ?? "-"}</td>
+          <td>${r.code} ${r.digits6 ? r.digits6.match(/.{1}/g).join(' ') : "-"}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -1087,157 +1039,115 @@
         const ball = document.createElement('div');
         ball.className = `lottery-ball ${ballColors[i]}`;
         
-        // Show "?" for empty boxes, numbers for filled boxes
-        ball.textContent = inputValues[i] !== "" ? inputValues[i] : "?";
+        // Use input value or "?" if empty
+        ball.textContent = inputValues[i] || "?";
         
-        // Position balls evenly across the screen
-        const leftPos = 10 + (i * (80/5));
-        ball.style.left = `${leftPos}%`;
+        // Random position
+        const left = 10 + Math.random() * 80;
+        ball.style.left = `${left}%`;
         
-        // Set animation with delay based on position
-        const delay = i * 0.8;
-        ball.style.animation = `ballFloat 6s ${delay}s forwards`;
+        // Random delay and duration
+        const delay = i * 0.5;
+        const duration = 3 + Math.random() * 2;
+        ball.style.animation = `ballFloat ${duration}s ease-in-out ${delay}s forwards`;
         
         lotteryAnimationArea.appendChild(ball);
       }
       
-      // Start animation sequence
+      // Update progress bar
       setTimeout(() => {
         progressFill.style.width = '100%';
-        
-        // Update loading text
-        const texts = [
-          "අංක විශ්ලේෂණය කිරීම...",
-          "දත්ත සැසදීම...",
-          "ප්‍රතිඵල ගණනය කිරීම...",
-          "අවසන් ප්‍රතිඵල සකස් කිරීම..."
-        ];
-        
-        texts.forEach((text, index) => {
-          setTimeout(() => {
-            loadingText.textContent = text;
-          }, index * 1500);
-        });
-        
-        // Complete animation after 6 seconds
-        setTimeout(() => {
-          overlay.classList.remove('visible');
-          lotteryAnimationArea.innerHTML = '';
-          showResults(inputValues);
-        }, 6000);
-      }, 100);
+      }, 50);
+      
+      // Update loading text
+      setTimeout(() => {
+        loadingText.textContent = "දත්ත විශ්ලේෂණය කෙරේ...";
+      }, 2000);
+      
+      setTimeout(() => {
+        loadingText.textContent = "ප්‍රතිඵල ගොනු කෙරේ...";
+      }, 4000);
+      
+      // After animation completes, show results
+      setTimeout(() => {
+        overlay.classList.remove('visible');
+        showResults(inputValues);
+      }, 6000);
     }
 
-    // Show analysis results
-    function showResults(inputs) {
-      const container = document.createElement("div");
-      container.className = "results-container";
-
-      inputs.forEach((val, idx) => {
-        if (val === "") return; // Skip empty inputs
+    // Show results
+    function showResults(inputValues) {
+      const resultsContainer = document.getElementById("matches");
+      resultsContainer.innerHTML = "";
+      
+      // Check each box
+      for (let i = 0; i < 6; i++) {
+        const boxValue = inputValues[i];
+        if (!boxValue) continue;
         
+        // Find matches for this box
+        const matches = lotteryData.filter(r => r.last2 === boxValue);
+        
+        // Create box card
         const boxCard = document.createElement("div");
         boxCard.className = "box-card";
-
-        const header = document.createElement("div");
-        header.className = "box-header";
-        header.innerHTML = `
-          <h3>
-            <i class="fas fa-cube"></i> Box ${idx+1}
-            <span style="color:var(--accent)">${val}</span>
-          </h3>
-          <div class="box-badge">offset: ${offsets[idx]}</div>
+        
+        // Box header
+        const boxHeader = document.createElement("div");
+        boxHeader.className = "box-header";
+        boxHeader.innerHTML = `
+          <h3><i class="fas fa-cube"></i> Box ${i+1} <span class="box-badge">${boxValue}</span></h3>
+          <span>${matches.length} ගැලපීම්</span>
         `;
-        boxCard.appendChild(header);
-
-        // Find ALL matches for this number across all historical data
-        const matches = lotteryData
-          .filter(r => r.last2 === val)
-          .map(r => ({...r}));
-
+        boxCard.appendChild(boxHeader);
+        
+        // Matches list
+        const matchList = document.createElement("div");
+        matchList.className = "match-list";
+        
         if (matches.length === 0) {
-          const noMatch = document.createElement("div");
-          noMatch.className = "no-match";
-          noMatch.innerHTML = `<i class="fas fa-times-circle"></i> ගැලපීමක් නොමිලේ.`;
-          boxCard.appendChild(noMatch);
+          matchList.innerHTML = `
+            <div class="no-match">
+              <i class="fas fa-exclamation-circle"></i> ${boxValue} සඳහා ගැලපීම් හමු නොවීය
+            </div>
+          `;
         } else {
-          const list = document.createElement("div");
-          list.className = "match-list";
-
-          // Show all historical matches, not just one
-          matches.forEach(m => {
-            const row = document.createElement("div");
-            row.className = "match-item";
-
-            const meta = document.createElement("div");
-            meta.className = "match-meta";
-            meta.innerHTML = `
-              <b>${m.date ?? "-"}</b>
-              <span>${m.code ?? "-"}</span>
-              <div style="margin-top:6px;color:var(--muted);font-size:12px">
-                <i class="fas fa-hashtag"></i> index: ${m._idx}
-              </div>
-            `;
-
-            const content = document.createElement("div");
-            content.className = "match-content";
-            content.innerHTML = `
-              <div class="match-digits">
-                <i class="fas fa-hashtag"></i> last2: <strong style="color: var(--accent);">${m.last2}</strong>
-              </div>
-              <div class="match-full">
-                <i class="fas fa-list-ol"></i> 6-digit: ${m.code} ${m.digits6.match(/.{1}/g).join(' ') ?? "-"}
-              </div>
-            `;
-
-            // Calculate the correct position for each box using the offset
-            const lookIndex = m._idx + offsets[idx];
-            const belowDiv = document.createElement("div");
-            belowDiv.className = "match-below";
+          matches.forEach(match => {
+            const matchItem = document.createElement("div");
+            matchItem.className = "match-item";
             
-            if (lookIndex < lotteryData.length) {
-              const below = lotteryData[lookIndex];
-              belowDiv.innerHTML = `
-                <div style="font-weight:600">
-                  <i class="fas fa-calendar-alt"></i> ${below.date ?? "-"}
-                </div>
-                <div style="font-size:13px;">
-                  ${below.code} ${below.digits6.match(/.{1}/g).join(' ')} — last2: <strong style="color: var(--accent);">${below.last2 ?? "-"}</strong>
-                </div>
-              `;
-              
-              // Highlight if the below result matches any of our inputs
-              if (inputs.includes(below.last2)) {
-                belowDiv.classList.add("highlight");
-              }
-            } else {
-              belowDiv.innerHTML = `
-                <i class="fas fa-exclamation-triangle"></i> පහළ draw දත්ත නොමැත
-              `;
-            }
-
-            row.appendChild(meta);
-            row.appendChild(content);
-            row.appendChild(belowDiv);
-            list.appendChild(row);
+            // Format the digits with spaces for readability
+            const formattedDigits = match.digits6 ? 
+              match.digits6.match(/.{1}/g).join(' ') : 
+              'N/A';
+            
+            // Get the next draw based on offset
+            const nextDrawIndex = match._idx - offsets[i];
+            const nextDraw = nextDrawIndex >= 0 ? lotteryData[nextDrawIndex] : null;
+            
+            matchItem.innerHTML = `
+              <div class="match-meta">
+                <b>${match.date || "N/A"}</b>
+                ${match.code || "N/A"}
+              </div>
+              <div class="match-content">
+                <div class="match-digits">${formattedDigits}</div>
+                <div class="match-full">${match.code || ""}${match.digits6 || ""}</div>
+              </div>
+              <div class="match-below ${nextDraw ? 'highlight' : ''}">
+                <div>පහළ Draw (${offsets[i]}):</div>
+                <div>${nextDraw ? (nextDraw.date || "N/A") : "N/A"}</div>
+                <div>${nextDraw ? (nextDraw.code || "N/A") + " " + (nextDraw.digits6 || "N/A") : "N/A"}</div>
+              </div>
+            `;
+            
+            matchList.appendChild(matchItem);
           });
-
-          boxCard.appendChild(list);
         }
-
-        container.appendChild(boxCard);
-      });
-
-      document.getElementById("matches").innerHTML = "";
-      document.getElementById("matches").appendChild(container);
-      
-      // Scroll to results
-      setTimeout(() => {
-        document.getElementById("matches").scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start' 
-        });
-      }, 100);
+        
+        boxCard.appendChild(matchList);
+        resultsContainer.appendChild(boxCard);
+      }
     }
 
     // Initialize the app when DOM is loaded
