@@ -867,32 +867,6 @@
       // For demo purposes, creating sample data with multiple matches across different years
       // In a real implementation, this would fetch from lottery_records.json
       const sampleData = [];
-      const today = new Date();
-      
-      // Create data for multiple years (2018-2023)
-      for (let year = 2018; year <= 2023; year++) {
-        for (let month = 1; month <= 12; month++) {
-          for (let day = 1; day <= 28; day += 7) { // Weekly draws
-            const date = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            
-            // Create some repeated numbers to test multiple matches
-            const last2 = String(Math.floor(Math.random() * 100)).padStart(2, '0');
-            
-            // Generate English character (A-Z)
-            const englishChar = String.fromCharCode(65 + Math.floor(Math.random() * 26));
-            
-            // Generate 6-digit number
-            const digits6 = `${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 10)}`;
-            
-            sampleData.push({
-              date: date,
-              code: englishChar, // Using English character as code
-              last2: last2,
-              digits6: digits6
-            });
-          }
-        }
-      }
       
       // Add specific test cases for multiple matches across different years
       sampleData.push({
@@ -903,6 +877,20 @@
       });
       
       sampleData.push({
+        date: "2023-04-10",
+        code: "W",
+        last2: "15",
+        digits6: "155743"
+      });
+      
+      sampleData.push({
+        date: "2023-03-12",
+        code: "H",
+        last2: "70",
+        digits6: "246571"
+      });
+      
+      sampleData.push({
         date: "2022-11-30",
         code: "B",
         last2: "22",
@@ -910,31 +898,59 @@
       });
       
       sampleData.push({
-        date: "2021-08-22",
+        date: "2022-10-25",
         code: "K",
-        last2: "22",
+        last2: "45",
         digits6: "789012"
       });
       
       sampleData.push({
-        date: "2020-03-10",
+        date: "2022-09-18",
         code: "L",
-        last2: "22",
+        last2: "33",
         digits6: "345678"
       });
       
       sampleData.push({
-        date: "2019-07-05",
+        date: "2021-08-22",
         code: "M",
         last2: "22",
         digits6: "901234"
       });
       
       sampleData.push({
-        date: "2018-12-18",
+        date: "2021-07-15",
         code: "P",
-        last2: "22",
+        last2: "67",
         digits6: "567890"
+      });
+      
+      sampleData.push({
+        date: "2021-06-10",
+        code: "T",
+        last2: "89",
+        digits6: "234567"
+      });
+      
+      sampleData.push({
+        date: "2020-03-10",
+        code: "R",
+        last2: "22",
+        digits6: "456789"
+      });
+      
+      sampleData.push({
+        date: "2019-07-05",
+        code: "D",
+        last2: "22",
+        digits6: "789123"
+      });
+      
+      sampleData.push({
+        date: "2018-12-18",
+        code: "F",
+        last2: "22",
+        digits6: "321654"
       });
       
       lotteryData = sampleData.map((d, i) => ({
@@ -1174,8 +1190,7 @@
               </div>
             `;
 
-            // Calculate the correct position for each box
-            // Box 3 should show the result 3 positions after the match
+            // Calculate the correct position for each box using the offset
             const lookIndex = m._idx + offsets[idx];
             const belowDiv = document.createElement("div");
             belowDiv.className = "match-below";
@@ -1187,7 +1202,7 @@
                   <i class="fas fa-calendar-alt"></i> ${below.date ?? "-"}
                 </div>
                 <div style="font-size:13px;">
-                  ${below.code ?? "-"} — last2: <strong style="color: var(--accent);">${below.last2 ?? "-"}</strong>
+                  ${below.code} ${below.digits6.match(/.{1}/g).join(' ')} — last2: <strong style="color: var(--accent);">${below.last2 ?? "-"}</strong>
                 </div>
               `;
               
