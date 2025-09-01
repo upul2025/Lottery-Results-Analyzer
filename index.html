@@ -91,6 +91,86 @@
       line-height: 1.5;
     }
 
+    .live-clock {
+      margin-top: 8px;
+      font-size: 14px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    
+    .live-clock i {
+      color: var(--accent);
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 0.7; }
+      50% { opacity: 1; }
+      100% { opacity: 0.7; }
+    }
+
+    /* Status Indicator */
+    .status-indicator {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 10px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .status-indicator.connected {
+      background: rgba(74, 222, 128, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(74, 222, 128, 0.3);
+    }
+    
+    .status-indicator.connecting {
+      background: rgba(251, 191, 36, 0.15);
+      color: var(--warning);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+    
+    .status-indicator.error {
+      background: rgba(255, 107, 107, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(255, 107, 107, 0.3);
+    }
+    
+    .status-indicator .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    
+    .status-indicator.connected .status-dot {
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+    }
+    
+    .status-indicator.connecting .status-dot {
+      background: var(--warning);
+      box-shadow: 0 0 8px var(--warning);
+      animation: pulse 1.5s infinite;
+    }
+    
+    .status-indicator.error .status-dot {
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      animation: pulse 0.8s infinite;
+    }
+
     /* Card Styles */
     .card {
       background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
@@ -539,6 +619,67 @@
       transition: width 6s linear;
     }
 
+    /* Custom Alert */
+    .custom-alert {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 16px 20px;
+      border-radius: 12px;
+      background: rgba(11, 18, 32, 0.95);
+      border: 1px solid rgba(255,107,107,0.2);
+      color: #fff;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 3000;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      transform: translateX(100%);
+      transition: transform 0.4s ease;
+      max-width: 400px;
+    }
+    
+    .custom-alert.visible {
+      transform: translateX(0);
+    }
+    
+    .custom-alert i {
+      color: var(--accent);
+      font-size: 20px;
+    }
+    
+    .custom-alert .alert-content {
+      flex: 1;
+    }
+    
+    .custom-alert .alert-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--accent);
+    }
+    
+    .custom-alert .alert-close {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+    }
+    
+    .custom-alert .alert-close:hover {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+
     /* Animations */
     @keyframes fadeIn {
       from { opacity: 0; }
@@ -617,6 +758,18 @@
         height: 70px;
         font-size: 24px;
       }
+      
+      .status-indicator {
+        bottom: 70px;
+        right: 10px;
+        font-size: 12px;
+      }
+      
+      .custom-alert {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+      }
     }
     
     @media (max-width: 480px) {
@@ -670,7 +823,11 @@
     <!-- Header -->
     <header class="app-header">
       <h1><i class="fas fa-chart-line"></i> Lottery Results Analyzer</h1>
-      <p>ඔබ ඇතුළත් කරන last-2 අංක සඳහා සියලු ගැලපීම් සහ ඒවාට අනුරූප ඉහළ draw-වල ප්‍රතිඵල පෙන්වයි</p>
+      <p>ඔබ ඇතුළත් කරන last-2 අංක සඳහා සියලු ගැලපීම් සහ ඒවාට අනුරූප පහළ draw-වල ප්‍රතිඵල පෙන්වයි</p>
+      <div class="live-clock">
+        <i class="fas fa-clock"></i>
+        <span id="currentDateTime">ලබනුයේ...</span>
+      </div>
     </header>
 
     <!-- Input Section -->
@@ -719,7 +876,7 @@
     <section class="card">
       <div class="results-header">
         <h2><i class="fas fa-poll"></i> විශ්ලේෂණ ප්‍රතිඵල</h2>
-        <div class="results-info">සියලු ගැලපීම් සහ ඉහළ draw</div>
+        <div class="results-info">සියලු ගැලපීම් සහ පහළ draw</div>
       </div>
 
       <div id="matches" class="results-container">
@@ -754,6 +911,12 @@
     <footer class="app-footer">
       <p>© 2023 Lottery Results Analyzer | Professional Edition</p>
     </footer>
+  </div>
+
+  <!-- Status Indicator -->
+  <div class="status-indicator connecting" id="statusIndicator">
+    <span class="status-dot"></span>
+    <span id="statusText">දත්ත ලබා ගනිමින්...</span>
   </div>
 
   <!-- Keypad -->
@@ -791,20 +954,35 @@
     <!-- Lottery balls will be dynamically added here -->
   </div>
 
+  <!-- Custom Alert -->
+  <div class="custom-alert" id="customAlert">
+    <i class="fas fa-exclamation-circle"></i>
+    <div class="alert-content">
+      <div class="alert-title" id="alertTitle">දෝෂය</div>
+      <div id="alertMessage">යම් දෝෂයක් ඇති විය</div>
+    </div>
+    <button class="alert-close" id="alertClose">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+
   <script>
     // Main data holder
     let lotteryData = [];
     let currentInputIndex = 0;
     const inputs = Array.from({length: 6}, (_, i) => document.getElementById(`box${i+1}`));
     
-    // Configuration: offsets per box
-    const offsets = [1, 2, 3, 1, 4, 6];
+    // Configuration: offsets per box (corrected values)
+    const offsets = [1, 2, 3, 4, 5, 6];
     
     // Ball colors
     const ballColors = ['ball-1', 'ball-2', 'ball-3', 'ball-4', 'ball-5', 'ball-6'];
 
     // Initialize the application
     function initApp() {
+      updateDateTime();
+      setInterval(updateDateTime, 1000);
+      
       setupEventListeners();
       loadJSONData();
       
@@ -824,6 +1002,22 @@
       });
     }
 
+    // Update date and time
+    function updateDateTime() {
+      const now = new Date();
+      const options = { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        weekday: 'long'
+      };
+      const formatter = new Intl.DateTimeFormat('si-LK', options);
+      document.getElementById('currentDateTime').textContent = formatter.format(now);
+    }
+
     // Set up event listeners
     function setupEventListeners() {
       // Button events
@@ -839,6 +1033,9 @@
           addDigitToInput(value);
         });
       });
+      
+      // Alert close button
+      document.getElementById('alertClose').addEventListener('click', hideAlert);
       
       // Allow Enter key to trigger analysis
       document.addEventListener('keydown', (e) => {
@@ -862,12 +1059,44 @@
       });
     }
 
+    // Show custom alert
+    function showAlert(title, message, duration = 5000) {
+      const alert = document.getElementById('customAlert');
+      document.getElementById('alertTitle').textContent = title;
+      document.getElementById('alertMessage').textContent = message;
+      
+      alert.classList.add('visible');
+      
+      // Auto hide after duration
+      setTimeout(() => {
+        hideAlert();
+      }, duration);
+    }
+    
+    // Hide custom alert
+    function hideAlert() {
+      document.getElementById('customAlert').classList.remove('visible');
+    }
+
+    // Update status indicator
+    function updateStatus(status, message) {
+      const indicator = document.getElementById('statusIndicator');
+      const statusText = document.getElementById('statusText');
+      
+      indicator.className = `status-indicator ${status}`;
+      statusText.textContent = message;
+    }
+
     // Load JSON data from external file
     function loadJSONData() {
-      fetch('lottery_records.json')
+      updateStatus('connecting', 'දත්ත ලබා ගනිමින්...');
+      
+      // Add cache busting parameter to prevent caching
+      const cacheBuster = new Date().getTime();
+      fetch(`lottery_records.json?t=${cacheBuster}`)
         .then(response => {
           if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw new Error('දත්ත සේවාදායකයෙන් ලබා ගැනීමට නොහැකි විය');
           }
           return response.json();
         })
@@ -896,11 +1125,14 @@
           
           // Reassign indices after sort
           lotteryData.forEach((r, i) => r._idx = i);
+          
+          updateStatus('connected', `දත්ත සාර්ථකව ලබාගත්තා (${lotteryData.length} records)`);
           renderTable();
         })
         .catch(error => {
           console.error('Error loading JSON data:', error);
-          alert('දත්ත ලබා ගැනීමේ දෝෂයක්: ' + error.message);
+          updateStatus('error', 'දත්ත ලබා ගැනීමේ දෝෂය');
+          showAlert('දත්ත දෝෂය', error.message);
           
           // Fallback to empty data if JSON loading fails
           lotteryData = [];
@@ -1015,7 +1247,7 @@
     function analyzeNumbers() {
       const inputValues = getInputValues();
       if (!inputValues) {
-        alert("අවම වශයෙන් එක් Box එකක් හෝ පුරවන්න.");
+        showAlert("අවවාදය", "අවම වශයෙන් එක් Box එකක් හෝ පුරවන්න.", 3000);
         return;
       }
 
@@ -1121,7 +1353,7 @@
               match.digits6.match(/.{1}/g).join(' ') : 
               'N/A';
             
-            // Get the next draw based on offset
+            // Get the next draw based on offset (corrected logic)
             const nextDrawIndex = match._idx - offsets[i];
             const nextDraw = nextDrawIndex >= 0 ? lotteryData[nextDrawIndex] : null;
             
@@ -1135,7 +1367,7 @@
                 <div class="match-full">${match.code || ""}${match.digits6 || ""}</div>
               </div>
               <div class="match-below ${nextDraw ? 'highlight' : ''}">
-                <div>ඉහළ Draw (${offsets[i]}):</div>
+                <div>පහළ Draw (${offsets[i]}):</div>
                 <div>${nextDraw ? (nextDraw.date || "N/A") : "N/A"}</div>
                 <div>${nextDraw ? (nextDraw.code || "N/A") + " " + (nextDraw.digits6 || "N/A") : "N/A"}</div>
               </div>
