@@ -823,12 +823,12 @@
     <!-- Header -->
     <header class="app-header">
       <h1><i class="fas fa-chart-line"></i> Lottery Results Analyzer</h1>
-      <p>ඔබ ඇතුළත් කරන last-2 අංක සඳහා සියලු ගැලපීම් සහ ඒවාට අනුරූප පහළ draw-වල ප්‍රතිඵල පෙන්වයි</p>
+      <p>ඔබ ඇතුළත් කරන last-2 අංක සඳහා සියලු ගැලපීම් සහ ඒවාට අනුරූප ඉහළ draw-වල ප්‍රතිඵල පෙන්වයි</p>
       <div class="live-clock">
         <i class="fas fa-clock"></i>
         <span id="currentDateTime">ලබනුයේ...</span>
       </div>
-    </header>
+    </header> 
 
     <!-- Input Section -->
     <section class="card input-section">
@@ -876,7 +876,7 @@
     <section class="card">
       <div class="results-header">
         <h2><i class="fas fa-poll"></i> විශ්ලේෂණ ප්‍රතිඵල</h2>
-        <div class="results-info">සියලු ගැලපීම් සහ පහළ draw</div>
+        <div class="results-info">සියලු ගැලපීම් සහ ඉහළ draw</div>
       </div>
 
       <div id="matches" class="results-container">
@@ -1367,7 +1367,7 @@
                 <div class="match-full">${match.code || ""}${match.digits6 || ""}</div>
               </div>
               <div class="match-below ${nextDraw ? 'highlight' : ''}">
-                <div>පහළ Draw (${offsets[i]}):</div>
+                <div>ඉහළ Draw (${offsets[i]}):</div>
                 <div>${nextDraw ? (nextDraw.date || "N/A") : "N/A"}</div>
                 <div>${nextDraw ? (nextDraw.code || "N/A") + " " + (nextDraw.digits6 || "N/A") : "N/A"}</div>
               </div>
