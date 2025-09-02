@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Lottery Results Analyzer — Professional Edition</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- SheetJS library for Excel export -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
     :root {
       --bg: #0f1720;
@@ -291,6 +293,57 @@
       gap: 6px;
     }
 
+    /* Export buttons */
+    .export-buttons {
+      display: flex;
+      gap: 10px;
+      margin-left: auto;
+    }
+    
+    .export-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #e6eef8;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .export-btn:hover {
+      background: rgba(255,255,255,0.1);
+      transform: translateY(-1px);
+    }
+    
+    .export-btn:active {
+      transform: translateY(0);
+    }
+    
+    .export-btn.excel {
+      background: rgba(33, 150, 83, 0.15);
+      border-color: rgba(33, 150, 83, 0.3);
+      color: #4ade80;
+    }
+    
+    .export-btn.excel:hover {
+      background: rgba(33, 150, 83, 0.25);
+    }
+    
+    .export-btn.copy {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: rgba(59, 130, 246, 0.3);
+      color: #60a5fa;
+    }
+    
+    .export-btn.copy:hover {
+      background: rgba(59, 130, 246, 0.25);
+    }
+
     /* Keypad */
     .keypad-container {
       position: fixed;
@@ -358,6 +411,7 @@
       align-items: center;
       gap: 10px;
       margin-bottom: 16px;
+      flex-wrap: wrap;
     }
     
     .results-header h2 {
@@ -770,6 +824,17 @@
         left: 10px;
         max-width: none;
       }
+      
+      .results-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .export-buttons {
+        margin-left: 0;
+        width: 100%;
+        justify-content: flex-end;
+      }
     }
     
     @media (max-width: 480px) {
@@ -814,6 +879,15 @@
         width: 60px;
         height: 60px;
         font-size: 20px;
+      }
+      
+      .export-buttons {
+        flex-direction: column;
+      }
+      
+      .export-btn {
+        width: 100%;
+        justify-content: center;
       }
     }
   </style>
@@ -876,7 +950,14 @@
     <section class="card">
       <div class="results-header">
         <h2><i class="fas fa-poll"></i> විශ්ලේෂණ ප්‍රතිඵල</h2>
-        <div class="results-info">සියලු ගැලපීම් සහ ඉහළ draw</div>
+        <div class="export-buttons">
+          <button class="export-btn excel" id="exportExcelBtn">
+            <i class="fas fa-file-excel"></i> Excel
+          </button>
+          <button class="export-btn copy" id="copyTextBtn">
+            <i class="fas fa-copy"></i> Text
+          </button>
+        </div>
       </div>
 
       <div id="matches" class="results-container">
@@ -1057,6 +1138,10 @@
           hideKeypad();
         }
       });
+      
+      // Export buttons
+      document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
+      document.getElementById('copyTextBtn').addEventListener('click', copyToClipboard);
     }
 
     // Show custom alert
@@ -1380,6 +1465,109 @@
         boxCard.appendChild(matchList);
         resultsContainer.appendChild(boxCard);
       }
+    }
+
+    // Export to Excel
+    function exportToExcel() {
+      const inputValues = getInputValues();
+      if (!inputValues) {
+        showAlert("අවවාදය", "ප්‍රතිඵල නොමැත. පළමුව විශ්ලේෂණය කරන්න.", 3000);
+        return;
+      }
+      
+      // Prepare data for Excel
+      const data = [['Box', 'Input Value', 'Date', 'Code', 'Last Two', 'All Numbers', 'Next Draw Date', 'Next Draw Code', 'Next Draw Numbers']];
+      
+      // Get all match items
+      const matchItems = document.querySelectorAll('.match-item');
+      
+      matchItems.forEach(item => {
+        const box = item.closest('.box-card').querySelector('h3').textContent.replace('Box', '').trim();
+        const inputValue = item.closest('.box-card').querySelector('.box-badge').textContent;
+        const date = item.querySelector('.match-meta b').textContent;
+        const code = item.querySelector('.match-meta div').textContent;
+        const lastTwo = item.querySelector('.match-content .match-full').textContent.slice(-2);
+        const allNumbers = item.querySelector('.match-content .match-full').textContent;
+        
+        const nextDrawSection = item.querySelector('.match-below');
+        const nextDrawDate = nextDrawSection.querySelectorAll('div')[1].textContent;
+        const nextDrawInfo = nextDrawSection.querySelectorAll('div')[2].textContent;
+        
+        data.push([box, inputValue, date, code, lastTwo, allNumbers, nextDrawDate, nextDrawInfo.split(' ')[0], nextDrawInfo.split(' ').slice(1).join(' ')]);
+      });
+      
+      // Create worksheet
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      
+      // Create workbook
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Lottery Results');
+      
+      // Generate Excel file and trigger download
+      XLSX.writeFile(wb, 'lottery_results.xlsx');
+      
+      showAlert('Excel ගොනුව', 'Excel ගොනුව සාර්ථකව බාගත කරන ලදී', 3000);
+    }
+
+    // Copy to clipboard as formatted text
+    function copyToClipboard() {
+      const inputValues = getInputValues();
+      if (!inputValues) {
+        showAlert("අවවාදය", "ප්‍රතිඵල නොමැත. පළමුව විශ්ලේෂණය කරන්න.", 3000);
+        return;
+      }
+      
+      let textContent = '';
+      
+      // Process each box
+      for (let i = 0; i < 6; i++) {
+        const boxValue = inputValues[i];
+        if (!boxValue) continue;
+        
+        // Find matches for this box
+        const matches = lotteryData.filter(r => r.last2 === boxValue);
+        if (matches.length === 0) continue;
+        
+        textContent += `*Box ${i+1}*\n`;
+        textContent += `*ඇතුලත් කළ අංකය* = ${boxValue}\n`;
+        textContent += `*ගැලපීම්* = ${matches.length}\n\n`;
+        
+        // Add each match
+        matches.forEach((match, index) => {
+          textContent += `${index+1}. *දිනය* = ${match.date || "N/A"}\n`;
+          textContent += `*ඉංග්‍රීසි අක්ෂරය* = ${match.code || "N/A"}\n`;
+          
+          // Format numbers with spaces
+          const formattedNumbers = match.digits6 ? 
+            match.digits6.match(/.{1}/g).join(' ') : 
+            'N/A';
+          textContent += `*ජයග්‍රහී අංක* = ${formattedNumbers}\n\n`;
+          
+          // Get the next draw based on offset
+          const nextDrawIndex = match._idx - offsets[i];
+          const nextDraw = nextDrawIndex >= 0 ? lotteryData[nextDrawIndex] : null;
+          
+          textContent += `*ඉහළ Draw (${offsets[i]}):*\n`;
+          if (nextDraw) {
+            textContent += `දිනය = ${nextDraw.date || "N/A"}\n`;
+            textContent += `${nextDraw.code || "N/A"} ${nextDraw.digits6 || "N/A"}\n\n`;
+            textContent += `*ජයග්‍රහී අවසාන අංක යුගලය* =(${nextDraw.last2 || "N/A"})\n\n`;
+          } else {
+            textContent += `දත්ත නොමැත\n\n`;
+          }
+          
+          textContent += '\n';
+        });
+        
+        textContent += '\n';
+      }
+      
+      // Copy to clipboard
+      navigator.clipboard.writeText(textContent).then(() => {
+        showAlert('Clipboard', 'පෙළ clipboard එකට පිටපත් කරන ලදී', 3000);
+      }).catch(err => {
+        showAlert('දෝෂය', 'Clipboard එකට පිටපත් කිරීමට නොහැකි විය', 3000);
+      });
     }
 
     // Initialize the app when DOM is loaded
