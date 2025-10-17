@@ -1,12 +1,14 @@
-<!DOCTYPE html>
-<html lang="si">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+<!DOCTYPE html><html lang="si"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Lottery Results Analyzer — Professional Edition</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/all.min.css">
   <!-- SheetJS library for Excel export -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="js/xlsx.full.min.js"></script>
+
+  <!-- Chart.js (for percentage distribution chart) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
   <style>
     :root {
       --bg: #0f1720;
@@ -576,6 +578,33 @@
       background: rgba(255,255,255,0.01);
     }
 
+    /* Chart card tweaks */
+    .chart-card {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 18px;
+      align-items: start;
+    }
+    .chart-summary {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+    .chart-summary ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    .chart-summary li {
+      display:flex;
+      justify-content:space-between;
+      padding:6px 0;
+      color:var(--muted);
+      font-weight:600;
+    }
+    .chart-summary .label { color:#fff; font-weight:700; }
+    .chart-summary .value { color:var(--accent); }
+
     /* Footer */
     .app-footer {
       text-align: center;
@@ -835,6 +864,10 @@
         width: 100%;
         justify-content: flex-end;
       }
+
+      .chart-card {
+        grid-template-columns: 1fr;
+      }
     }
     
     @media (max-width: 480px) {
@@ -909,27 +942,27 @@
       <div class="inputs-grid" id="inputGrid">
         <div class="input-box">
           <label for="box1">Box 1</label>
-          <input id="box1" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
+          <input id="box1" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly="">
         </div>
         <div class="input-box">
           <label for="box2">Box 2</label>
-          <input id="box2" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
+          <input id="box2" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly="">
         </div>
         <div class="input-box">
           <label for="box3">Box 3</label>
-          <input id="box3" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
+          <input id="box3" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly="">
         </div>
         <div class="input-box">
           <label for="box4">Box 4</label>
-          <input id="box4" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
+          <input id="box4" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly="">
         </div>
         <div class="input-box">
           <label for="box5">Box 5</label>
-          <input id="box5" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
+          <input id="box5" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly="">
         </div>
         <div class="input-box">
           <label for="box6">Box 6</label>
-          <input id="box6" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
+          <input id="box6" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly="">
         </div>
       </div>
 
@@ -963,6 +996,26 @@
       <div id="matches" class="results-container">
         <div class="no-match">
           <i class="fas fa-info-circle"></i> වක්‍රී-පද්ධතිය සූදානම් — අගයන් ඇතුළත් කර "විශ්ලේෂණය කරන්න" ඔබන්න.
+        </div>
+      </div>
+    </section>
+
+    <!-- Percentage Distribution Chart -->
+    <section class="card">
+      <div class="box-header" style="margin-bottom:12px;">
+        <h3 style="margin:0;"><i class="fas fa-chart-bar"></i> Last-2 Percentage Distribution</h3>
+        <div style="color:var(--muted); font-size:13px;">ඔබ විශ්ලේෂණය කරන විට, ඇතුලත් last-2 අගයන්ට අදාල ගණන සහ % පෙන්වයි</div>
+      </div>
+
+      <div class="chart-card">
+        <div>
+          <canvas id="percentChart" width="800" height="320"></canvas>
+        </div>
+        <div class="chart-summary" id="chartSummary">
+          <strong style="display:block; margin-bottom:8px; color:var(--muted);">Summary</strong>
+          <div id="summaryList">
+            <div class="no-match">විශ්ලේෂණයක් නොවූ නිසා කිසිදු තොරතුරක් නැත.</div>
+          </div>
         </div>
       </div>
     </section>
@@ -1058,6 +1111,9 @@
     
     // Ball colors
     const ballColors = ['ball-1', 'ball-2', 'ball-3', 'ball-4', 'ball-5', 'ball-6'];
+
+    // Chart instance
+    let percentChart = null;
 
     // Initialize the application
     function initApp() {
@@ -1213,6 +1269,9 @@
           
           updateStatus('connected', `දත්ත සාර්ථකව ලබාගත්තා (${lotteryData.length} records)`);
           renderTable();
+
+          // Reset chart summary to empty (until analyze)
+          resetChart();
         })
         .catch(error => {
           console.error('Error loading JSON data:', error);
@@ -1222,6 +1281,7 @@
           // Fallback to empty data if JSON loading fails
           lotteryData = [];
           renderTable();
+          resetChart();
         });
     }
 
@@ -1301,6 +1361,7 @@
       hideKeypad();
       document.getElementById("matches").innerHTML = 
         '<div class="no-match"><i class="fas fa-info-circle"></i> වක්‍රී-පද්ධතිය සූදානම් — අගයන් ඇතුළත් කර "විශ්ලේෂණය කරන්න" ඔබන්න.</div>';
+      resetChart();
     }
 
     // Highlight current input
@@ -1389,6 +1450,7 @@
       setTimeout(() => {
         overlay.classList.remove('visible');
         showResults(inputValues);
+        renderPercentageChart(inputValues); // <-- update chart here
       }, 6000);
     }
 
@@ -1465,6 +1527,132 @@
         boxCard.appendChild(matchList);
         resultsContainer.appendChild(boxCard);
       }
+    }
+
+    // Render percentage chart for the entered last-2 values
+    function renderPercentageChart(inputValues) {
+      // Only consider non-empty distinct last-2 from the inputs (preserve input order)
+      const entered = inputValues.filter(v => v).map(v => String(v).padStart(2,"0"));
+      const uniqueEntered = Array.from(new Set(entered));
+
+      const totalRecords = lotteryData.length;
+      const summaryListEl = document.getElementById('summaryList');
+
+      if (uniqueEntered.length === 0 || totalRecords === 0) {
+        resetChart();
+        return;
+      }
+
+      // Count occurrences for each entered value
+      const counts = uniqueEntered.map(code => {
+        return lotteryData.reduce((acc, r) => acc + (r.last2 === code ? 1 : 0), 0);
+      });
+
+      // Prepare labels and data arrays
+      const labels = uniqueEntered;
+      const dataCounts = counts;
+      const dataPercent = dataCounts.map(c => totalRecords ? (c / totalRecords * 100) : 0);
+
+      // Build chart dataset colors (subtle gradient-like using accent)
+      const backgroundColors = labels.map((_, i) => {
+        // reuse a small palette
+        const palette = [
+          'rgba(255,107,107,0.9)',
+          'rgba(74,222,128,0.9)',
+          'rgba(96,165,250,0.9)',
+          'rgba(251,191,36,0.9)',
+          'rgba(192,132,252,0.9)',
+          'rgba(45,212,191,0.9)'
+        ];
+        return palette[i % palette.length];
+      });
+
+      // Destroy previous chart instance to avoid duplication
+      if (percentChart) {
+        percentChart.destroy();
+        percentChart = null;
+      }
+
+      const ctx = document.getElementById('percentChart').getContext('2d');
+      percentChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Count',
+            data: dataCounts,
+            backgroundColor: backgroundColors,
+            borderRadius: 6,
+            barThickness: 36
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const idx = context.dataIndex;
+                  const c = dataCounts[idx];
+                  const p = dataPercent[idx];
+                  return ` Count: ${c} — ${p.toFixed(2)}% of total (${totalRecords})`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              title: {
+                display: true,
+                text: 'Last-2 value'
+              }
+            },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                // Show primary ticks as counts, but allow space for percentage annotation in tooltip
+              },
+              title: {
+                display: true,
+                text: 'Occurrences (count)'
+              }
+            }
+          }
+        }
+      });
+
+      // Render textual summary on the right
+      summaryListEl.innerHTML = '';
+      uniqueEntered.forEach((label, i) => {
+        const count = dataCounts[i];
+        const pct = dataPercent[i];
+        const li = document.createElement('div');
+        li.innerHTML = `<span class="label">${label}</span> <span class="value">${count} (${pct.toFixed(2)}%)</span>`;
+        summaryListEl.appendChild(li);
+      });
+
+      // Also add a total line
+      const totalMatches = dataCounts.reduce((a,b) => a+b, 0);
+      const totalLi = document.createElement('div');
+      totalLi.style.borderTop = '1px dashed rgba(255,255,255,0.04)';
+      totalLi.style.marginTop = '8px';
+      totalLi.style.paddingTop = '8px';
+      totalLi.innerHTML = `<span class="label">Total Matches</span> <span class="value">${totalMatches} / ${totalRecords}</span>`;
+      summaryListEl.appendChild(totalLi);
+    }
+
+    // Reset chart area to empty
+    function resetChart() {
+      if (percentChart) {
+        percentChart.destroy();
+        percentChart = null;
+      }
+      document.getElementById('summaryList').innerHTML = '<div class="no-match">විශ්ලේෂණයක් නොවූ නිසා කිසිදු තොරතුරක් නැත.</div>';
+      const ctx = document.getElementById('percentChart').getContext('2d');
+      ctx.clearRect(0,0,document.getElementById('percentChart').width, document.getElementById('percentChart').height);
     }
 
     // Export to Excel
@@ -1564,7 +1752,7 @@
       
       // Copy to clipboard
       navigator.clipboard.writeText(textContent).then(() => {
-        showAlert('Clipboard', 'පෙළ clipboard එකට පිටපත් කරන ලදී', 3000);
+        showAlert('Clipboard', 'පෙළ clipboard එකට පිටপත් කරන ලදී', 3000);
       }).catch(err => {
         showAlert('දෝෂය', 'Clipboard එකට පිටපත් කිරීමට නොහැකි විය', 3000);
       });
@@ -1573,5 +1761,5 @@
     // Initialize the app when DOM is loaded
     document.addEventListener('DOMContentLoaded', initApp);
   </script>
-</body>
-</html>
+
+</body></html>
