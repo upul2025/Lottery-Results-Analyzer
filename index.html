@@ -541,6 +541,92 @@
       text-align: center;
     }
 
+    /* Statistics Chart */
+    .stats-chart {
+      margin-top: 20px;
+    }
+    
+    .stats-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .stats-header h3 {
+      margin: 0;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .stats-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.03);
+      transition: all 0.3s ease;
+    }
+    
+    .stat-item:hover {
+      background: rgba(255,255,255,0.04);
+      transform: translateY(-1px);
+    }
+    
+    .stat-label {
+      min-width: 40px;
+      font-weight: 600;
+      font-size: 14px;
+      text-align: center;
+    }
+    
+    .stat-bar-container {
+      flex: 1;
+      height: 24px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .stat-bar {
+      height: 100%;
+      border-radius: 12px;
+      transition: width 1s ease-in-out;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #071022;
+    }
+    
+    .stat-value {
+      min-width: 60px;
+      text-align: right;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .stat-percentage {
+      min-width: 50px;
+      text-align: right;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
     /* Table */
     .table-container {
       overflow: auto;
@@ -732,176 +818,6 @@
       color: #fff;
     }
 
-    /* Statistics Section */
-    .stats-section {
-      margin-top: 20px;
-    }
-    
-    .stats-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-    
-    .stats-header h3 {
-      margin: 0;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .stats-container {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    
-    .stat-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 12px;
-      background: rgba(255,255,255,0.02);
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.03);
-      transition: all 0.3s ease;
-    }
-    
-    .stat-item:hover {
-      background: rgba(255,255,255,0.05);
-      transform: translateY(-2px);
-    }
-    
-    .stat-label {
-      min-width: 100px;
-      font-size: 14px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .stat-bar-container {
-      flex: 1;
-      height: 24px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 12px;
-      overflow: hidden;
-      position: relative;
-    }
-    
-    .stat-bar {
-      height: 100%;
-      border-radius: 12px;
-      background: linear-gradient(90deg, var(--accent), #ff8a80);
-      transition: width 1s ease-in-out;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      padding-right: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      color: #071022;
-      min-width: 40px;
-    }
-    
-    .stat-value {
-      min-width: 80px;
-      text-align: right;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--muted);
-    }
-    
-    .stat-percentage {
-      min-width: 60px;
-      text-align: right;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--accent);
-    }
-    
-    .stats-summary {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 16px;
-      padding: 12px 16px;
-      background: rgba(255,255,255,0.02);
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.03);
-      font-size: 14px;
-    }
-    
-    .stats-summary-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-    
-    .stats-summary-value {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--accent);
-    }
-    
-    .stats-summary-label {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    /* Circular Progress Chart */
-    .circular-chart {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: center;
-      margin-top: 20px;
-    }
-    
-    .circular-progress {
-      position: relative;
-      width: 100px;
-      height: 100px;
-    }
-    
-    .circular-bg {
-      fill: none;
-      stroke: rgba(255,255,255,0.1);
-      stroke-width: 3.8;
-    }
-    
-    .circular-circle {
-      fill: none;
-      stroke-width: 3.8;
-      stroke-linecap: round;
-      transform: rotate(-90deg);
-      transform-origin: 50% 50%;
-      transition: stroke-dasharray 1s ease;
-    }
-    
-    .circular-text {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-    }
-    
-    .circular-number {
-      font-size: 16px;
-      font-weight: 700;
-      color: #fff;
-    }
-    
-    .circular-label {
-      font-size: 10px;
-      color: var(--muted);
-    }
-
     /* Animations */
     @keyframes fadeIn {
       from { opacity: 0; }
@@ -1004,18 +920,14 @@
         justify-content: flex-end;
       }
       
-      .stats-summary {
-        flex-direction: column;
-        gap: 12px;
+      .stat-item {
+        flex-wrap: wrap;
       }
       
-      .circular-chart {
-        gap: 15px;
-      }
-      
-      .circular-progress {
-        width: 80px;
-        height: 80px;
+      .stat-bar-container {
+        order: 3;
+        width: 100%;
+        margin-top: 8px;
       }
     }
     
@@ -1070,24 +982,6 @@
       .export-btn {
         width: 100%;
         justify-content: center;
-      }
-      
-      .stat-item {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      
-      .stat-bar-container {
-        width: 100%;
-      }
-      
-      .circular-chart {
-        gap: 10px;
-      }
-      
-      .circular-progress {
-        width: 70px;
-        height: 70px;
       }
     }
   </style>
@@ -1146,6 +1040,18 @@
       </div>
     </section>
 
+    <!-- Statistics Chart Section -->
+    <section class="card stats-chart" id="statsChart">
+      <div class="stats-header">
+        <h3><i class="fas fa-chart-bar"></i> අංක යුගල සංඛ්යානය</h3>
+      </div>
+      <div class="stats-container" id="statsContainer">
+        <div class="no-match">
+          <i class="fas fa-info-circle"></i> විශ්ලේෂණය කිරීමෙන් පසු සංඛ්යාන දත්ත පෙන්වනු ඇත
+        </div>
+      </div>
+    </section>
+
     <!-- Results Section -->
     <section class="card">
       <div class="results-header">
@@ -1164,27 +1070,6 @@
         <div class="no-match">
           <i class="fas fa-info-circle"></i> වක්‍රී-පද්ධතිය සූදානම් — අගයන් ඇතුළත් කර "විශ්ලේෂණය කරන්න" ඔබන්න.
         </div>
-      </div>
-    </section>
-
-    <!-- Statistics Section -->
-    <section class="card stats-section" id="statsSection" style="display: none;">
-      <div class="stats-header">
-        <h3><i class="fas fa-chart-pie"></i> අංක ගැලපීම් සංඛ්‍යානය</h3>
-      </div>
-      
-      <!-- Circular Progress Charts -->
-      <div class="circular-chart" id="circularChart">
-        <!-- Circular charts will be dynamically inserted here -->
-      </div>
-      
-      <!-- Bar Statistics -->
-      <div class="stats-container" id="statsContainer">
-        <!-- Statistics will be dynamically inserted here -->
-      </div>
-      
-      <div class="stats-summary" id="statsSummary">
-        <!-- Summary will be dynamically inserted here -->
       </div>
     </section>
 
@@ -1211,7 +1096,7 @@
 
     <!-- Footer -->
     <footer class="app-footer">
-      <p>© 2023 Lottery Results Analyzer — Professional Edition</p>
+      <p>© 2023 Lottery Results Analyzer | Professional Edition</p>
     </footer>
   </div>
 
@@ -1523,8 +1408,9 @@
       document.getElementById("matches").innerHTML = 
         '<div class="no-match"><i class="fas fa-info-circle"></i> වක්‍රී-පද්ධතිය සූදානම් — අගයන් ඇතුළත් කර "විශ්ලේෂණය කරන්න" ඔබන්න.</div>';
       
-      // Hide statistics section
-      document.getElementById('statsSection').style.display = 'none';
+      // Reset statistics chart
+      document.getElementById("statsContainer").innerHTML = 
+        '<div class="no-match"><i class="fas fa-info-circle"></i> විශ්ලේෂණය කිරීමෙන් පසු සංඛ්යාන දත්ත පෙන්වනු ඇත</div>';
     }
 
     // Highlight current input
@@ -1613,6 +1499,7 @@
       setTimeout(() => {
         overlay.classList.remove('visible');
         showResults(inputValues);
+        generateStatisticsChart(inputValues);
       }, 6000);
     }
 
@@ -1621,14 +1508,6 @@
       const resultsContainer = document.getElementById("matches");
       resultsContainer.innerHTML = "";
       
-      // Statistics object to track match counts
-      const matchStats = {};
-      inputValues.forEach(val => {
-        if (val) matchStats[val] = 0;
-      });
-      
-      let totalMatches = 0;
-      
       // Check each box
       for (let i = 0; i < 6; i++) {
         const boxValue = inputValues[i];
@@ -1636,10 +1515,6 @@
         
         // Find matches for this box
         const matches = lotteryData.filter(r => r.last2 === boxValue);
-        
-        // Update statistics
-        matchStats[boxValue] = matches.length;
-        totalMatches += matches.length;
         
         // Create box card
         const boxCard = document.createElement("div");
@@ -1701,98 +1576,99 @@
         boxCard.appendChild(matchList);
         resultsContainer.appendChild(boxCard);
       }
-      
-      // Show statistics
-      showStatistics(matchStats, totalMatches);
     }
 
-    // Show statistics with circular charts and bars
-    function showStatistics(matchStats, totalMatches) {
-      const statsSection = document.getElementById('statsSection');
-      const circularChart = document.getElementById('circularChart');
-      const statsContainer = document.getElementById('statsContainer');
-      const statsSummary = document.getElementById('statsSummary');
+    // Generate statistics chart
+    function generateStatisticsChart(inputValues) {
+      const statsContainer = document.getElementById("statsContainer");
+      statsContainer.innerHTML = "";
       
-      // Show statistics section
-      statsSection.style.display = 'block';
+      // Count occurrences of each number pair in the entire dataset
+      const pairCounts = {};
       
-      // Clear previous content
-      circularChart.innerHTML = '';
-      statsContainer.innerHTML = '';
-      
-      // Calculate maximum value for percentage calculations
-      const maxValue = Math.max(...Object.values(matchStats));
-      
-      // Create circular progress charts
-      Object.entries(matchStats).forEach(([number, count], index) => {
-        const percentage = maxValue > 0 ? Math.round((count / maxValue) * 100) : 0;
-        
-        const circularProgress = document.createElement('div');
-        circularProgress.className = 'circular-progress';
-        circularProgress.innerHTML = `
-          <svg width="100" height="100" viewBox="0 0 100 100">
-            <circle class="circular-bg" cx="50" cy="50" r="45"></circle>
-            <circle class="circular-circle" cx="50" cy="50" r="45" 
-                    stroke="var(--${ballColors[index]})" 
-                    stroke-dasharray="${283 * percentage / 100} 283"></circle>
-          </svg>
-          <div class="circular-text">
-            <div class="circular-number">${number}</div>
-            <div class="circular-label">${count} වතා</div>
-          </div>
-        `;
-        
-        circularChart.appendChild(circularProgress);
+      // Count total occurrences of each number pair
+      lotteryData.forEach(record => {
+        if (record.last2) {
+          pairCounts[record.last2] = (pairCounts[record.last2] || 0) + 1;
+        }
       });
       
-      // Create bar statistics
-      Object.entries(matchStats).forEach(([number, count], index) => {
-        const percentage = totalMatches > 0 ? Math.round((count / totalMatches) * 100) : 0;
-        
-        const statItem = document.createElement('div');
-        statItem.className = 'stat-item';
-        statItem.innerHTML = `
-          <div class="stat-label">
-            <span class="lottery-ball-small ${ballColors[index]}">${number}</span>
-            අංකය:
+      // Get the input values that are not empty
+      const validInputs = inputValues.filter(val => val !== "");
+      
+      if (validInputs.length === 0) {
+        statsContainer.innerHTML = `
+          <div class="no-match">
+            <i class="fas fa-info-circle"></i> විශ්ලේෂණය කිරීමට අංක නොමැත
           </div>
+        `;
+        return;
+      }
+      
+      // Calculate statistics for each input value
+      const stats = validInputs.map(value => {
+        const count = pairCounts[value] || 0;
+        const percentage = lotteryData.length > 0 ? 
+          ((count / lotteryData.length) * 100).toFixed(2) : 
+          0;
+        
+        return {
+          value,
+          count,
+          percentage: parseFloat(percentage)
+        };
+      });
+      
+      // Sort by percentage (descending)
+      stats.sort((a, b) => b.percentage - a.percentage);
+      
+      // Find max percentage for scaling
+      const maxPercentage = Math.max(...stats.map(stat => stat.percentage));
+      
+      // Create chart items
+      stats.forEach(stat => {
+        const statItem = document.createElement("div");
+        statItem.className = "stat-item";
+        
+        // Determine bar color based on percentage
+        let barColor;
+        if (stat.percentage > 2.0) {
+          barColor = "var(--success)"; // Green for high frequency
+        } else if (stat.percentage > 1.0) {
+          barColor = "var(--warning)"; // Yellow for medium frequency
+        } else {
+          barColor = "var(--accent)"; // Red for low frequency
+        }
+        
+        // Calculate bar width (scaled to max percentage)
+        const barWidth = maxPercentage > 0 ? (stat.percentage / maxPercentage) * 100 : 0;
+        
+        statItem.innerHTML = `
+          <div class="stat-label">${stat.value}</div>
           <div class="stat-bar-container">
-            <div class="stat-bar" style="width: ${percentage}%">
-              ${percentage > 5 ? `${percentage}%` : ''}
+            <div class="stat-bar" style="width: ${barWidth}%; background: ${barColor};">
+              ${stat.percentage > 5 ? `${stat.percentage}%` : ''}
             </div>
           </div>
-          <div class="stat-value">${count} වතාවක්</div>
-          <div class="stat-percentage">${percentage}%</div>
+          <div class="stat-value">${stat.count} වාර</div>
+          <div class="stat-percentage">${stat.percentage}%</div>
         `;
         
         statsContainer.appendChild(statItem);
       });
       
-      // Update summary
-      const numbers = Object.keys(matchStats);
-      const counts = Object.values(matchStats);
-      const highestMatch = Math.max(...counts);
-      const lowestMatch = Math.min(...counts);
-      const avgMatch = Math.round(counts.reduce((a, b) => a + b, 0) / counts.length);
-      
-      statsSummary.innerHTML = `
-        <div class="stats-summary-item">
-          <div class="stats-summary-value">${totalMatches}</div>
-          <div class="stats-summary-label">මුළු ගැලපීම්</div>
-        </div>
-        <div class="stats-summary-item">
-          <div class="stats-summary-value">${highestMatch}</div>
-          <div class="stats-summary-label">වැඩිම ගැලපීම්</div>
-        </div>
-        <div class="stats-summary-item">
-          <div class="stats-summary-value">${lowestMatch}</div>
-          <div class="stats-summary-label">අඩුම ගැලපීම්</div>
-        </div>
-        <div class="stats-summary-item">
-          <div class="stats-summary-value">${avgMatch}</div>
-          <div class="stats-summary-label">සාමාන්‍ය ගැලපීම්</div>
-        </div>
+      // Add summary
+      const summaryItem = document.createElement("div");
+      summaryItem.className = "stat-item";
+      summaryItem.style.background = "rgba(255,255,255,0.03)";
+      summaryItem.style.border = "1px dashed rgba(255,255,255,0.1)";
+      summaryItem.innerHTML = `
+        <div class="stat-label"><i class="fas fa-info-circle"></i></div>
+        <div class="stat-bar-container"></div>
+        <div class="stat-value">මුළු: ${lotteryData.length}</div>
+        <div class="stat-percentage">100%</div>
       `;
+      statsContainer.appendChild(summaryItem);
     }
 
     // Export to Excel
