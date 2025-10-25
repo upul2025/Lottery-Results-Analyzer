@@ -1,10 +1,12 @@
-<!DOCTYPE html><html lang="si"><head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Lottery Results Analyzer — Professional Edition</title>
-  <link rel="stylesheet" href="css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- SheetJS library for Excel export -->
-  <script src="js/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
     :root {
       --bg: #0f1720;
@@ -541,6 +543,69 @@
       text-align: center;
     }
 
+    /* Frequency Analysis Section */
+    .frequency-section {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .frequency-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    
+    .frequency-header i {
+      color: var(--accent);
+    }
+    
+    .frequency-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 10px;
+    }
+    
+    .frequency-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    
+    .frequency-item:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.05);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .frequency-number {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: #fff;
+    }
+    
+    .frequency-count {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    
+    .frequency-none {
+      color: var(--muted);
+      font-size: 13px;
+      padding: 12px;
+      text-align: center;
+      background: rgba(255,255,255,0.02);
+      border-radius: 8px;
+      border: 1px dashed rgba(255,255,255,0.05);
+    }
+
     /* Table */
     .table-container {
       overflow: auto;
@@ -732,176 +797,6 @@
       color: #fff;
     }
 
-    /* Statistics Section */
-    .stats-section {
-      margin-top: 20px;
-    }
-    
-    .stats-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-    
-    .stats-header h3 {
-      margin: 0;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .stats-container {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    
-    .stat-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 12px;
-      background: rgba(255,255,255,0.02);
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.03);
-      transition: all 0.3s ease;
-    }
-    
-    .stat-item:hover {
-      background: rgba(255,255,255,0.05);
-      transform: translateY(-2px);
-    }
-    
-    .stat-label {
-      min-width: 100px;
-      font-size: 14px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .stat-bar-container {
-      flex: 1;
-      height: 24px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 12px;
-      overflow: hidden;
-      position: relative;
-    }
-    
-    .stat-bar {
-      height: 100%;
-      border-radius: 12px;
-      background: linear-gradient(90deg, var(--accent), #ff8a80);
-      transition: width 1s ease-in-out;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      padding-right: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      color: #071022;
-      min-width: 40px;
-    }
-    
-    .stat-value {
-      min-width: 80px;
-      text-align: right;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--muted);
-    }
-    
-    .stat-percentage {
-      min-width: 60px;
-      text-align: right;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--accent);
-    }
-    
-    .stats-summary {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 16px;
-      padding: 12px 16px;
-      background: rgba(255,255,255,0.02);
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.03);
-      font-size: 14px;
-    }
-    
-    .stats-summary-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-    
-    .stats-summary-value {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--accent);
-    }
-    
-    .stats-summary-label {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    /* Circular Progress Chart */
-    .circular-chart {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: center;
-      margin-top: 20px;
-    }
-    
-    .circular-progress {
-      position: relative;
-      width: 100px;
-      height: 100px;
-    }
-    
-    .circular-bg {
-      fill: none;
-      stroke: rgba(255,255,255,0.1);
-      stroke-width: 3.8;
-    }
-    
-    .circular-circle {
-      fill: none;
-      stroke-width: 3.8;
-      stroke-linecap: round;
-      transform: rotate(-90deg);
-      transform-origin: 50% 50%;
-      transition: stroke-dasharray 1s ease;
-    }
-    
-    .circular-text {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-    }
-    
-    .circular-number {
-      font-size: 16px;
-      font-weight: 700;
-      color: #fff;
-    }
-    
-    .circular-label {
-      font-size: 10px;
-      color: var(--muted);
-    }
-
     /* Animations */
     @keyframes fadeIn {
       from { opacity: 0; }
@@ -1004,18 +899,8 @@
         justify-content: flex-end;
       }
       
-      .stats-summary {
-        flex-direction: column;
-        gap: 12px;
-      }
-      
-      .circular-chart {
-        gap: 15px;
-      }
-      
-      .circular-progress {
-        width: 80px;
-        height: 80px;
+      .frequency-grid {
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
       }
     }
     
@@ -1072,22 +957,9 @@
         justify-content: center;
       }
       
-      .stat-item {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      
-      .stat-bar-container {
-        width: 100%;
-      }
-      
-      .circular-chart {
-        gap: 10px;
-      }
-      
-      .circular-progress {
-        width: 70px;
-        height: 70px;
+      .frequency-grid {
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+        gap: 8px;
       }
     }
   </style>
@@ -1109,27 +981,27 @@
       <div class="inputs-grid" id="inputGrid">
         <div class="input-box">
           <label for="box1">Box 1</label>
-          <input id="box1" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly="">
+          <input id="box1" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
         </div>
         <div class="input-box">
           <label for="box2">Box 2</label>
-          <input id="box2" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly="">
+          <input id="box2" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
         </div>
         <div class="input-box">
           <label for="box3">Box 3</label>
-          <input id="box3" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly="">
+          <input id="box3" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
         </div>
         <div class="input-box">
           <label for="box4">Box 4</label>
-          <input id="box4" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly="">
+          <input id="box4" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
         </div>
         <div class="input-box">
           <label for="box5">Box 5</label>
-          <input id="box5" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly="">
+          <input id="box5" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
         </div>
         <div class="input-box">
           <label for="box6">Box 6</label>
-          <input id="box6" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly="">
+          <input id="box6" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
         </div>
       </div>
 
@@ -1167,27 +1039,6 @@
       </div>
     </section>
 
-    <!-- Statistics Section -->
-    <section class="card stats-section" id="statsSection" style="display: none;">
-      <div class="stats-header">
-        <h3><i class="fas fa-chart-pie"></i> අංක ගැලපීම් සංඛ්‍යානය</h3>
-      </div>
-      
-      <!-- Circular Progress Charts -->
-      <div class="circular-chart" id="circularChart">
-        <!-- Circular charts will be dynamically inserted here -->
-      </div>
-      
-      <!-- Bar Statistics -->
-      <div class="stats-container" id="statsContainer">
-        <!-- Statistics will be dynamically inserted here -->
-      </div>
-      
-      <div class="stats-summary" id="statsSummary">
-        <!-- Summary will be dynamically inserted here -->
-      </div>
-    </section>
-
     <!-- Data Table -->
     <section class="card">
       <h3 style="margin: 0 0 12px 0; display: flex; align-items: center; gap: 8px;">
@@ -1211,7 +1062,7 @@
 
     <!-- Footer -->
     <footer class="app-footer">
-      <p>© 2023 Lottery Results Analyzer — Professional Edition</p>
+      <p>© 2023 Lottery Results Analyzer | Professional Edition</p>
     </footer>
   </div>
 
@@ -1234,34 +1085,30 @@
       <button class="keypad-btn" data-value="8">8</button>
       <button class="keypad-btn" data-value="9">9</button>
       <button class="keypad-btn" data-value="0">0</button>
-      <button class="keypad-btn keypad-clear" id="keypadClear">
-        <i class="fas fa-backspace"></i> Clear
-      </button>
+      <button class="keypad-btn keypad-clear" id="keypadClear">හිස් කරන්න</button>
       <button class="keypad-btn keypad-close" id="keypadClose">
         <i class="fas fa-times"></i>
       </button>
     </div>
   </div>
 
-  <!-- Animation Overlay -->
-  <div class="overlay" id="animationOverlay">
-    <div class="loading-text" id="loadingText">විශ්ලේෂණය ආරම්භ වෙමින්...</div>
+  <!-- Lottery Animation Area -->
+  <div class="lottery-animation-area" id="lotteryAnimation"></div>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay">
     <div class="progress-bar">
       <div class="progress-fill" id="progressFill"></div>
     </div>
-  </div>
-
-  <!-- Animation Area (Full Screen) -->
-  <div class="lottery-animation-area" id="lotteryAnimationArea">
-    <!-- Lottery balls will be dynamically added here -->
+    <div class="loading-text" id="loadingText">ලොතරැයි දත්ත සොයමින්...</div>
   </div>
 
   <!-- Custom Alert -->
   <div class="custom-alert" id="customAlert">
-    <i class="fas fa-exclamation-circle"></i>
+    <i class="fas fa-exclamation-triangle"></i>
     <div class="alert-content">
-      <div class="alert-title" id="alertTitle">දෝෂය</div>
-      <div id="alertMessage">යම් දෝෂයක් ඇති විය</div>
+      <div class="alert-title">අවවාදයයි!</div>
+      <div class="alert-message">කරුණාකර වලංගු අංක යුගලයක් ඇතුළත් කරන්න.</div>
     </div>
     <button class="alert-close" id="alertClose">
       <i class="fas fa-times"></i>
@@ -1269,637 +1116,585 @@
   </div>
 
   <script>
-    // Main data holder
+    // Global variables
     let lotteryData = [];
-    let currentInputIndex = 0;
-    const inputs = Array.from({length: 6}, (_, i) => document.getElementById(`box${i+1}`));
-    
-    // Configuration: offsets per box (corrected values)
-    const offsets = [1, 2, 3, 4, 5, 6];
-    
-    // Ball colors
-    const ballColors = ['ball-1', 'ball-2', 'ball-3', 'ball-4', 'ball-5', 'ball-6'];
+    let currentInput = null;
+
+    // DOM elements
+    const statusIndicator = document.getElementById('statusIndicator');
+    const statusText = document.getElementById('statusText');
+    const inputGrid = document.getElementById('inputGrid');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const matchesContainer = document.getElementById('matches');
+    const dataTable = document.querySelector('#dataTable tbody');
+    const keypad = document.getElementById('keypad');
+    const keypadClear = document.getElementById('keypadClear');
+    const keypadClose = document.getElementById('keypadClose');
+    const overlay = document.getElementById('overlay');
+    const progressFill = document.getElementById('progressFill');
+    const loadingText = document.getElementById('loadingText');
+    const lotteryAnimation = document.getElementById('lotteryAnimation');
+    const customAlert = document.getElementById('customAlert');
+    const alertClose = document.getElementById('alertClose');
+    const currentDateTime = document.getElementById('currentDateTime');
+    const exportExcelBtn = document.getElementById('exportExcelBtn');
+    const copyTextBtn = document.getElementById('copyTextBtn');
 
     // Initialize the application
-    function initApp() {
+    document.addEventListener('DOMContentLoaded', function() {
       updateDateTime();
       setInterval(updateDateTime, 1000);
       
-      setupEventListeners();
-      loadJSONData();
+      // Load lottery data
+      loadLotteryData();
       
-      // Show keypad when any input is focused
-      inputs.forEach(input => {
-        input.addEventListener('focus', (e) => {
-          currentInputIndex = inputs.indexOf(e.target);
-          highlightCurrentInput();
-          showKeypad();
-        });
-        
-        input.addEventListener('click', (e) => {
-          currentInputIndex = inputs.indexOf(e.target);
-          highlightCurrentInput();
-          showKeypad();
-        });
-      });
-    }
+      // Setup event listeners
+      setupEventListeners();
+      
+      // Initialize inputs
+      initializeInputs();
+    });
 
-    // Update date and time
+    // Update current date and time
     function updateDateTime() {
       const now = new Date();
       const options = { 
+        weekday: 'long', 
         year: 'numeric', 
         month: 'long', 
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
-        second: '2-digit',
-        weekday: 'long'
+        second: '2-digit'
       };
-      const formatter = new Intl.DateTimeFormat('si-LK', options);
-      document.getElementById('currentDateTime').textContent = formatter.format(now);
+      currentDateTime.textContent = now.toLocaleDateString('si-LK', options);
     }
 
-    // Set up event listeners
-    function setupEventListeners() {
-      // Button events
-      document.getElementById('analyzeBtn').addEventListener('click', analyzeNumbers);
-      document.getElementById('resetBtn').addEventListener('click', resetInputs);
-      document.getElementById('keypadClose').addEventListener('click', hideKeypad);
-      document.getElementById('keypadClear').addEventListener('click', clearCurrentInput);
+    // Load lottery data from JSON
+    function loadLotteryData() {
+      const jsonUrl = 'lottery_records.json';
       
-      // Keypad number buttons
-      document.querySelectorAll('.keypad-btn[data-value]').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const value = e.target.getAttribute('data-value');
-          addDigitToInput(value);
-        });
-      });
-      
-      // Alert close button
-      document.getElementById('alertClose').addEventListener('click', hideAlert);
-      
-      // Allow Enter key to trigger analysis
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          analyzeNumbers();
-        } else if (e.key >= '0' && e.key <= '9') {
-          // Add digit if number key pressed
-          addDigitToInput(e.key);
-          e.preventDefault();
-        }
-      });
-      
-      // Hide keypad when clicking outside
-      document.addEventListener('click', (e) => {
-        const keypad = document.getElementById('keypad');
-        const inputSection = document.querySelector('.input-section');
-        if (!keypad.contains(e.target) && 
-            !inputSection.contains(e.target)) {
-          hideKeypad();
-        }
-      });
-      
-      // Export buttons
-      document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
-      document.getElementById('copyTextBtn').addEventListener('click', copyToClipboard);
-    }
-
-    // Show custom alert
-    function showAlert(title, message, duration = 5000) {
-      const alert = document.getElementById('customAlert');
-      document.getElementById('alertTitle').textContent = title;
-      document.getElementById('alertMessage').textContent = message;
-      
-      alert.classList.add('visible');
-      
-      // Auto hide after duration
-      setTimeout(() => {
-        hideAlert();
-      }, duration);
-    }
-    
-    // Hide custom alert
-    function hideAlert() {
-      document.getElementById('customAlert').classList.remove('visible');
-    }
-
-    // Update status indicator
-    function updateStatus(status, message) {
-      const indicator = document.getElementById('statusIndicator');
-      const statusText = document.getElementById('statusText');
-      
-      indicator.className = `status-indicator ${status}`;
-      statusText.textContent = message;
-    }
-
-    // Load JSON data from external file
-    function loadJSONData() {
-      updateStatus('connecting', 'දත්ත ලබා ගනිමින්...');
-      
-      // Add cache busting parameter to prevent caching
-      const cacheBuster = new Date().getTime();
-      fetch(`lottery_records.json?t=${cacheBuster}`)
+      fetch(jsonUrl)
         .then(response => {
           if (!response.ok) {
-            throw new Error('දත්ත සේවාදායකයෙන් ලබා ගැනීමට නොහැකි විය');
+            throw new Error('දත්ත ලබා ගැනීමට නොහැකි විය: ' + response.status);
           }
           return response.json();
         })
         .then(data => {
-          // Process the data to match our expected format
-          lotteryData = data.map((item, index) => {
-            // Extract date, code, digits6, and last2 from the JSON structure
-            const date = item.date || '';
-            const code = item.letter || item.code || '';
-            const digits6 = item.digits6 || '';
-            const last2 = item.last2 || '';
-            
-            return {
-              date: date,
-              code: code,
-              digits6: digits6,
-              last2: String(last2).padStart(2, "0"),
-              _parsedDate: date ? new Date(date) : null,
-              _idx: index
-            };
-          }).sort((a, b) => {
-            // Sort by date, newest first
-            if (!a._parsedDate || !b._parsedDate) return 0;
-            return b._parsedDate - a._parsedDate;
-          });
-          
-          // Reassign indices after sort
-          lotteryData.forEach((r, i) => r._idx = i);
-          
-          updateStatus('connected', `දත්ත සාර්ථකව ලබාගත්තා (${lotteryData.length} records)`);
-          renderTable();
+          lotteryData = data;
+          updateStatus('connected', 'දත්ත සම්බන්ධතාවය සාර්ථකයි');
+          populateDataTable();
         })
         .catch(error => {
-          console.error('Error loading JSON data:', error);
-          updateStatus('error', 'දත්ත ලබා ගැනීමේ දෝෂය');
-          showAlert('දත්ත දෝෂය', error.message);
+          console.error('දත්ත පූරණය කිරීමේ දෝෂය:', error);
+          updateStatus('error', 'දත්ත සම්බන්ධතාවය අසාර්ථකයි');
           
-          // Fallback to empty data if JSON loading fails
-          lotteryData = [];
-          renderTable();
+          // Show error in table
+          dataTable.innerHTML = `
+            <tr>
+              <td colspan="5" style="text-align: center; color: var(--accent); padding: 20px;">
+                <i class="fas fa-exclamation-triangle"></i> දත්ත ලබා ගැනීමට නොහැකි විය: ${error.message}
+              </td>
+            </tr>
+          `;
         });
     }
 
-    // Render data table
-    function renderTable() {
-      const tbody = document.querySelector("#dataTable tbody");
-      tbody.innerHTML = "";
-      
-      if (lotteryData.length === 0) {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td colspan="5" style="text-align: center; padding: 20px; color: var(--muted);">
-            <i class="fas fa-exclamation-triangle"></i> දත්ත ලබා ගැනීමට නොහැකි විය
-          </td>
+    // Update connection status
+    function updateStatus(status, message) {
+      statusIndicator.className = `status-indicator ${status}`;
+      statusText.textContent = message;
+    }
+
+    // Populate data table
+    function populateDataTable() {
+      if (!lotteryData.length) {
+        dataTable.innerHTML = `
+          <tr>
+            <td colspan="5" style="text-align: center; color: var(--muted); padding: 20px;">
+              <i class="fas fa-info-circle"></i> දත්ත නොමැත
+            </td>
+          </tr>
         `;
-        tbody.appendChild(tr);
         return;
       }
-      
-      lotteryData.forEach((r, i) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${i+1}</td>
-          <td>${r.date ?? "-"}</td>
-          <td>${r.code ?? "-"}</td>
-          <td>${r.last2 ?? "-"}</td>
-          <td>${r.code} ${r.digits6 ? r.digits6.match(/.{1}/g).join(' ') : "-"}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
 
-    // Get input values
-    function getInputValues() {
-      const vals = [];
-      let hasAtLeastOneValue = false;
-      
-      for (let i = 1; i <= 6; i++) {
-        const v = document.getElementById("box" + i).value.trim();
-        if (v !== "") {
-          hasAtLeastOneValue = true;
-          vals.push(String(v).padStart(2, "0"));
-        } else {
-          vals.push("");
-        }
-      }
-      
-      return hasAtLeastOneValue ? vals : null;
-    }
-
-    // Add digit to current input
-    function addDigitToInput(digit) {
-      const currentInput = inputs[currentInputIndex];
-      if (currentInput.value.length < 2) {
-        currentInput.value += digit;
+      dataTable.innerHTML = '';
+      lotteryData.forEach((record, index) => {
+        const row = document.createElement('tr');
         
-        // Auto move to next input
-        if (currentInput.value.length === 2 && currentInputIndex < 5) {
-          currentInputIndex++;
-          highlightCurrentInput();
-        }
-      }
-    }
-
-    // Clear current input
-    function clearCurrentInput() {
-      inputs[currentInputIndex].value = "";
-    }
-
-    // Reset all inputs
-    function resetInputs() {
-      inputs.forEach(input => {
-        input.value = "";
+        // Format the 6 numbers
+        const numbers = record.numbers.map(num => 
+          `<span style="display: inline-block; width: 24px; height: 24px; line-height: 24px; text-align: center; background: rgba(255,255,255,0.1); border-radius: 50%; margin: 0 1px; font-size: 12px;">${num}</span>`
+        ).join('');
+        
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${record.date}</td>
+          <td>${record.code}</td>
+          <td><strong>${record.last2}</strong></td>
+          <td>${numbers}</td>
+        `;
+        
+        dataTable.appendChild(row);
       });
-      currentInputIndex = 0;
-      highlightCurrentInput();
-      hideKeypad();
-      document.getElementById("matches").innerHTML = 
-        '<div class="no-match"><i class="fas fa-info-circle"></i> වක්‍රී-පද්ධතිය සූදානම් — අගයන් ඇතුළත් කර "විශ්ලේෂණය කරන්න" ඔබන්න.</div>';
-      
-      // Hide statistics section
-      document.getElementById('statsSection').style.display = 'none';
     }
 
-    // Highlight current input
-    function highlightCurrentInput() {
-      inputs.forEach((input, index) => {
-        if (index === currentInputIndex) {
-          input.style.borderColor = "var(--accent)";
-          input.style.boxShadow = "0 0 0 2px rgba(255,107,107,0.2)";
-          input.style.background = "rgba(255,255,255,0.05)";
-        } else {
-          input.style.borderColor = "rgba(255,255,255,0.06)";
-          input.style.boxShadow = "none";
-          input.style.background = "rgba(255,255,255,0.02)";
+    // Setup event listeners
+    function setupEventListeners() {
+      // Analyze button
+      analyzeBtn.addEventListener('click', analyzeNumbers);
+      
+      // Reset button
+      resetBtn.addEventListener('click', resetInputs);
+      
+      // Keypad buttons
+      document.querySelectorAll('.keypad-btn[data-value]').forEach(btn => {
+        btn.addEventListener('click', function() {
+          if (currentInput) {
+            const currentValue = currentInput.value;
+            if (currentValue.length < 2) {
+              currentInput.value = currentValue + this.getAttribute('data-value');
+            }
+          }
+        });
+      });
+      
+      // Keypad clear
+      keypadClear.addEventListener('click', function() {
+        if (currentInput) {
+          currentInput.value = '';
         }
+      });
+      
+      // Keypad close
+      keypadClose.addEventListener('click', hideKeypad);
+      
+      // Alert close
+      alertClose.addEventListener('click', function() {
+        customAlert.classList.remove('visible');
+      });
+      
+      // Export buttons
+      exportExcelBtn.addEventListener('click', exportToExcel);
+      copyTextBtn.addEventListener('click', copyResultsToClipboard);
+    }
+
+    // Initialize input boxes
+    function initializeInputs() {
+      const inputs = document.querySelectorAll('.input-box input');
+      
+      inputs.forEach(input => {
+        // Show keypad on focus
+        input.addEventListener('focus', function() {
+          currentInput = this;
+          showKeypad();
+        });
+        
+        // Validate input on blur
+        input.addEventListener('blur', function() {
+          validateInput(this);
+        });
       });
     }
 
     // Show keypad
     function showKeypad() {
-      document.getElementById('keypad').classList.add('visible');
+      keypad.classList.add('visible');
     }
 
     // Hide keypad
     function hideKeypad() {
-      document.getElementById('keypad').classList.remove('visible');
+      keypad.classList.remove('visible');
+      if (currentInput) {
+        currentInput.blur();
+        currentInput = null;
+      }
     }
 
-    // Analyze numbers with animation
+    // Validate input
+    function validateInput(input) {
+      const value = input.value.trim();
+      
+      if (value === '') return true;
+      
+      // Check if it's a valid 2-digit number
+      if (!/^\d{2}$/.test(value)) {
+        showAlert('වලංගු නොවන ආදානය', 'කරුණාකර 00 සිට 99 දක්වා වලංගු අංක දෙකක් ඇතුළත් කරන්න.');
+        input.value = '';
+        input.focus();
+        return false;
+      }
+      
+      return true;
+    }
+
+    // Show custom alert
+    function showAlert(title, message) {
+      const alertTitle = customAlert.querySelector('.alert-title');
+      const alertMessage = customAlert.querySelector('.alert-message');
+      
+      alertTitle.textContent = title;
+      alertMessage.textContent = message;
+      
+      customAlert.classList.add('visible');
+      
+      // Auto hide after 5 seconds
+      setTimeout(() => {
+        customAlert.classList.remove('visible');
+      }, 5000);
+    }
+
+    // Analyze numbers
     function analyzeNumbers() {
-      const inputValues = getInputValues();
-      if (!inputValues) {
-        showAlert("අවවාදය", "අවම වශයෙන් එක් Box එකක් හෝ පුරවන්න.", 3000);
+      // Get all input values
+      const inputs = document.querySelectorAll('.input-box input');
+      const values = Array.from(inputs).map(input => input.value.trim()).filter(val => val !== '');
+      
+      // Validate inputs
+      if (values.length === 0) {
+        showAlert('ආදානයක් නැත', 'කරුණාකර විශ්ලේෂණය කිරීමට අවම වශයෙන් එක් අංකයක්වත් ඇතුළත් කරන්න.');
         return;
       }
-
-      // Hide keypad when analyzing
-      hideKeypad();
-
-      // Show animation overlay
-      const overlay = document.getElementById('animationOverlay');
-      const progressFill = document.getElementById('progressFill');
-      const lotteryAnimationArea = document.getElementById('lotteryAnimationArea');
-      const loadingText = document.getElementById('loadingText');
       
+      // Validate each input
+      for (let i = 0; i < inputs.length; i++) {
+        if (inputs[i].value.trim() !== '' && !validateInput(inputs[i])) {
+          return;
+        }
+      }
+      
+      // Show loading animation
+      showLoadingAnimation();
+      
+      // Simulate analysis delay
+      setTimeout(() => {
+        performAnalysis(values);
+        hideLoadingAnimation();
+      }, 1500);
+    }
+
+    // Show loading animation
+    function showLoadingAnimation() {
       overlay.classList.add('visible');
       progressFill.style.width = '0%';
       
-      // Clear previous balls
-      lotteryAnimationArea.innerHTML = '';
-      
-      // Create floating balls with numbers or "?" for empty boxes
-      for (let i = 0; i < 6; i++) {
-        const ball = document.createElement('div');
-        ball.className = `lottery-ball ${ballColors[i]}`;
-        
-        // Use input value or "?" if empty
-        ball.textContent = inputValues[i] || "?";
-        
-        // Random position
-        const left = 10 + Math.random() * 80;
-        ball.style.left = `${left}%`;
-        
-        // Random delay and duration
-        const delay = i * 0.5;
-        const duration = 3 + Math.random() * 2;
-        ball.style.animation = `ballFloat ${duration}s ease-in-out ${delay}s forwards`;
-        
-        lotteryAnimationArea.appendChild(ball);
-      }
-      
-      // Update progress bar
       setTimeout(() => {
         progressFill.style.width = '100%';
-      }, 50);
+      }, 10);
       
-      // Update loading text
-      setTimeout(() => {
-        loadingText.textContent = "දත්ත විශ්ලේෂණය කෙරේ...";
-      }, 2000);
-      
-      setTimeout(() => {
-        loadingText.textContent = "ප්‍රතිඵල ගොනු කෙරේ...";
-      }, 4000);
-      
-      // After animation completes, show results
-      setTimeout(() => {
-        overlay.classList.remove('visible');
-        showResults(inputValues);
-      }, 6000);
+      // Create lottery ball animation
+      createLotteryBalls();
     }
 
-    // Show results
-    function showResults(inputValues) {
-      const resultsContainer = document.getElementById("matches");
-      resultsContainer.innerHTML = "";
+    // Hide loading animation
+    function hideLoadingAnimation() {
+      overlay.classList.remove('visible');
+      lotteryAnimation.innerHTML = '';
+    }
+
+    // Create lottery balls animation
+    function createLotteryBalls() {
+      lotteryAnimation.innerHTML = '';
       
-      // Statistics object to track match counts
-      const matchStats = {};
-      inputValues.forEach(val => {
-        if (val) matchStats[val] = 0;
-      });
-      
-      let totalMatches = 0;
-      
-      // Check each box
-      for (let i = 0; i < 6; i++) {
-        const boxValue = inputValues[i];
-        if (!boxValue) continue;
+      for (let i = 1; i <= 6; i++) {
+        const ball = document.createElement('div');
+        ball.className = `lottery-ball ball-${i}`;
+        ball.textContent = i;
         
-        // Find matches for this box
-        const matches = lotteryData.filter(r => r.last2 === boxValue);
+        // Random horizontal position
+        const left = Math.random() * 85 + 5; // 5% to 90%
+        ball.style.left = `${left}%`;
         
-        // Update statistics
-        matchStats[boxValue] = matches.length;
-        totalMatches += matches.length;
+        // Random animation duration and delay
+        const duration = 3 + Math.random() * 2; // 3-5 seconds
+        const delay = Math.random() * 2; // 0-2 seconds
+        
+        ball.style.animation = `ballFloat ${duration}s ease-in-out ${delay}s forwards`;
+        
+        lotteryAnimation.appendChild(ball);
+      }
+    }
+
+    // Perform the analysis
+    function performAnalysis(values) {
+      // Clear previous results
+      matchesContainer.innerHTML = '';
+      
+      // Track frequency of last2 digits from High Draw (1)
+      const last2Frequency = {};
+      
+      // Process each box
+      values.forEach((value, index) => {
+        const matches = findMatches(value);
         
         // Create box card
-        const boxCard = document.createElement("div");
-        boxCard.className = "box-card";
+        const boxCard = document.createElement('div');
+        boxCard.className = 'box-card';
         
         // Box header
-        const boxHeader = document.createElement("div");
-        boxHeader.className = "box-header";
+        const boxHeader = document.createElement('div');
+        boxHeader.className = 'box-header';
         boxHeader.innerHTML = `
-          <h3><i class="fas fa-cube"></i> Box ${i+1} <span class="box-badge">${boxValue}</span></h3>
-          <span>${matches.length} ගැලපීම්</span>
+          <h3><i class="fas fa-cube"></i> Box ${index + 1}</h3>
+          <div class="box-badge">${value}</div>
         `;
-        boxCard.appendChild(boxHeader);
         
-        // Matches list
-        const matchList = document.createElement("div");
-        matchList.className = "match-list";
+        // Match list
+        const matchList = document.createElement('div');
+        matchList.className = 'match-list';
         
-        if (matches.length === 0) {
+        if (matches.length > 0) {
+          matches.forEach(match => {
+            const matchItem = createMatchItem(match);
+            matchList.appendChild(matchItem);
+            
+            // Track frequency for High Draw (1) matches
+            if (match.highDraw && match.highDraw.last2) {
+              const last2 = match.highDraw.last2;
+              last2Frequency[last2] = (last2Frequency[last2] || 0) + 1;
+            }
+          });
+        } else {
           matchList.innerHTML = `
             <div class="no-match">
-              <i class="fas fa-exclamation-circle"></i> ${boxValue} සඳහා ගැලපීම් හමු නොවීය
+              <i class="fas fa-search"></i> ගැලපීම් හමු නොවීය
             </div>
           `;
-        } else {
-          matches.forEach(match => {
-            const matchItem = document.createElement("div");
-            matchItem.className = "match-item";
-            
-            // Format the digits with spaces for readability
-            const formattedDigits = match.digits6 ? 
-              match.digits6.match(/.{1}/g).join(' ') : 
-              'N/A';
-            
-            // Get the next draw based on offset (corrected logic)
-            const nextDrawIndex = match._idx - offsets[i];
-            const nextDraw = nextDrawIndex >= 0 ? lotteryData[nextDrawIndex] : null;
-            
-            matchItem.innerHTML = `
-              <div class="match-meta">
-                <b>${match.date || "N/A"}</b>
-                ${match.code || "N/A"}
-              </div>
-              <div class="match-content">
-                <div class="match-digits">${formattedDigits}</div>
-                <div class="match-full">${match.code || ""}${match.digits6 || ""}</div>
-              </div>
-              <div class="match-below ${nextDraw ? 'highlight' : ''}">
-                <div>ඉහළ Draw (${offsets[i]}):</div>
-                <div>${nextDraw ? (nextDraw.date || "N/A") : "N/A"}</div>
-                <div>${nextDraw ? (nextDraw.code || "N/A") + " " + (nextDraw.digits6 || "N/A") : "N/A"}</div>
-              </div>
-            `;
-            
-            matchList.appendChild(matchItem);
-          });
         }
         
+        // Add frequency analysis section
+        const frequencySection = createFrequencySection(last2Frequency);
+        
+        boxCard.appendChild(boxHeader);
         boxCard.appendChild(matchList);
-        resultsContainer.appendChild(boxCard);
-      }
-      
-      // Show statistics
-      showStatistics(matchStats, totalMatches);
+        boxCard.appendChild(frequencySection);
+        
+        matchesContainer.appendChild(boxCard);
+      });
     }
 
-    // Show statistics with circular charts and bars
-    function showStatistics(matchStats, totalMatches) {
-      const statsSection = document.getElementById('statsSection');
-      const circularChart = document.getElementById('circularChart');
-      const statsContainer = document.getElementById('statsContainer');
-      const statsSummary = document.getElementById('statsSummary');
+    // Find matches for a given value
+    function findMatches(value) {
+      const matches = [];
       
-      // Show statistics section
-      statsSection.style.display = 'block';
-      
-      // Clear previous content
-      circularChart.innerHTML = '';
-      statsContainer.innerHTML = '';
-      
-      // Calculate maximum value for percentage calculations
-      const maxValue = Math.max(...Object.values(matchStats));
-      
-      // Create circular progress charts
-      Object.entries(matchStats).forEach(([number, count], index) => {
-        const percentage = maxValue > 0 ? Math.round((count / maxValue) * 100) : 0;
-        
-        const circularProgress = document.createElement('div');
-        circularProgress.className = 'circular-progress';
-        circularProgress.innerHTML = `
-          <svg width="100" height="100" viewBox="0 0 100 100">
-            <circle class="circular-bg" cx="50" cy="50" r="45"></circle>
-            <circle class="circular-circle" cx="50" cy="50" r="45" 
-                    stroke="var(--${ballColors[index]})" 
-                    stroke-dasharray="${283 * percentage / 100} 283"></circle>
-          </svg>
-          <div class="circular-text">
-            <div class="circular-number">${number}</div>
-            <div class="circular-label">${count} වතා</div>
-          </div>
-        `;
-        
-        circularChart.appendChild(circularProgress);
+      lotteryData.forEach(record => {
+        if (record.last2 === value) {
+          // Find the next draw (high draw)
+          const recordIndex = lotteryData.indexOf(record);
+          const nextDraw = lotteryData[recordIndex + 1];
+          
+          if (nextDraw) {
+            matches.push({
+              date: record.date,
+              code: record.code,
+              numbers: record.numbers,
+              last2: record.last2,
+              highDraw: {
+                date: nextDraw.date,
+                code: nextDraw.code,
+                numbers: nextDraw.numbers,
+                last2: nextDraw.last2
+              }
+            });
+          }
+        }
       });
       
-      // Create bar statistics
-      Object.entries(matchStats).forEach(([number, count], index) => {
-        const percentage = totalMatches > 0 ? Math.round((count / totalMatches) * 100) : 0;
-        
-        const statItem = document.createElement('div');
-        statItem.className = 'stat-item';
-        statItem.innerHTML = `
-          <div class="stat-label">
-            <span class="lottery-ball-small ${ballColors[index]}">${number}</span>
-            අංකය:
+      return matches;
+    }
+
+    // Create a match item
+    function createMatchItem(match) {
+      const matchItem = document.createElement('div');
+      matchItem.className = 'match-item';
+      
+      matchItem.innerHTML = `
+        <div class="match-meta">
+          <b>${match.date}</b>
+          ${match.code}
+        </div>
+        <div class="match-content">
+          <div class="match-digits">
+            ${match.numbers.map(num => 
+              `<span style="display: inline-block; width: 28px; height: 28px; line-height: 28px; text-align: center; background: rgba(255,255,255,0.1); border-radius: 50%; margin: 0 2px; font-size: 14px;">${num}</span>`
+            ).join('')}
           </div>
-          <div class="stat-bar-container">
-            <div class="stat-bar" style="width: ${percentage}%">
-              ${percentage > 5 ? `${percentage}%` : ''}
-            </div>
+          <div class="match-full">
+            අවසාන 2: <strong>${match.last2}</strong>
           </div>
-          <div class="stat-value">${count} වතාවක්</div>
-          <div class="stat-percentage">${percentage}%</div>
+        </div>
+        <div class="match-below highlight">
+          <div><strong>ඉහළ Draw (1)</strong></div>
+          <div>${match.highDraw.date}</div>
+          <div>${match.highDraw.code}</div>
+          <div>${match.highDraw.numbers.join(', ')}</div>
+          <div>අවසාන 2: <strong>${match.highDraw.last2}</strong></div>
+        </div>
+      `;
+      
+      return matchItem;
+    }
+
+    // Create frequency analysis section
+    function createFrequencySection(frequencyMap) {
+      const frequencySection = document.createElement('div');
+      frequencySection.className = 'frequency-section';
+      
+      const frequencyHeader = document.createElement('div');
+      frequencyHeader.className = 'frequency-header';
+      frequencyHeader.innerHTML = `
+        <i class="fas fa-chart-bar"></i>
+        <span>ඉහළ Draw (1) අවසාන අංක යුගල — Frequency විශ්ලේෂණය</span>
+      `;
+      
+      const frequencyGrid = document.createElement('div');
+      frequencyGrid.className = 'frequency-grid';
+      
+      // Filter frequencies (only show those with count >= 2)
+      const filteredFrequencies = Object.entries(frequencyMap)
+        .filter(([_, count]) => count >= 2)
+        .sort((a, b) => b[1] - a[1]); // Sort by frequency descending
+      
+      if (filteredFrequencies.length > 0) {
+        filteredFrequencies.forEach(([last2, count]) => {
+          const frequencyItem = document.createElement('div');
+          frequencyItem.className = 'frequency-item';
+          frequencyItem.innerHTML = `
+            <div class="frequency-number">${last2}</div>
+            <div class="frequency-count">${count} වාර</div>
+          `;
+          frequencyGrid.appendChild(frequencyItem);
+        });
+      } else {
+        frequencyGrid.innerHTML = `
+          <div class="frequency-none">
+            ඉහළ Draw (1) අගයන්හි 2 දක්වා ගණනාවක් නැත
+          </div>
         `;
-        
-        statsContainer.appendChild(statItem);
+      }
+      
+      frequencySection.appendChild(frequencyHeader);
+      frequencySection.appendChild(frequencyGrid);
+      
+      return frequencySection;
+    }
+
+    // Reset inputs
+    function resetInputs() {
+      const inputs = document.querySelectorAll('.input-box input');
+      inputs.forEach(input => {
+        input.value = '';
       });
       
-      // Update summary
-      const numbers = Object.keys(matchStats);
-      const counts = Object.values(matchStats);
-      const highestMatch = Math.max(...counts);
-      const lowestMatch = Math.min(...counts);
-      const avgMatch = Math.round(counts.reduce((a, b) => a + b, 0) / counts.length);
-      
-      statsSummary.innerHTML = `
-        <div class="stats-summary-item">
-          <div class="stats-summary-value">${totalMatches}</div>
-          <div class="stats-summary-label">මුළු ගැලපීම්</div>
-        </div>
-        <div class="stats-summary-item">
-          <div class="stats-summary-value">${highestMatch}</div>
-          <div class="stats-summary-label">වැඩිම ගැලපීම්</div>
-        </div>
-        <div class="stats-summary-item">
-          <div class="stats-summary-value">${lowestMatch}</div>
-          <div class="stats-summary-label">අඩුම ගැලපීම්</div>
-        </div>
-        <div class="stats-summary-item">
-          <div class="stats-summary-value">${avgMatch}</div>
-          <div class="stats-summary-label">සාමාන්‍ය ගැලපීම්</div>
+      matchesContainer.innerHTML = `
+        <div class="no-match">
+          <i class="fas fa-info-circle"></i> වක්‍රී-පද්ධතිය සූදානම් — අගයන් ඇතුළත් කර "විශ්ලේෂණය කරන්න" ඔබන්න.
         </div>
       `;
     }
 
     // Export to Excel
     function exportToExcel() {
-      const inputValues = getInputValues();
-      if (!inputValues) {
-        showAlert("අවවාදය", "ප්‍රතිඵල නොමැත. පළමුව විශ්ලේෂණය කරන්න.", 3000);
+      if (!lotteryData.length) {
+        showAlert('නිර්යාත කිරීමේ දෝෂය', 'පැටවීමට දත්ත නොමැත.');
         return;
       }
       
-      // Prepare data for Excel
-      const data = [['Box', 'Input Value', 'Date', 'Code', 'Last Two', 'All Numbers', 'Next Draw Date', 'Next Draw Code', 'Next Draw Numbers']];
-      
-      // Get all match items
-      const matchItems = document.querySelectorAll('.match-item');
-      
-      matchItems.forEach(item => {
-        const box = item.closest('.box-card').querySelector('h3').textContent.replace('Box', '').trim();
-        const inputValue = item.closest('.box-card').querySelector('.box-badge').textContent;
-        const date = item.querySelector('.match-meta b').textContent;
-        const code = item.querySelector('.match-meta div').textContent;
-        const lastTwo = item.querySelector('.match-content .match-full').textContent.slice(-2);
-        const allNumbers = item.querySelector('.match-content .match-full').textContent;
+      try {
+        // Create worksheet
+        const ws = XLSX.utils.json_to_sheet(lotteryData.map(record => ({
+          'දිනය': record.date,
+          'කේතය': record.code,
+          'අවසන් 2': record.last2,
+          'අංක 1': record.numbers[0],
+          'අංක 2': record.numbers[1],
+          'අංක 3': record.numbers[2],
+          'අංක 4': record.numbers[3],
+          'අංක 5': record.numbers[4],
+          'අංක 6': record.numbers[5]
+        })));
         
-        const nextDrawSection = item.querySelector('.match-below');
-        const nextDrawDate = nextDrawSection.querySelectorAll('div')[1].textContent;
-        const nextDrawInfo = nextDrawSection.querySelectorAll('div')[2].textContent;
+        // Create workbook
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'ලොතරැයි ප්‍රතිඵල');
         
-        data.push([box, inputValue, date, code, lastTwo, allNumbers, nextDrawDate, nextDrawInfo.split(' ')[0], nextDrawInfo.split(' ').slice(1).join(' ')]);
-      });
-      
-      // Create worksheet
-      const ws = XLSX.utils.aoa_to_sheet(data);
-      
-      // Create workbook
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Lottery Results');
-      
-      // Generate Excel file and trigger download
-      XLSX.writeFile(wb, 'lottery_results.xlsx');
-      
-      showAlert('Excel ගොනුව', 'Excel ගොනුව සාර්ථකව බාගත කරන ලදී', 3000);
+        // Export to file
+        XLSX.writeFile(wb, 'lottery_results.xlsx');
+        
+        showAlert('සාර්ථකත්වය', 'Excel ගොනුව සාර්ථකව නිර්යාත කරන ලදී.');
+      } catch (error) {
+        console.error('Excel නිර්යාත දෝෂය:', error);
+        showAlert('නිර්යාත දෝෂය', 'Excel ගොනුව නිර්යාත කිරීමට නොහැකි විය.');
+      }
     }
 
-    // Copy to clipboard as formatted text
-    function copyToClipboard() {
-      const inputValues = getInputValues();
-      if (!inputValues) {
-        showAlert("අවවාදය", "ප්‍රතිඵල නොමැත. පළමුව විශ්ලේෂණය කරන්න.", 3000);
+    // Copy results to clipboard
+    function copyResultsToClipboard() {
+      // Get current results
+      const boxCards = document.querySelectorAll('.box-card');
+      
+      if (boxCards.length === 0) {
+        showAlert('ප්‍රතිලිපි දෝෂය', 'ප්‍රතිලිපි නොමැත.');
         return;
       }
       
-      let textContent = '';
+      let text = 'ලොතරැයි විශ්ලේෂණ ප්‍රතිඵල\n';
+      text += '========================\n\n';
       
-      // Process each box
-      for (let i = 0; i < 6; i++) {
-        const boxValue = inputValues[i];
-        if (!boxValue) continue;
+      boxCards.forEach(card => {
+        const boxTitle = card.querySelector('.box-header h3').textContent;
+        const boxValue = card.querySelector('.box-badge').textContent;
         
-        // Find matches for this box
-        const matches = lotteryData.filter(r => r.last2 === boxValue);
-        if (matches.length === 0) continue;
+        text += `${boxTitle}: ${boxValue}\n`;
         
-        textContent += `*Box ${i+1}*\n`;
-        textContent += `*ඇතුලත් කළ අංකය* = ${boxValue}\n`;
-        textContent += `*ගැලපීම්* = ${matches.length}\n\n`;
+        const matchItems = card.querySelectorAll('.match-item');
+        if (matchItems.length > 0) {
+          matchItems.forEach(item => {
+            const date = item.querySelector('.match-meta b').textContent;
+            const code = item.querySelector('.match-meta').childNodes[2].textContent.trim();
+            const numbers = item.querySelector('.match-digits').textContent.trim();
+            const last2 = item.querySelector('.match-full strong').textContent;
+            const highDraw = item.querySelector('.match-below').textContent;
+            
+            text += `  දිනය: ${date} | කේතය: ${code}\n`;
+            text += `  අංක: ${numbers} | අවසාන 2: ${last2}\n`;
+            text += `  ${highDraw}\n\n`;
+          });
+        } else {
+          text += '  ගැලපීම් හමු නොවීය\n\n';
+        }
         
-        // Add each match
-        matches.forEach((match, index) => {
-          textContent += `${index+1}. *දිනය* = ${match.date || "N/A"}\n`;
-          textContent += `*ඉංග්‍රීසි අක්ෂරය* = ${match.code || "N/A"}\n`;
-          
-          // Format numbers with spaces
-          const formattedNumbers = match.digits6 ? 
-            match.digits6.match(/.{1}/g).join(' ') : 
-            'N/A';
-          textContent += `*ජයග්‍රහී අංක* = ${formattedNumbers}\n\n`;
-          
-          // Get the next draw based on offset
-          const nextDrawIndex = match._idx - offsets[i];
-          const nextDraw = nextDrawIndex >= 0 ? lotteryData[nextDrawIndex] : null;
-          
-          textContent += `*ඉහළ Draw (${offsets[i]}):*\n`;
-          if (nextDraw) {
-            textContent += `දිනය = ${nextDraw.date || "N/A"}\n`;
-            textContent += `${nextDraw.code || "N/A"} ${nextDraw.digits6 || "N/A"}\n\n`;
-            textContent += `*ජයග්‍රහී අවසාන අංක යුගලය* =(${nextDraw.last2 || "N/A"})\n\n`;
-          } else {
-            textContent += `දත්ත නොමැත\n\n`;
-          }
-          
-          textContent += '\n';
-        });
+        // Add frequency analysis
+        const frequencyHeader = card.querySelector('.frequency-header span').textContent;
+        text += `  ${frequencyHeader}\n`;
         
-        textContent += '\n';
-      }
+        const frequencyItems = card.querySelectorAll('.frequency-item');
+        if (frequencyItems.length > 0) {
+          frequencyItems.forEach(item => {
+            const number = item.querySelector('.frequency-number').textContent;
+            const count = item.querySelector('.frequency-count').textContent;
+            text += `    ${number} → ${count}\n`;
+          });
+        } else {
+          text += '    ඉහළ Draw (1) අගයන්හි 2 දක්වා ගණනාවක් නැත\n';
+        }
+        
+        text += '\n';
+      });
       
       // Copy to clipboard
-      navigator.clipboard.writeText(textContent).then(() => {
-        showAlert('Clipboard', 'පෙළ clipboard එකට පිටපත් කරන ලදී', 3000);
-      }).catch(err => {
-        showAlert('දෝෂය', 'Clipboard එකට පිටපත් කිරීමට නොහැකි විය', 3000);
-      });
+      navigator.clipboard.writeText(text)
+        .then(() => {
+          showAlert('සාර්ථකත්වය', 'ප්‍රතිලිපි සාර්ථකව පසුරු පුවරුවට පිටපත් කරන ලදී.');
+        })
+        .catch(err => {
+          console.error('පසුරු පුවරුවට පිටපත් කිරීමේ දෝෂය:', err);
+          showAlert('පිටපත් කිරීමේ දෝෂය', 'ප්‍රතිලිපි පසුරු පුවරුවට පිටපත් කිරීමට නොහැකි විය.');
+        });
     }
-
-    // Initialize the app when DOM is loaded
-    document.addEventListener('DOMContentLoaded', initApp);
   </script>
-
-</body></html>
+</body>
+</html>
