@@ -1088,7 +1088,6 @@
   <script>
     // Main data holder
     let lotteryData = [];
-    let currentInputIndex = 0;
     const singleInput = document.getElementById('singleInput');
     
     // Ball colors
@@ -1352,7 +1351,7 @@
       setTimeout(() => {
         const searchNumber = inputValue;
         
-        // Find matches in the data
+        // Find matches in the data - ONLY at the beginning of the 6-digit number
         const matches = findMatches(searchNumber, selectedYears);
         
         // Display results
@@ -1363,7 +1362,7 @@
       }, 2000);
     }
     
-    // Find matches in the data
+    // Find matches in the data - ONLY at the beginning of the 6-digit number
     function findMatches(searchNumber, selectedYears) {
       const matches = [];
       
@@ -1374,8 +1373,8 @@
           return;
         }
         
-        // Check if the search number appears in the 6-digit number
-        if (item.digits6.includes(searchNumber)) {
+        // Check if the search number appears at the beginning of the 6-digit number
+        if (item.digits6 && item.digits6.startsWith(searchNumber)) {
           matches.push(item);
         }
       });
@@ -1391,16 +1390,13 @@
         matchesContainer.innerHTML = `
           <div class="no-match">
             <i class="fas fa-search"></i> "${searchNumber}" සඳහා ගැලපීම් හමු නොවීය
+            <div style="margin-top: 8px; font-size: 12px; color: var(--muted);">
+              (අංකය ලොතරැයි අංකවල මුලටම යෙදී තිබිය යුතුය)
+            </div>
           </div>
         `;
         return;
       }
-      
-      // Group matches by date to find adjacent draws
-      const matchesByDate = {};
-      matches.forEach(match => {
-        matchesByDate[match.date] = match;
-      });
       
       // Find adjacent draws for each match
       const resultsWithAdjacent = matches.map(match => {
@@ -1436,7 +1432,7 @@
                 <i class="fas fa-calendar-alt"></i> ${match.date}
                 <span class="box-badge">${match.code}</span>
               </h3>
-              <span>${match.last2}</span>
+              <span>අවසාන 2: ${match.last2}</span>
             </div>
             
             <div class="match-list">
@@ -1447,14 +1443,14 @@
                 </div>
                 <div class="match-content">
                   <div class="match-digits">
-                    <span class="highlight">${match.letter} ${formatDigits(match.digits6, searchNumber)}</span>
+                    <span style="color: var(--accent); font-weight: bold;">${match.letter} ${formatDigits(match.digits6, searchNumber)}</span>
                   </div>
                   <div class="match-full">
                     සම්පූර්ණ කේතය: ${match.code}
                   </div>
                 </div>
-                <div class="match-below">
-                  <i class="fas fa-info-circle"></i> අංකය "${searchNumber}" අඩංගු වේ
+                <div class="match-below highlight">
+                  <i class="fas fa-info-circle"></i> අංකය "${searchNumber}" මුලටම යෙදී ඇත
                 </div>
               </div>
               
@@ -1473,10 +1469,25 @@
                     </div>
                   </div>
                   <div class="match-below">
-                    <i class="fas fa-arrow-down"></i> අවසාන 2: ${prevDraw.last2}
+                    <i class="fas fa-arrow-down"></i> අවසාන 2: <strong>${prevDraw.last2}</strong>
                   </div>
                 </div>
-              ` : ''}
+              ` : `
+                <div class="match-item">
+                  <div class="match-meta">
+                    <b>පෙර දිනය</b>
+                    දත්ත නොමැත
+                  </div>
+                  <div class="match-content">
+                    <div class="match-digits" style="color: var(--muted);">
+                      දත්ත නොමැත
+                    </div>
+                  </div>
+                  <div class="match-below">
+                    <i class="fas fa-exclamation-circle"></i> දත්ත නොමැත
+                  </div>
+                </div>
+              `}
               
               ${nextDraw ? `
                 <div class="match-item">
@@ -1493,10 +1504,25 @@
                     </div>
                   </div>
                   <div class="match-below">
-                    <i class="fas fa-arrow-up"></i> අවසාන 2: ${nextDraw.last2}
+                    <i class="fas fa-arrow-up"></i> අවසාන 2: <strong>${nextDraw.last2}</strong>
                   </div>
                 </div>
-              ` : ''}
+              ` : `
+                <div class="match-item">
+                  <div class="match-meta">
+                    <b>ඊළඟ දිනය</b>
+                    දත්ත නොමැත
+                  </div>
+                  <div class="match-content">
+                    <div class="match-digits" style="color: var(--muted);">
+                      දත්ත නොමැත
+                    </div>
+                  </div>
+                  <div class="match-below">
+                    <i class="fas fa-exclamation-circle"></i> දත්ත නොමැත
+                  </div>
+                </div>
+              `}
             </div>
           </div>
         `;
@@ -1505,16 +1531,14 @@
       matchesContainer.innerHTML = resultsHTML;
     }
     
-    // Format digits to highlight the search number
+    // Format digits to highlight the search number at the beginning
     function formatDigits(digits, searchNumber) {
-      const index = digits.indexOf(searchNumber);
-      if (index === -1) return digits;
+      if (!digits.startsWith(searchNumber)) return digits;
       
-      const before = digits.substring(0, index);
-      const match = digits.substring(index, index + 2);
-      const after = digits.substring(index + 2);
+      const match = digits.substring(0, 2);
+      const after = digits.substring(2);
       
-      return `${before}<span style="color: var(--accent); font-weight: bold; text-decoration: underline;">${match}</span>${after}`;
+      return `<span style="color: var(--accent); font-weight: bold; text-decoration: underline;">${match}</span>${after}`;
     }
     
     // Show loading animation
