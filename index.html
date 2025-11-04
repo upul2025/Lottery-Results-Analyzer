@@ -194,38 +194,40 @@
       position: relative;
     }
     
-    .inputs-grid {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 12px;
+    .single-input-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
       margin-bottom: 16px;
     }
     
-    .input-box {
+    .single-input-box {
       position: relative;
+      width: 120px;
     }
     
-    .input-box input {
+    .single-input-box input {
       width: 100%;
-      padding: 16px 10px;
+      padding: 20px 10px;
       border-radius: 12px;
       border: 1px solid rgba(255,255,255,0.06);
       background: rgba(255,255,255,0.02);
       color: #e6eef8;
-      font-size: 18px;
+      font-size: 24px;
       text-align: center;
       outline: none;
       transition: all 0.3s ease;
       font-weight: 600;
     }
     
-    .input-box input:focus {
+    .single-input-box input:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 2px rgba(255,107,107,0.2);
       background: rgba(255,255,255,0.05);
     }
     
-    .input-box label {
+    .single-input-box label {
       position: absolute;
       top: -8px;
       left: 50%;
@@ -237,12 +239,70 @@
       z-index: 1;
     }
 
+    /* Year Filter */
+    .year-filter {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      max-width: 400px;
+    }
+    
+    .year-filter label {
+      font-size: 14px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .year-select-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      max-height: 120px;
+      overflow-y: auto;
+      padding: 8px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      width: 100%;
+    }
+    
+    .year-checkbox {
+      display: none;
+    }
+    
+    .year-checkbox-label {
+      padding: 6px 12px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--muted);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .year-checkbox:checked + .year-checkbox-label {
+      background: rgba(255,107,107,0.2);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    
+    .year-checkbox-label:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
     /* Controls */
     .controls {
       display: flex;
       gap: 12px;
       align-items: center;
       flex-wrap: wrap;
+      justify-content: center;
     }
     
     .btn {
@@ -543,65 +603,6 @@
       text-align: center;
     }
 
-    /* Pattern Analysis Section */
-    .pattern-analysis {
-      margin-top: 20px;
-      padding-top: 16px;
-      border-top: 1px solid rgba(255,255,255,0.05);
-    }
-    
-    .pattern-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 12px;
-      font-size: 16px;
-      font-weight: 600;
-    }
-    
-    .pattern-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    
-    .pattern-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px;
-      background: rgba(255,255,255,0.02);
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.03);
-      transition: all 0.3s ease;
-    }
-    
-    .pattern-item:hover {
-      background: rgba(255,255,255,0.05);
-      transform: translateY(-1px);
-    }
-    
-    .pattern-number {
-      font-weight: 600;
-      font-size: 16px;
-      color: var(--accent);
-    }
-    
-    .pattern-count {
-      background: rgba(255,107,107,0.2);
-      color: var(--accent);
-      padding: 4px 8px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-    
-    .pattern-details {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 4px;
-    }
-
     /* Table */
     .table-container {
       overflow: auto;
@@ -841,10 +842,6 @@
 
     /* Responsive Design */
     @media (max-width: 768px) {
-      .inputs-grid { 
-        grid-template-columns: repeat(3, 1fr); 
-      }
-      
       .app-header h1 { 
         font-size: 24px; 
       }
@@ -897,11 +894,6 @@
     }
     
     @media (max-width: 480px) {
-      .inputs-grid { 
-        grid-template-columns: repeat(2, 1fr); 
-        gap: 10px;
-      }
-      
       .controls { 
         flex-direction: column; 
         align-items: stretch; 
@@ -956,7 +948,7 @@
     <!-- Header -->
     <header class="app-header">
       <h1><i class="fas fa-chart-line"></i> Lottery Results Analyzer</h1>
-      <p>ඔබ ඇතුළත් කරන last-2 අංක සඳහා සියලු ගැලපීම් සහ ඒවාට අනුරූප ඉහළ draw-වල ප්‍රතිඵල පෙන්වයි</p>
+      <p>ඔබ ඇතුළත් කරන අවසාන-2 අංකය සඳහා සියලු ගැලපීම් සහ ඒවාට අනුරූප ඉහළ draw-වල ප්‍රතිඵල පෙන්වයි</p>
       <div class="live-clock">
         <i class="fas fa-clock"></i>
         <span id="currentDateTime">ලබනුයේ...</span>
@@ -965,30 +957,17 @@
 
     <!-- Input Section -->
     <section class="card input-section">
-      <div class="inputs-grid" id="inputGrid">
-        <div class="input-box">
-          <label for="box1">Box 1</label>
-          <input id="box1" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
+      <div class="single-input-container">
+        <div class="single-input-box">
+          <label for="singleInput">අංක යුගලය</label>
+          <input id="singleInput" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
         </div>
-        <div class="input-box">
-          <label for="box2">Box 2</label>
-          <input id="box2" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
-        </div>
-        <div class="input-box">
-          <label for="box3">Box 3</label>
-          <input id="box3" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
-        </div>
-        <div class="input-box">
-          <label for="box4">Box 4</label>
-          <input id="box4" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
-        </div>
-        <div class="input-box">
-          <label for="box5">Box 5</label>
-          <input id="box5" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
-        </div>
-        <div class="input-box">
-          <label for="box6">Box 6</label>
-          <input id="box6" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
+        
+        <div class="year-filter">
+          <label for="yearFilter"><i class="fas fa-filter"></i> වර්ෂය තෝරන්න:</label>
+          <div class="year-select-container" id="yearFilter">
+            <!-- Years will be populated dynamically -->
+          </div>
         </div>
       </div>
 
@@ -1021,21 +1000,8 @@
 
       <div id="matches" class="results-container">
         <div class="no-match">
-          <i class="fas fa-info-circle"></i> වක්‍රී-පද්ධතිය සූදානම් — අගයන් ඇතුළත් කර "විශ්ලේෂණය කරන්න" ඔබන්න.
+          <i class="fas fa-info-circle"></i> වක්‍රී-පද්ධතිය සූදානම් — අංක යුගලයක් ඇතුළත් කර "විශ්ලේෂණය කරන්න" ඔබන්න.
         </div>
-      </div>
-    </section>
-
-    <!-- Pattern Analysis Section -->
-    <section class="card" id="patternAnalysisSection" style="display: none;">
-      <div class="results-header">
-        <h2><i class="fas fa-chart-bar"></i> අංක රටා විශ්ලේෂණය</h2>
-        <div class="json-info">
-          <i class="fas fa-info-circle"></i> ඉහළ Draw (1) හි අවසාන අංක යුගල
-        </div>
-      </div>
-      <div id="patternAnalysis" class="results-container">
-        <!-- Pattern analysis results will be displayed here -->
       </div>
     </section>
 
@@ -1123,10 +1089,7 @@
     // Main data holder
     let lotteryData = [];
     let currentInputIndex = 0;
-    const inputs = Array.from({length: 6}, (_, i) => document.getElementById(`box${i+1}`));
-    
-    // Configuration: offsets per box (corrected values)
-    const offsets = [1, 2, 3, 4, 5, 6];
+    const singleInput = document.getElementById('singleInput');
     
     // Ball colors
     const ballColors = ['ball-1', 'ball-2', 'ball-3', 'ball-4', 'ball-5', 'ball-6'];
@@ -1139,111 +1102,90 @@
       setupEventListeners();
       loadJSONData();
       
-      // Show keypad when any input is focused
-      inputs.forEach(input => {
-        input.addEventListener('focus', (e) => {
-          currentInputIndex = inputs.indexOf(e.target);
-          highlightCurrentInput();
-          showKeypad();
-        });
-        
-        input.addEventListener('click', (e) => {
-          currentInputIndex = inputs.indexOf(e.target);
-          highlightCurrentInput();
-          showKeypad();
-        });
+      // Show keypad when input is focused
+      singleInput.addEventListener('focus', () => {
+        showKeypad();
+      });
+      
+      singleInput.addEventListener('click', () => {
+        showKeypad();
       });
     }
-
-    // Update date and time
+    
+    // Update current date and time
     function updateDateTime() {
       const now = new Date();
       const options = { 
+        weekday: 'long', 
         year: 'numeric', 
         month: 'long', 
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
-        second: '2-digit',
-        weekday: 'long'
+        second: '2-digit'
       };
-      const formatter = new Intl.DateTimeFormat('si-LK', options);
-      document.getElementById('currentDateTime').textContent = formatter.format(now);
+      document.getElementById('currentDateTime').textContent = now.toLocaleDateString('si-LK', options);
     }
-
-    // Set up event listeners
+    
+    // Setup event listeners
     function setupEventListeners() {
-      // Button events
+      // Analyze button
       document.getElementById('analyzeBtn').addEventListener('click', analyzeNumbers);
-      document.getElementById('resetBtn').addEventListener('click', resetInputs);
-      document.getElementById('keypadClose').addEventListener('click', hideKeypad);
-      document.getElementById('keypadClear').addEventListener('click', clearCurrentInput);
       
-      // Keypad number buttons
+      // Reset button
+      document.getElementById('resetBtn').addEventListener('click', resetApp);
+      
+      // Keypad buttons
       document.querySelectorAll('.keypad-btn[data-value]').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const value = e.target.getAttribute('data-value');
-          addDigitToInput(value);
+        btn.addEventListener('click', () => {
+          const value = btn.getAttribute('data-value');
+          if (singleInput.value.length < 2) {
+            singleInput.value += value;
+          }
         });
       });
       
-      // Alert close button
-      document.getElementById('alertClose').addEventListener('click', hideAlert);
-      
-      // Allow Enter key to trigger analysis
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          analyzeNumbers();
-        } else if (e.key >= '0' && e.key <= '9') {
-          // Add digit if number key pressed
-          addDigitToInput(e.key);
-          e.preventDefault();
-        }
+      // Keypad clear button
+      document.getElementById('keypadClear').addEventListener('click', () => {
+        singleInput.value = '';
       });
       
-      // Hide keypad when clicking outside
-      document.addEventListener('click', (e) => {
-        const keypad = document.getElementById('keypad');
-        const inputSection = document.querySelector('.input-section');
-        if (!keypad.contains(e.target) && 
-            !inputSection.contains(e.target)) {
-          hideKeypad();
-        }
-      });
+      // Keypad close button
+      document.getElementById('keypadClose').addEventListener('click', hideKeypad);
       
       // Export buttons
       document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
-      document.getElementById('copyTextBtn').addEventListener('click', copyToClipboard);
-    }
-
-    // Show custom alert
-    function showAlert(title, message, duration = 5000) {
-      const alert = document.getElementById('customAlert');
-      document.getElementById('alertTitle').textContent = title;
-      document.getElementById('alertMessage').textContent = message;
+      document.getElementById('copyTextBtn').addEventListener('click', copyResultsToClipboard);
       
-      alert.classList.add('visible');
-      
-      // Auto hide after duration
-      setTimeout(() => {
-        hideAlert();
-      }, duration);
+      // Alert close button
+      document.getElementById('alertClose').addEventListener('click', hideAlert);
     }
     
-    // Hide custom alert
+    // Show keypad
+    function showKeypad() {
+      document.getElementById('keypad').classList.add('visible');
+    }
+    
+    // Hide keypad
+    function hideKeypad() {
+      document.getElementById('keypad').classList.remove('visible');
+    }
+    
+    // Show alert
+    function showAlert(title, message) {
+      document.getElementById('alertTitle').textContent = title;
+      document.getElementById('alertMessage').textContent = message;
+      document.getElementById('customAlert').classList.add('visible');
+      
+      // Auto hide after 5 seconds
+      setTimeout(hideAlert, 5000);
+    }
+    
+    // Hide alert
     function hideAlert() {
       document.getElementById('customAlert').classList.remove('visible');
     }
-
-    // Update status indicator
-    function updateStatus(status, message) {
-      const indicator = document.getElementById('statusIndicator');
-      const statusText = document.getElementById('statusText');
-      
-      indicator.className = `status-indicator ${status}`;
-      statusText.textContent = message;
-    }
-
+    
     // Load JSON data from external file
     function loadJSONData() {
       updateStatus('connecting', 'දත්ත ලබා ගනිමින්...');
@@ -1284,6 +1226,7 @@
           lotteryData.forEach((r, i) => r._idx = i);
           
           updateStatus('connected', `දත්ත සාර්ථකව ලබාගත්තා (${lotteryData.length} records)`);
+          populateYearFilter();
           renderTable();
         })
         .catch(error => {
@@ -1296,7 +1239,60 @@
           renderTable();
         });
     }
-
+    
+    // Update status indicator
+    function updateStatus(status, message) {
+      const indicator = document.getElementById('statusIndicator');
+      const statusText = document.getElementById('statusText');
+      
+      indicator.className = `status-indicator ${status}`;
+      statusText.textContent = message;
+    }
+    
+    // Populate year filter
+    function populateYearFilter() {
+      const yearFilter = document.getElementById('yearFilter');
+      const years = new Set();
+      
+      // Extract unique years from data
+      lotteryData.forEach(item => {
+        const year = item.date.substring(0, 4);
+        years.add(year);
+      });
+      
+      // Clear existing options
+      yearFilter.innerHTML = '';
+      
+      // Add year options
+      Array.from(years).sort().reverse().forEach(year => {
+        const checkboxId = `year-${year}`;
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = checkboxId;
+        checkbox.className = 'year-checkbox';
+        checkbox.value = year;
+        checkbox.checked = true;
+        
+        const label = document.createElement('label');
+        label.htmlFor = checkboxId;
+        label.className = 'year-checkbox-label';
+        label.textContent = year;
+        
+        yearFilter.appendChild(checkbox);
+        yearFilter.appendChild(label);
+      });
+    }
+    
+    // Get selected years from filter
+    function getSelectedYears() {
+      const checkboxes = document.querySelectorAll('.year-checkbox:checked');
+      if (checkboxes.length === 0) {
+        return [];
+      }
+      
+      return Array.from(checkboxes).map(checkbox => checkbox.value);
+    }
+    
     // Render data table
     function renderTable() {
       const tbody = document.querySelector("#dataTable tbody");
@@ -1325,428 +1321,327 @@
         tbody.appendChild(tr);
       });
     }
-
-    // Get input values
-    function getInputValues() {
-      const vals = [];
-      let hasAtLeastOneValue = false;
-      
-      for (let i = 1; i <= 6; i++) {
-        const v = document.getElementById("box" + i).value.trim();
-        if (v !== "") {
-          hasAtLeastOneValue = true;
-          vals.push(String(v).padStart(2, "0"));
-        } else {
-          vals.push("");
-        }
-      }
-      
-      return hasAtLeastOneValue ? vals : null;
-    }
-
-    // Add digit to current input
-    function addDigitToInput(digit) {
-      const currentInput = inputs[currentInputIndex];
-      if (currentInput.value.length < 2) {
-        currentInput.value += digit;
-        
-        // Auto move to next input
-        if (currentInput.value.length === 2 && currentInputIndex < 5) {
-          currentInputIndex++;
-          highlightCurrentInput();
-        }
-      }
-    }
-
-    // Clear current input
-    function clearCurrentInput() {
-      inputs[currentInputIndex].value = "";
-    }
-
-    // Reset all inputs
-    function resetInputs() {
-      inputs.forEach(input => {
-        input.value = "";
-      });
-      currentInputIndex = 0;
-      highlightCurrentInput();
-      hideKeypad();
-      document.getElementById("matches").innerHTML = 
-        '<div class="no-match"><i class="fas fa-info-circle"></i> වක්‍රී-පද්ධතිය සූදානම් — අගයන් ඇතුළත් කර "විශ්ලේෂණය කරන්න" ඔබන්න.</div>';
-      
-      // Hide pattern analysis section
-      document.getElementById('patternAnalysisSection').style.display = 'none';
-    }
-
-    // Highlight current input
-    function highlightCurrentInput() {
-      inputs.forEach((input, index) => {
-        if (index === currentInputIndex) {
-          input.style.borderColor = "var(--accent)";
-          input.style.boxShadow = "0 0 0 2px rgba(255,107,107,0.2)";
-          input.style.background = "rgba(255,255,255,0.05)";
-        } else {
-          input.style.borderColor = "rgba(255,255,255,0.06)";
-          input.style.boxShadow = "none";
-          input.style.background = "rgba(255,255,255,0.02)";
-        }
-      });
-    }
-
-    // Show keypad
-    function showKeypad() {
-      document.getElementById('keypad').classList.add('visible');
-    }
-
-    // Hide keypad
-    function hideKeypad() {
-      document.getElementById('keypad').classList.remove('visible');
-    }
-
-    // Analyze numbers with animation
+    
+    // Analyze numbers
     function analyzeNumbers() {
-      const inputValues = getInputValues();
-      if (!inputValues) {
-        showAlert("අවවාදය", "අවම වශයෙන් එක් Box එකක් හෝ පුරවන්න.", 3000);
+      const inputValue = singleInput.value.trim();
+      
+      // Validate input
+      if (inputValue.length !== 2 || !/^\d+$/.test(inputValue)) {
+        showAlert('වලංගු නොවන ආදානය', 'කරුණාකර අංක දෙකක් ඇතුළත් කරන්න (00-99)');
         return;
       }
-
-      // Hide keypad when analyzing
-      hideKeypad();
-
-      // Show animation overlay
+      
+      // Check if data is loaded
+      if (lotteryData.length === 0) {
+        showAlert('දත්ත නොමැත', 'දත්ත තවම ලබා ගෙන නොමැත. කරුණාකර රැඳී සිටින්න.');
+        return;
+      }
+      
+      // Get selected years
+      const selectedYears = getSelectedYears();
+      if (selectedYears.length === 0) {
+        showAlert('වර්ෂ තෝරන්න', 'කරුණාකර විශ්ලේෂණය සඳහා අවම වශයෙන් එක් වර්ෂයක් හෝ තෝරන්න');
+        return;
+      }
+      
+      // Show loading animation
+      showLoadingAnimation();
+      
+      // Simulate processing delay
+      setTimeout(() => {
+        const searchNumber = inputValue;
+        
+        // Find matches in the data
+        const matches = findMatches(searchNumber, selectedYears);
+        
+        // Display results
+        displayResults(matches, searchNumber);
+        
+        // Hide loading animation
+        hideLoadingAnimation();
+      }, 2000);
+    }
+    
+    // Find matches in the data
+    function findMatches(searchNumber, selectedYears) {
+      const matches = [];
+      
+      lotteryData.forEach(item => {
+        // Check if the item matches the selected years
+        const year = item.date.substring(0, 4);
+        if (!selectedYears.includes(year)) {
+          return;
+        }
+        
+        // Check if the search number appears in the 6-digit number
+        if (item.digits6.includes(searchNumber)) {
+          matches.push(item);
+        }
+      });
+      
+      return matches;
+    }
+    
+    // Display results
+    function displayResults(matches, searchNumber) {
+      const matchesContainer = document.getElementById("matches");
+      
+      if (matches.length === 0) {
+        matchesContainer.innerHTML = `
+          <div class="no-match">
+            <i class="fas fa-search"></i> "${searchNumber}" සඳහා ගැලපීම් හමු නොවීය
+          </div>
+        `;
+        return;
+      }
+      
+      // Group matches by date to find adjacent draws
+      const matchesByDate = {};
+      matches.forEach(match => {
+        matchesByDate[match.date] = match;
+      });
+      
+      // Find adjacent draws for each match
+      const resultsWithAdjacent = matches.map(match => {
+        const date = new Date(match.date);
+        const prevDate = new Date(date);
+        prevDate.setDate(date.getDate() - 1);
+        const nextDate = new Date(date);
+        nextDate.setDate(date.getDate() + 1);
+        
+        const prevDateStr = prevDate.toISOString().split('T')[0];
+        const nextDateStr = nextDate.toISOString().split('T')[0];
+        
+        const prevDraw = lotteryData.find(item => item.date === prevDateStr);
+        const nextDraw = lotteryData.find(item => item.date === nextDateStr);
+        
+        return {
+          match,
+          prevDraw,
+          nextDraw
+        };
+      });
+      
+      // Generate HTML for results
+      let resultsHTML = '';
+      
+      resultsWithAdjacent.forEach((result, index) => {
+        const { match, prevDraw, nextDraw } = result;
+        
+        resultsHTML += `
+          <div class="box-card">
+            <div class="box-header">
+              <h3>
+                <i class="fas fa-calendar-alt"></i> ${match.date}
+                <span class="box-badge">${match.code}</span>
+              </h3>
+              <span>${match.last2}</span>
+            </div>
+            
+            <div class="match-list">
+              <div class="match-item">
+                <div class="match-meta">
+                  <b>ජයග්‍රාහී අංකය</b>
+                  ${match.date}
+                </div>
+                <div class="match-content">
+                  <div class="match-digits">
+                    <span class="highlight">${match.letter} ${formatDigits(match.digits6, searchNumber)}</span>
+                  </div>
+                  <div class="match-full">
+                    සම්පූර්ණ කේතය: ${match.code}
+                  </div>
+                </div>
+                <div class="match-below">
+                  <i class="fas fa-info-circle"></i> අංකය "${searchNumber}" අඩංගු වේ
+                </div>
+              </div>
+              
+              ${prevDraw ? `
+                <div class="match-item">
+                  <div class="match-meta">
+                    <b>පෙර දිනය</b>
+                    ${prevDraw.date}
+                  </div>
+                  <div class="match-content">
+                    <div class="match-digits">
+                      ${prevDraw.letter} ${prevDraw.digits6}
+                    </div>
+                    <div class="match-full">
+                      සම්පූර්ණ කේතය: ${prevDraw.code}
+                    </div>
+                  </div>
+                  <div class="match-below">
+                    <i class="fas fa-arrow-down"></i> අවසාන 2: ${prevDraw.last2}
+                  </div>
+                </div>
+              ` : ''}
+              
+              ${nextDraw ? `
+                <div class="match-item">
+                  <div class="match-meta">
+                    <b>ඊළඟ දිනය</b>
+                    ${nextDraw.date}
+                  </div>
+                  <div class="match-content">
+                    <div class="match-digits">
+                      ${nextDraw.letter} ${nextDraw.digits6}
+                    </div>
+                    <div class="match-full">
+                      සම්පූර්ණ කේතය: ${nextDraw.code}
+                    </div>
+                  </div>
+                  <div class="match-below">
+                    <i class="fas fa-arrow-up"></i> අවසාන 2: ${nextDraw.last2}
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      });
+      
+      matchesContainer.innerHTML = resultsHTML;
+    }
+    
+    // Format digits to highlight the search number
+    function formatDigits(digits, searchNumber) {
+      const index = digits.indexOf(searchNumber);
+      if (index === -1) return digits;
+      
+      const before = digits.substring(0, index);
+      const match = digits.substring(index, index + 2);
+      const after = digits.substring(index + 2);
+      
+      return `${before}<span style="color: var(--accent); font-weight: bold; text-decoration: underline;">${match}</span>${after}`;
+    }
+    
+    // Show loading animation
+    function showLoadingAnimation() {
       const overlay = document.getElementById('animationOverlay');
       const progressFill = document.getElementById('progressFill');
-      const lotteryAnimationArea = document.getElementById('lotteryAnimationArea');
       const loadingText = document.getElementById('loadingText');
+      const animationArea = document.getElementById('lotteryAnimationArea');
       
-      overlay.classList.add('visible');
+      // Reset progress bar
       progressFill.style.width = '0%';
       
-      // Clear previous balls
-      lotteryAnimationArea.innerHTML = '';
+      // Show overlay
+      overlay.classList.add('visible');
       
-      // Create floating balls with numbers or "?" for empty boxes
+      // Start progress bar
+      setTimeout(() => {
+        progressFill.style.width = '100%';
+      }, 100);
+      
+      // Update loading text
+      loadingText.textContent = 'විශ්ලේෂණය කරමින්...';
+      
+      // Create lottery balls
+      createLotteryBalls();
+    }
+    
+    // Create lottery balls animation
+    function createLotteryBalls() {
+      const animationArea = document.getElementById('lotteryAnimationArea');
+      animationArea.innerHTML = '';
+      
+      // Create 6 balls
       for (let i = 0; i < 6; i++) {
         const ball = document.createElement('div');
         ball.className = `lottery-ball ${ballColors[i]}`;
+        ball.textContent = Math.floor(Math.random() * 10);
         
-        // Use input value or "?" if empty
-        ball.textContent = inputValues[i] || "?";
+        // Random position and animation delay
+        const left = Math.random() * 85 + 5; // 5% to 90%
+        const delay = Math.random() * 2;
+        const duration = 3 + Math.random() * 2; // 3-5 seconds
         
-        // Random position
-        const left = 10 + Math.random() * 80;
         ball.style.left = `${left}%`;
+        ball.style.animationDelay = `${delay}s`;
+        ball.style.animationDuration = `${duration}s`;
+        ball.style.animationName = 'ballFloat';
+        ball.style.animationTimingFunction = 'cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        ball.style.animationIterationCount = 'infinite';
         
-        // Random delay and duration
-        const delay = i * 0.5;
-        const duration = 3 + Math.random() * 2;
-        ball.style.animation = `ballFloat ${duration}s ease-in-out ${delay}s forwards`;
-        
-        lotteryAnimationArea.appendChild(ball);
-      }
-      
-      // Update progress bar
-      setTimeout(() => {
-        progressFill.style.width = '100%';
-      }, 50);
-      
-      // Update loading text
-      setTimeout(() => {
-        loadingText.textContent = "දත්ත විශ්ලේෂණය කෙරේ...";
-      }, 2000);
-      
-      setTimeout(() => {
-        loadingText.textContent = "ප්‍රතිඵල ගොනු කෙරේ...";
-      }, 4000);
-      
-      // After animation completes, show results
-      setTimeout(() => {
-        overlay.classList.remove('visible');
-        showResults(inputValues);
-        performPatternAnalysis(inputValues);
-      }, 6000);
-    }
-
-    // Show results
-    function showResults(inputValues) {
-      const resultsContainer = document.getElementById("matches");
-      resultsContainer.innerHTML = "";
-      
-      // Check each box
-      for (let i = 0; i < 6; i++) {
-        const boxValue = inputValues[i];
-        if (!boxValue) continue;
-        
-        // Find matches for this box
-        const matches = lotteryData.filter(r => r.last2 === boxValue);
-        
-        // Create box card
-        const boxCard = document.createElement("div");
-        boxCard.className = "box-card";
-        
-        // Box header
-        const boxHeader = document.createElement("div");
-        boxHeader.className = "box-header";
-        boxHeader.innerHTML = `
-          <h3><i class="fas fa-cube"></i> Box ${i+1} <span class="box-badge">${boxValue}</span></h3>
-          <span>${matches.length} ගැලපීම්</span>
-        `;
-        boxCard.appendChild(boxHeader);
-        
-        // Matches list
-        const matchList = document.createElement("div");
-        matchList.className = "match-list";
-        
-        if (matches.length === 0) {
-          matchList.innerHTML = `
-            <div class="no-match">
-              <i class="fas fa-exclamation-circle"></i> ${boxValue} සඳහා ගැලපීම් හමු නොවීය
-            </div>
-          `;
-        } else {
-          matches.forEach(match => {
-            const matchItem = document.createElement("div");
-            matchItem.className = "match-item";
-            
-            // Format the digits with spaces for readability
-            const formattedDigits = match.digits6 ? 
-              match.digits6.match(/.{1}/g).join(' ') : 
-              'N/A';
-            
-            // Get the next draw based on offset (corrected logic)
-            const nextDrawIndex = match._idx - offsets[i];
-            const nextDraw = nextDrawIndex >= 0 ? lotteryData[nextDrawIndex] : null;
-            
-            matchItem.innerHTML = `
-              <div class="match-meta">
-                <b>${match.date || "N/A"}</b>
-                ${match.code || "N/A"}
-              </div>
-              <div class="match-content">
-                <div class="match-digits">${formattedDigits}</div>
-                <div class="match-full">${match.code || ""}${match.digits6 || ""}</div>
-              </div>
-              <div class="match-below ${nextDraw ? 'highlight' : ''}">
-                <div>ඉහළ Draw (${offsets[i]}):</div>
-                <div>${nextDraw ? (nextDraw.date || "N/A") : "N/A"}</div>
-                <div>${nextDraw ? (nextDraw.code || "N/A") + " " + (nextDraw.digits6 || "N/A") : "N/A"}</div>
-              </div>
-            `;
-            
-            matchList.appendChild(matchItem);
-          });
-        }
-        
-        boxCard.appendChild(matchList);
-        resultsContainer.appendChild(boxCard);
+        animationArea.appendChild(ball);
       }
     }
-
-    // Perform pattern analysis
-    function performPatternAnalysis(inputValues) {
-      const patternAnalysisSection = document.getElementById('patternAnalysisSection');
-      const patternAnalysis = document.getElementById('patternAnalysis');
+    
+    // Hide loading animation
+    function hideLoadingAnimation() {
+      const overlay = document.getElementById('animationOverlay');
+      const animationArea = document.getElementById('lotteryAnimationArea');
       
-      // Clear previous results
-      patternAnalysis.innerHTML = '';
+      overlay.classList.remove('visible');
       
-      // Collect all upper draw results for the entered values
-      const allUpperDraws = [];
-      
-      for (let i = 0; i < 6; i++) {
-        const boxValue = inputValues[i];
-        if (!boxValue) continue;
-        
-        // Find matches for this box
-        const matches = lotteryData.filter(r => r.last2 === boxValue);
-        
-        // For each match, get the upper draw
-        matches.forEach(match => {
-          const nextDrawIndex = match._idx - offsets[i];
-          const nextDraw = nextDrawIndex >= 0 ? lotteryData[nextDrawIndex] : null;
-          
-          if (nextDraw) {
-            allUpperDraws.push({
-              box: i + 1,
-              boxValue: boxValue,
-              originalDate: match.date,
-              upperDraw: nextDraw,
-              upperDrawLastTwo: nextDraw.last2
-            });
-          }
-        });
-      }
-      
-      // Count occurrences of each last two digit
-      const digitCounts = {};
-      
-      allUpperDraws.forEach(item => {
-        const lastTwo = item.upperDrawLastTwo;
-        if (!digitCounts[lastTwo]) {
-          digitCounts[lastTwo] = {
-            count: 0,
-            occurrences: []
-          };
-        }
-        
-        digitCounts[lastTwo].count++;
-        digitCounts[lastTwo].occurrences.push({
-          box: item.box,
-          boxValue: item.boxValue,
-          originalDate: item.originalDate,
-          upperDrawDate: item.upperDraw.date,
-          upperDrawCode: item.upperDraw.code,
-          upperDrawNumbers: item.upperDraw.digits6
-        });
-      });
-      
-      // Filter digits that appear more than once and sort by count
-      const filteredDigits = Object.entries(digitCounts)
-        .filter(([digit, data]) => data.count > 1)
-        .sort((a, b) => b[1].count - a[1].count);
-      
-      if (filteredDigits.length === 0) {
-        patternAnalysis.innerHTML = `
-          <div class="no-match">
-            <i class="fas fa-info-circle"></i> එක් වරකට වඩා පෙනෙන අවසාන අංක යුගල නොමැත.
-          </div>
-        `;
-        patternAnalysisSection.style.display = 'block';
-        return;
-      }
-      
-      // Display pattern analysis results
-      filteredDigits.forEach(([digit, data]) => {
-        const patternItem = document.createElement("div");
-        patternItem.className = "pattern-item";
-        
-        // Get unique source boxes
-        const sourceBoxes = [...new Set(data.occurrences.map(o => `Box ${o.box} (${o.boxValue})`))].join(', ');
-        
-        // Get sample dates (first 3)
-        const sampleDates = data.occurrences.slice(0, 3).map(o => o.upperDrawDate).join(', ');
-        
-        patternItem.innerHTML = `
-          <div>
-            <div class="pattern-number">${digit}</div>
-            <div class="pattern-details">
-              මූලාශ්‍ර: ${sourceBoxes} | 
-              දින: ${sampleDates}${data.occurrences.length > 3 ? ` ... +${data.occurrences.length - 3}` : ''}
-            </div>
-          </div>
-          <div class="pattern-count">${data.count} වතාවක්</div>
-        `;
-        
-        patternAnalysis.appendChild(patternItem);
-      });
-      
-      patternAnalysisSection.style.display = 'block';
+      // Clear animation after a delay
+      setTimeout(() => {
+        animationArea.innerHTML = '';
+      }, 500);
     }
-
+    
+    // Reset application
+    function resetApp() {
+      singleInput.value = '';
+      document.getElementById('matches').innerHTML = `
+        <div class="no-match">
+          <i class="fas fa-info-circle"></i> වක්‍රී-පද්ධතිය සූදානම් — අංක යුගලයක් ඇතුළත් කර "විශ්ලේෂණය කරන්න" ඔබන්න.
+        </div>
+      `;
+      hideKeypad();
+    }
+    
     // Export to Excel
     function exportToExcel() {
-      const inputValues = getInputValues();
-      if (!inputValues) {
-        showAlert("අවවාදය", "ප්‍රතිඵල නොමැත. පළමුව විශ්ලේෂණය කරන්න.", 3000);
+      if (lotteryData.length === 0) {
+        showAlert('රික්ත දත්ත', 'පිටතට යාමට දත්ත නොමැත');
         return;
       }
       
-      // Prepare data for Excel
-      const data = [['Box', 'Input Value', 'Date', 'Code', 'Last Two', 'All Numbers', 'Next Draw Date', 'Next Draw Code', 'Next Draw Numbers']];
-      
-      // Get all match items
-      const matchItems = document.querySelectorAll('.match-item');
-      
-      matchItems.forEach(item => {
-        const box = item.closest('.box-card').querySelector('h3').textContent.replace('Box', '').trim();
-        const inputValue = item.closest('.box-card').querySelector('.box-badge').textContent;
-        const date = item.querySelector('.match-meta b').textContent;
-        const code = item.querySelector('.match-meta div').textContent;
-        const lastTwo = item.querySelector('.match-content .match-full').textContent.slice(-2);
-        const allNumbers = item.querySelector('.match-content .match-full').textContent;
-        
-        const nextDrawSection = item.querySelector('.match-below');
-        const nextDrawDate = nextDrawSection.querySelectorAll('div')[1].textContent;
-        const nextDrawInfo = nextDrawSection.querySelectorAll('div')[2].textContent;
-        
-        data.push([box, inputValue, date, code, lastTwo, allNumbers, nextDrawDate, nextDrawInfo.split(' ')[0], nextDrawInfo.split(' ').slice(1).join(' ')]);
-      });
-      
       // Create worksheet
-      const ws = XLSX.utils.aoa_to_sheet(data);
+      const ws = XLSX.utils.json_to_sheet(lotteryData.map(item => ({
+        'Index': item._idx,
+        'Date': item.date,
+        'Code': item.code,
+        'Last 2': item.last2,
+        '6 Digits': item.digits6
+      })));
       
       // Create workbook
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Lottery Results');
       
-      // Generate Excel file and trigger download
+      // Export to file
       XLSX.writeFile(wb, 'lottery_results.xlsx');
       
-      showAlert('Excel ගොනුව', 'Excel ගොනුව සාර්ථකව බාගත කරන ලදී', 3000);
+      showAlert('Excel පිටතට යාම', 'ලොතරැයි ප්‍රතිඵල සාර්ථකව පිටතට යවන ලදී');
     }
-
-    // Copy to clipboard as formatted text
-    function copyToClipboard() {
-      const inputValues = getInputValues();
-      if (!inputValues) {
-        showAlert("අවවාදය", "ප්‍රතිඵල නොමැත. පළමුව විශ්ලේෂණය කරන්න.", 3000);
+    
+    // Copy results to clipboard
+    function copyResultsToClipboard() {
+      if (lotteryData.length === 0) {
+        showAlert('රික්ත දත්ත', 'පිටපත් කිරීමට දත්ත නොමැත');
         return;
       }
       
-      let textContent = '';
+      // Create text representation
+      let text = 'Lottery Results\n';
+      text += 'Index\tDate\tCode\tLast 2\t6 Digits\n';
       
-      // Process each box
-      for (let i = 0; i < 6; i++) {
-        const boxValue = inputValues[i];
-        if (!boxValue) continue;
-        
-        // Find matches for this box
-        const matches = lotteryData.filter(r => r.last2 === boxValue);
-        if (matches.length === 0) continue;
-        
-        textContent += `*Box ${i+1}*\n`;
-        textContent += `*ඇතුලත් කළ අංකය* = ${boxValue}\n`;
-        textContent += `*ගැලපීම්* = ${matches.length}\n\n`;
-        
-        // Add each match
-        matches.forEach((match, index) => {
-          textContent += `${index+1}. *දිනය* = ${match.date || "N/A"}\n`;
-          textContent += `*ඉංග්‍රීසි අක්ෂරය* = ${match.code || "N/A"}\n`;
-          
-          // Format numbers with spaces
-          const formattedNumbers = match.digits6 ? 
-            match.digits6.match(/.{1}/g).join(' ') : 
-            'N/A';
-          textContent += `*ජයග්‍රහී අංක* = ${formattedNumbers}\n\n`;
-          
-          // Get the next draw based on offset
-          const nextDrawIndex = match._idx - offsets[i];
-          const nextDraw = nextDrawIndex >= 0 ? lotteryData[nextDrawIndex] : null;
-          
-          textContent += `*ඉහළ Draw (${offsets[i]}):*\n`;
-          if (nextDraw) {
-            textContent += `දිනය = ${nextDraw.date || "N/A"}\n`;
-            textContent += `${nextDraw.code || "N/A"} ${nextDraw.digits6 || "N/A"}\n\n`;
-            textContent += `*ජයග්‍රහී අවසාන අංක යුගලය* =(${nextDraw.last2 || "N/A"})\n\n`;
-          } else {
-            textContent += `දත්ත නොමැත\n\n`;
-          }
-          
-          textContent += '\n';
-        });
-        
-        textContent += '\n';
-      }
+      lotteryData.forEach(item => {
+        text += `${item._idx}\t${item.date}\t${item.code}\t${item.last2}\t${item.digits6}\n`;
+      });
       
       // Copy to clipboard
-      navigator.clipboard.writeText(textContent).then(() => {
-        showAlert('Clipboard', 'පෙළ clipboard එකට පිටපත් කරන ලදී', 3000);
+      navigator.clipboard.writeText(text).then(() => {
+        showAlert('පිටපත් කරන ලදී', 'ලොතරැයි ප්‍රතිඵල සාර්ථකව පිටපත් කරන ලදී');
       }).catch(err => {
-        showAlert('දෝෂය', 'Clipboard එකට පිටපත් කිරීමට නොහැකි විය', 3000);
+        showAlert('පිටපත් කිරීමේ දෝෂය', 'දත්ත පිටපත් කිරීමට නොහැකි විය');
       });
     }
-
+    
     // Initialize the app when DOM is loaded
     document.addEventListener('DOMContentLoaded', initApp);
   </script>
