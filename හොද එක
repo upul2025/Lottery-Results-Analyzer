@@ -1,1 +1,1754 @@
-ෆ්
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lottery Results Analyzer — Professional Edition</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- SheetJS library for Excel export -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f1720;
+      --card: #0b1220;
+      --muted: #94a3b8;
+      --accent: #ff6b6b;
+      --accent-dark: #e05a5a;
+      --glass: rgba(255,255,255,0.04);
+      --radius: 14px;
+      --max-width: 980px;
+      --success: #4ade80;
+      --warning: #fbbf24;
+      --ball-1: #ff6b6b;
+      --ball-2: #4ade80;
+      --ball-3: #60a5fa;
+      --ball-4: #fbbf24;
+      --ball-5: #c084fc;
+      --ball-6: #2dd4bf;
+    }
+    
+    * { 
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      margin: 0;
+      font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+      background: linear-gradient(180deg,#071022 0%, #0f1720 100%);
+      color: #e6eef8;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .app {
+      width: 100%;
+      max-width: var(--max-width);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header Styles */
+    .app-header {
+      text-align: center;
+      margin-bottom: 24px;
+      padding: 20px 0;
+      position: relative;
+    }
+    
+    .app-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), #ff8a80);
+      border-radius: 2px;
+    }
+    
+    .app-header h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+      background: linear-gradient(90deg, #e6eef8, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+    }
+    
+    .app-header p {
+      margin: 0; 
+      color: var(--muted); 
+      font-size: 14px;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    .live-clock {
+      margin-top: 8px;
+      font-size: 14px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    
+    .live-clock i {
+      color: var(--accent);
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 0.7; }
+      50% { opacity: 1; }
+      100% { opacity: 0.7; }
+    }
+
+    /* Status Indicator */
+    .status-indicator {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 10px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .status-indicator.connected {
+      background: rgba(74, 222, 128, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(74, 222, 128, 0.3);
+    }
+    
+    .status-indicator.connecting {
+      background: rgba(251, 191, 36, 0.15);
+      color: var(--warning);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+    
+    .status-indicator.error {
+      background: rgba(255, 107, 107, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(255, 107, 107, 0.3);
+    }
+    
+    .status-indicator .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    
+    .status-indicator.connected .status-dot {
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+    }
+    
+    .status-indicator.connecting .status-dot {
+      background: var(--warning);
+      box-shadow: 0 0 8px var(--warning);
+      animation: pulse 1.5s infinite;
+    }
+    
+    .status-indicator.error .status-dot {
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      animation: pulse 0.8s infinite;
+    }
+
+    /* Card Styles */
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: 0 6px 18px rgba(2,6,23,0.6);
+      border: 1px solid rgba(255,255,255,0.03);
+      margin-bottom: 20px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(2,6,23,0.8);
+    }
+
+    /* Input Section */
+    .input-section {
+      position: relative;
+    }
+    
+    .inputs-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .input-box {
+      position: relative;
+    }
+    
+    .input-box input {
+      width: 100%;
+      padding: 16px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
+      color: #e6eef8;
+      font-size: 18px;
+      text-align: center;
+      outline: none;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+    
+    .input-box input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(255,107,107,0.2);
+      background: rgba(255,255,255,0.05);
+    }
+    
+    .input-box label {
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--card);
+      padding: 0 8px;
+      font-size: 12px;
+      color: var(--muted);
+      z-index: 1;
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      background: linear-gradient(90deg, var(--accent), #ff8a80);
+      border: none;
+      color: #071022;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(255,107,107,0.12);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(255,107,107,0.25);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .btn-secondary {
+      font-size: 13px;
+      color: var(--muted);
+      background: transparent;
+      border: 1px dashed rgba(255,255,255,0.1);
+      padding: 10px 14px;
+      border-radius: 8px;
+      box-shadow: none;
+    }
+    
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.03);
+      color: #e6eef8;
+    }
+    
+    .json-info {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Export buttons */
+    .export-buttons {
+      display: flex;
+      gap: 10px;
+      margin-left: auto;
+    }
+    
+    .export-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #e6eef8;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .export-btn:hover {
+      background: rgba(255,255,255,0.1);
+      transform: translateY(-1px);
+    }
+    
+    .export-btn:active {
+      transform: translateY(0);
+    }
+    
+    .export-btn.excel {
+      background: rgba(33, 150, 83, 0.15);
+      border-color: rgba(33, 150, 83, 0.3);
+      color: #4ade80;
+    }
+    
+    .export-btn.excel:hover {
+      background: rgba(33, 150, 83, 0.25);
+    }
+    
+    .export-btn.copy {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: rgba(59, 130, 246, 0.3);
+      color: #60a5fa;
+    }
+    
+    .export-btn.copy:hover {
+      background: rgba(59, 130, 246, 0.25);
+    }
+
+    /* Keypad */
+    .keypad-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--card);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 16px;
+      z-index: 1000;
+      transform: translateY(100%);
+      transition: transform 0.4s ease;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+    }
+    
+    .keypad-container.visible {
+      transform: translateY(0);
+    }
+    
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    
+    .keypad-btn {
+      padding: 14px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #e6eef8;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .keypad-btn:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    
+    .keypad-btn:active {
+      transform: scale(0.95);
+    }
+    
+    .keypad-clear {
+      grid-column: span 2;
+      background: rgba(255,107,107,0.2);
+      color: var(--accent);
+    }
+    
+    .keypad-close {
+      background: rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Results Section */
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    
+    .results-header h2 {
+      margin: 0;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .results-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Box Card */
+    .box-card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,0.03);
+      animation: fadeIn 0.5s ease;
+    }
+    
+    .box-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    
+    .box-header h3 {
+      margin: 0;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .box-badge {
+      background: var(--accent);
+      color: #071022;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+    
+    .match-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Match Item */
+    .match-item {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      background: linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.02);
+      flex-wrap: wrap;
+      animation: slideIn 0.4s ease;
+      transition: all 0.3s ease;
+    }
+    
+    .match-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      border-color: rgba(255,255,255,0.05);
+    }
+    
+    .match-meta {
+      min-width: 120px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    
+    .match-meta b {
+      color: #fff;
+      display: block;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    
+    .match-content {
+      flex: 1;
+    }
+    
+    .match-digits {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    
+    .match-full {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    
+    .match-below {
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.02);
+      font-size: 13px;
+      color: var(--muted);
+      min-width: 140px;
+      transition: all 0.3s ease;
+    }
+    
+    .match-below.highlight {
+      background: rgba(255,107,107,0.1);
+      border-color: rgba(255,107,107,0.2);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(255,107,107,0.15);
+    }
+    
+    .no-match {
+      color: var(--muted);
+      font-size: 14px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    /* Pattern Analysis Section */
+    .pattern-analysis {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .pattern-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    .pattern-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .pattern-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: rgba(255,255,255,0.02);
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.03);
+      transition: all 0.3s ease;
+    }
+    
+    .pattern-item:hover {
+      background: rgba(255,255,255,0.05);
+      transform: translateY(-1px);
+    }
+    
+    .pattern-number {
+      font-weight: 600;
+      font-size: 16px;
+      color: var(--accent);
+    }
+    
+    .pattern-count {
+      background: rgba(255,107,107,0.2);
+      color: var(--accent);
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .pattern-details {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* Table */
+    .table-container {
+      overflow: auto;
+      border-radius: 10px;
+      margin-top: 10px;
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 680px;
+    }
+    
+    th, td {
+      padding: 12px 10px;
+      text-align: center;
+      font-size: 14px;
+      border-bottom: 1px dashed rgba(255,255,255,0.02);
+    }
+    
+    th {
+      background: rgba(255,255,255,0.03);
+      color: var(--muted);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+    
+    tr:hover {
+      background: rgba(255,255,255,0.01);
+    }
+
+    /* Footer */
+    .app-footer {
+      text-align: center;
+      margin-top: 30px;
+      padding: 20px 0;
+      color: var(--muted);
+      font-size: 13px;
+      border-top: 1px solid rgba(255,255,255,0.03);
+    }
+
+    /* Animation Elements */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(7, 16, 34, 0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s ease;
+    }
+    
+    .overlay.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .lottery-animation-area {
+      width: 100%;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 2001; /* Higher z-index to appear above overlay */
+      pointer-events: none;
+      overflow: hidden;
+    }
+    
+    .lottery-ball {
+      position: absolute;
+      width: 90px; /* Increased ball size */
+      height: 90px; /* Increased ball size */
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 28px; /* Increased font size */
+      box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+      z-index: 2002; /* Higher than animation area */
+      bottom: -90px;
+      opacity: 0;
+      border: 3px solid white; /* White outline */
+    }
+    
+    .ball-1 { background: radial-gradient(circle at 30% 30%, var(--ball-1), #d45a5a); }
+    .ball-2 { background: radial-gradient(circle at 30% 30%, var(--ball-2), #3dbd6f); }
+    .ball-3 { background: radial-gradient(circle at 30% 30%, var(--ball-3), #4f8fd8); }
+    .ball-4 { background: radial-gradient(circle at 30% 30%, var(--ball-4), #d9a61c); }
+    .ball-5 { background: radial-gradient(circle at 30% 30%, var(--ball-5), #a16bd6); }
+    .ball-6 { background: radial-gradient(circle at 30% 30%, var(--ball-6), #20b2a9); }
+    
+    .loading-text {
+      color: #fff;
+      margin-top: 20px;
+      font-size: 16px;
+      text-align: center;
+      z-index: 2003; /* Highest z-index */
+      position: relative;
+    }
+    
+    .progress-bar {
+      width: 240px;
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      margin-top: 16px;
+      overflow: hidden;
+      z-index: 2003; /* Highest z-index */
+      position: relative;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), #ff8a80);
+      border-radius: 2px;
+      transition: width 6s linear;
+    }
+
+    /* Custom Alert */
+    .custom-alert {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 16px 20px;
+      border-radius: 12px;
+      background: rgba(11, 18, 32, 0.95);
+      border: 1px solid rgba(255,107,107,0.2);
+      color: #fff;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 3000;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      transform: translateX(100%);
+      transition: transform 0.4s ease;
+      max-width: 400px;
+    }
+    
+    .custom-alert.visible {
+      transform: translateX(0);
+    }
+    
+    .custom-alert i {
+      color: var(--accent);
+      font-size: 20px;
+    }
+    
+    .custom-alert .alert-content {
+      flex: 1;
+    }
+    
+    .custom-alert .alert-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--accent);
+    }
+    
+    .custom-alert .alert-close {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+    }
+    
+    .custom-alert .alert-close:hover {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideIn {
+      from { 
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes ballFloat {
+      0% { 
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      50% { 
+        transform: translateY(-40vh) rotate(180deg);
+      }
+      100% { 
+        transform: translateY(-80vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+    
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-20px); }
+      60% { transform: translateY(-10px); }
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(5deg); }
+      100% { transform: translateY(0) rotate(0deg); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .inputs-grid { 
+        grid-template-columns: repeat(3, 1fr); 
+      }
+      
+      .app-header h1 { 
+        font-size: 24px; 
+      }
+      
+      .match-meta { 
+        min-width: 100px; 
+        font-size: 12px;
+      }
+      
+      .match-below { 
+        font-size: 12px; 
+      }
+      
+      .keypad {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      
+      .keypad-clear {
+        grid-column: span 2;
+      }
+      
+      .lottery-ball {
+        width: 70px;
+        height: 70px;
+        font-size: 24px;
+      }
+      
+      .status-indicator {
+        bottom: 70px;
+        right: 10px;
+        font-size: 12px;
+      }
+      
+      .custom-alert {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+      }
+      
+      .results-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .export-buttons {
+        margin-left: 0;
+        width: 100%;
+        justify-content: flex-end;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .inputs-grid { 
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 10px;
+      }
+      
+      .controls { 
+        flex-direction: column; 
+        align-items: stretch; 
+      }
+      
+      .btn { 
+        width: 100%; 
+        justify-content: center;
+      }
+      
+      .json-info {
+        margin-left: 0;
+        justify-content: center;
+      }
+      
+      .match-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .match-below {
+        width: 100%;
+      }
+      
+      .keypad {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      
+      .keypad-clear {
+        grid-column: span 1;
+      }
+      
+      .lottery-ball {
+        width: 60px;
+        height: 60px;
+        font-size: 20px;
+      }
+      
+      .export-buttons {
+        flex-direction: column;
+      }
+      
+      .export-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="app-header">
+      <h1><i class="fas fa-chart-line"></i> Lottery Results Analyzer</h1>
+      <p>ඔබ ඇතුළත් කරන last-2 අංක සඳහා සියලු ගැලපීම් සහ ඒවාට අනුරූප ඉහළ draw-වල ප්‍රතිඵල පෙන්වයි</p>
+      <div class="live-clock">
+        <i class="fas fa-clock"></i>
+        <span id="currentDateTime">ලබනුයේ...</span>
+      </div>
+    </header> 
+
+    <!-- Input Section -->
+    <section class="card input-section">
+      <div class="inputs-grid" id="inputGrid">
+        <div class="input-box">
+          <label for="box1">Box 1</label>
+          <input id="box1" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
+        </div>
+        <div class="input-box">
+          <label for="box2">Box 2</label>
+          <input id="box2" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
+        </div>
+        <div class="input-box">
+          <label for="box3">Box 3</label>
+          <input id="box3" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
+        </div>
+        <div class="input-box">
+          <label for="box4">Box 4</label>
+          <input id="box4" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
+        </div>
+        <div class="input-box">
+          <label for="box5">Box 5</label>
+          <input id="box5" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
+        </div>
+        <div class="input-box">
+          <label for="box6">Box 6</label>
+          <input id="box6" type="text" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="00" readonly>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="analyzeBtn">
+          <i class="fas fa-search"></i> විශ්ලේෂණය කරන්න
+        </button>
+        <button class="btn btn-secondary" id="resetBtn">
+          <i class="fas fa-undo"></i> හිස් කරන්න
+        </button>
+        <div class="json-info">
+          <i class="fas fa-database"></i> JSON: <code>lottery_records.json</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results Section -->
+    <section class="card">
+      <div class="results-header">
+        <h2><i class="fas fa-poll"></i> විශ්ලේෂණ ප්‍රතිඵල</h2>
+        <div class="export-buttons">
+          <button class="export-btn excel" id="exportExcelBtn">
+            <i class="fas fa-file-excel"></i> Excel
+          </button>
+          <button class="export-btn copy" id="copyTextBtn">
+            <i class="fas fa-copy"></i> Text
+          </button>
+        </div>
+      </div>
+
+      <div id="matches" class="results-container">
+        <div class="no-match">
+          <i class="fas fa-info-circle"></i> වක්‍රී-පද්ධතිය සූදානම් — අගයන් ඇතුළත් කර "විශ්ලේෂණය කරන්න" ඔබන්න.
+        </div>
+      </div>
+    </section>
+
+    <!-- Pattern Analysis Section -->
+    <section class="card" id="patternAnalysisSection" style="display: none;">
+      <div class="results-header">
+        <h2><i class="fas fa-chart-bar"></i> අංක රටා විශ්ලේෂණය</h2>
+        <div class="json-info">
+          <i class="fas fa-info-circle"></i> ඉහළ Draw (1) හි අවසාන අංක යුගල
+        </div>
+      </div>
+      <div id="patternAnalysis" class="results-container">
+        <!-- Pattern analysis results will be displayed here -->
+      </div>
+    </section>
+
+    <!-- Data Table -->
+    <section class="card">
+      <h3 style="margin: 0 0 12px 0; display: flex; align-items: center; gap: 8px;">
+        <i class="fas fa-table"></i> සියලු ලොතරැයි ප්‍රතිඵල (Raw JSON Table)
+      </h3>
+      <div class="table-container">
+        <table id="dataTable" aria-label="All lottery records">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>දිනය</th>
+              <th>කේතය</th>
+              <th>අවසන් 2</th>
+              <th>6 අංක</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>© 2023 Lottery Results Analyzer | Professional Edition</p>
+    </footer>
+  </div>
+
+  <!-- Status Indicator -->
+  <div class="status-indicator connecting" id="statusIndicator">
+    <span class="status-dot"></span>
+    <span id="statusText">දත්ත ලබා ගනිමින්...</span>
+  </div>
+
+  <!-- Keypad -->
+  <div class="keypad-container" id="keypad">
+    <div class="keypad">
+      <button class="keypad-btn" data-value="1">1</button>
+      <button class="keypad-btn" data-value="2">2</button>
+      <button class="keypad-btn" data-value="3">3</button>
+      <button class="keypad-btn" data-value="4">4</button>
+      <button class="keypad-btn" data-value="5">5</button>
+      <button class="keypad-btn" data-value="6">6</button>
+      <button class="keypad-btn" data-value="7">7</button>
+      <button class="keypad-btn" data-value="8">8</button>
+      <button class="keypad-btn" data-value="9">9</button>
+      <button class="keypad-btn" data-value="0">0</button>
+      <button class="keypad-btn keypad-clear" id="keypadClear">
+        <i class="fas fa-backspace"></i> Clear
+      </button>
+      <button class="keypad-btn keypad-close" id="keypadClose">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Animation Overlay -->
+  <div class="overlay" id="animationOverlay">
+    <div class="loading-text" id="loadingText">විශ්ලේෂණය ආරම්භ වෙමින්...</div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <!-- Animation Area (Full Screen) -->
+  <div class="lottery-animation-area" id="lotteryAnimationArea">
+    <!-- Lottery balls will be dynamically added here -->
+  </div>
+
+  <!-- Custom Alert -->
+  <div class="custom-alert" id="customAlert">
+    <i class="fas fa-exclamation-circle"></i>
+    <div class="alert-content">
+      <div class="alert-title" id="alertTitle">දෝෂය</div>
+      <div id="alertMessage">යම් දෝෂයක් ඇති විය</div>
+    </div>
+    <button class="alert-close" id="alertClose">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+
+  <script>
+    // Main data holder
+    let lotteryData = [];
+    let currentInputIndex = 0;
+    const inputs = Array.from({length: 6}, (_, i) => document.getElementById(`box${i+1}`));
+    
+    // Configuration: offsets per box (corrected values)
+    const offsets = [1, 2, 3, 4, 5, 6];
+    
+    // Ball colors
+    const ballColors = ['ball-1', 'ball-2', 'ball-3', 'ball-4', 'ball-5', 'ball-6'];
+
+    // Initialize the application
+    function initApp() {
+      updateDateTime();
+      setInterval(updateDateTime, 1000);
+      
+      setupEventListeners();
+      loadJSONData();
+      
+      // Show keypad when any input is focused
+      inputs.forEach(input => {
+        input.addEventListener('focus', (e) => {
+          currentInputIndex = inputs.indexOf(e.target);
+          highlightCurrentInput();
+          showKeypad();
+        });
+        
+        input.addEventListener('click', (e) => {
+          currentInputIndex = inputs.indexOf(e.target);
+          highlightCurrentInput();
+          showKeypad();
+        });
+      });
+    }
+
+    // Update date and time
+    function updateDateTime() {
+      const now = new Date();
+      const options = { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        weekday: 'long'
+      };
+      const formatter = new Intl.DateTimeFormat('si-LK', options);
+      document.getElementById('currentDateTime').textContent = formatter.format(now);
+    }
+
+    // Set up event listeners
+    function setupEventListeners() {
+      // Button events
+      document.getElementById('analyzeBtn').addEventListener('click', analyzeNumbers);
+      document.getElementById('resetBtn').addEventListener('click', resetInputs);
+      document.getElementById('keypadClose').addEventListener('click', hideKeypad);
+      document.getElementById('keypadClear').addEventListener('click', clearCurrentInput);
+      
+      // Keypad number buttons
+      document.querySelectorAll('.keypad-btn[data-value]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const value = e.target.getAttribute('data-value');
+          addDigitToInput(value);
+        });
+      });
+      
+      // Alert close button
+      document.getElementById('alertClose').addEventListener('click', hideAlert);
+      
+      // Allow Enter key to trigger analysis
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          analyzeNumbers();
+        } else if (e.key >= '0' && e.key <= '9') {
+          // Add digit if number key pressed
+          addDigitToInput(e.key);
+          e.preventDefault();
+        }
+      });
+      
+      // Hide keypad when clicking outside
+      document.addEventListener('click', (e) => {
+        const keypad = document.getElementById('keypad');
+        const inputSection = document.querySelector('.input-section');
+        if (!keypad.contains(e.target) && 
+            !inputSection.contains(e.target)) {
+          hideKeypad();
+        }
+      });
+      
+      // Export buttons
+      document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
+      document.getElementById('copyTextBtn').addEventListener('click', copyToClipboard);
+    }
+
+    // Show custom alert
+    function showAlert(title, message, duration = 5000) {
+      const alert = document.getElementById('customAlert');
+      document.getElementById('alertTitle').textContent = title;
+      document.getElementById('alertMessage').textContent = message;
+      
+      alert.classList.add('visible');
+      
+      // Auto hide after duration
+      setTimeout(() => {
+        hideAlert();
+      }, duration);
+    }
+    
+    // Hide custom alert
+    function hideAlert() {
+      document.getElementById('customAlert').classList.remove('visible');
+    }
+
+    // Update status indicator
+    function updateStatus(status, message) {
+      const indicator = document.getElementById('statusIndicator');
+      const statusText = document.getElementById('statusText');
+      
+      indicator.className = `status-indicator ${status}`;
+      statusText.textContent = message;
+    }
+
+    // Load JSON data from external file
+    function loadJSONData() {
+      updateStatus('connecting', 'දත්ත ලබා ගනිමින්...');
+      
+      // Add cache busting parameter to prevent caching
+      const cacheBuster = new Date().getTime();
+      fetch(`lottery_records.json?t=${cacheBuster}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('දත්ත සේවාදායකයෙන් ලබා ගැනීමට නොහැකි විය');
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Process the data to match our expected format
+          lotteryData = data.map((item, index) => {
+            // Extract date, code, digits6, and last2 from the JSON structure
+            const date = item.date || '';
+            const code = item.letter || item.code || '';
+            const digits6 = item.digits6 || '';
+            const last2 = item.last2 || '';
+            
+            return {
+              date: date,
+              code: code,
+              digits6: digits6,
+              last2: String(last2).padStart(2, "0"),
+              _parsedDate: date ? new Date(date) : null,
+              _idx: index
+            };
+          }).sort((a, b) => {
+            // Sort by date, newest first
+            if (!a._parsedDate || !b._parsedDate) return 0;
+            return b._parsedDate - a._parsedDate;
+          });
+          
+          // Reassign indices after sort
+          lotteryData.forEach((r, i) => r._idx = i);
+          
+          updateStatus('connected', `දත්ත සාර්ථකව ලබාගත්තා (${lotteryData.length} records)`);
+          renderTable();
+        })
+        .catch(error => {
+          console.error('Error loading JSON data:', error);
+          updateStatus('error', 'දත්ත ලබා ගැනීමේ දෝෂය');
+          showAlert('දත්ත දෝෂය', error.message);
+          
+          // Fallback to empty data if JSON loading fails
+          lotteryData = [];
+          renderTable();
+        });
+    }
+
+    // Render data table
+    function renderTable() {
+      const tbody = document.querySelector("#dataTable tbody");
+      tbody.innerHTML = "";
+      
+      if (lotteryData.length === 0) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td colspan="5" style="text-align: center; padding: 20px; color: var(--muted);">
+            <i class="fas fa-exclamation-triangle"></i> දත්ත ලබා ගැනීමට නොහැකි විය
+          </td>
+        `;
+        tbody.appendChild(tr);
+        return;
+      }
+      
+      lotteryData.forEach((r, i) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${i+1}</td>
+          <td>${r.date ?? "-"}</td>
+          <td>${r.code ?? "-"}</td>
+          <td>${r.last2 ?? "-"}</td>
+          <td>${r.code} ${r.digits6 ? r.digits6.match(/.{1}/g).join(' ') : "-"}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Get input values
+    function getInputValues() {
+      const vals = [];
+      let hasAtLeastOneValue = false;
+      
+      for (let i = 1; i <= 6; i++) {
+        const v = document.getElementById("box" + i).value.trim();
+        if (v !== "") {
+          hasAtLeastOneValue = true;
+          vals.push(String(v).padStart(2, "0"));
+        } else {
+          vals.push("");
+        }
+      }
+      
+      return hasAtLeastOneValue ? vals : null;
+    }
+
+    // Add digit to current input
+    function addDigitToInput(digit) {
+      const currentInput = inputs[currentInputIndex];
+      if (currentInput.value.length < 2) {
+        currentInput.value += digit;
+        
+        // Auto move to next input
+        if (currentInput.value.length === 2 && currentInputIndex < 5) {
+          currentInputIndex++;
+          highlightCurrentInput();
+        }
+      }
+    }
+
+    // Clear current input
+    function clearCurrentInput() {
+      inputs[currentInputIndex].value = "";
+    }
+
+    // Reset all inputs
+    function resetInputs() {
+      inputs.forEach(input => {
+        input.value = "";
+      });
+      currentInputIndex = 0;
+      highlightCurrentInput();
+      hideKeypad();
+      document.getElementById("matches").innerHTML = 
+        '<div class="no-match"><i class="fas fa-info-circle"></i> වක්‍රී-පද්ධතිය සූදානම් — අගයන් ඇතුළත් කර "විශ්ලේෂණය කරන්න" ඔබන්න.</div>';
+      
+      // Hide pattern analysis section
+      document.getElementById('patternAnalysisSection').style.display = 'none';
+    }
+
+    // Highlight current input
+    function highlightCurrentInput() {
+      inputs.forEach((input, index) => {
+        if (index === currentInputIndex) {
+          input.style.borderColor = "var(--accent)";
+          input.style.boxShadow = "0 0 0 2px rgba(255,107,107,0.2)";
+          input.style.background = "rgba(255,255,255,0.05)";
+        } else {
+          input.style.borderColor = "rgba(255,255,255,0.06)";
+          input.style.boxShadow = "none";
+          input.style.background = "rgba(255,255,255,0.02)";
+        }
+      });
+    }
+
+    // Show keypad
+    function showKeypad() {
+      document.getElementById('keypad').classList.add('visible');
+    }
+
+    // Hide keypad
+    function hideKeypad() {
+      document.getElementById('keypad').classList.remove('visible');
+    }
+
+    // Analyze numbers with animation
+    function analyzeNumbers() {
+      const inputValues = getInputValues();
+      if (!inputValues) {
+        showAlert("අවවාදය", "අවම වශයෙන් එක් Box එකක් හෝ පුරවන්න.", 3000);
+        return;
+      }
+
+      // Hide keypad when analyzing
+      hideKeypad();
+
+      // Show animation overlay
+      const overlay = document.getElementById('animationOverlay');
+      const progressFill = document.getElementById('progressFill');
+      const lotteryAnimationArea = document.getElementById('lotteryAnimationArea');
+      const loadingText = document.getElementById('loadingText');
+      
+      overlay.classList.add('visible');
+      progressFill.style.width = '0%';
+      
+      // Clear previous balls
+      lotteryAnimationArea.innerHTML = '';
+      
+      // Create floating balls with numbers or "?" for empty boxes
+      for (let i = 0; i < 6; i++) {
+        const ball = document.createElement('div');
+        ball.className = `lottery-ball ${ballColors[i]}`;
+        
+        // Use input value or "?" if empty
+        ball.textContent = inputValues[i] || "?";
+        
+        // Random position
+        const left = 10 + Math.random() * 80;
+        ball.style.left = `${left}%`;
+        
+        // Random delay and duration
+        const delay = i * 0.5;
+        const duration = 3 + Math.random() * 2;
+        ball.style.animation = `ballFloat ${duration}s ease-in-out ${delay}s forwards`;
+        
+        lotteryAnimationArea.appendChild(ball);
+      }
+      
+      // Update progress bar
+      setTimeout(() => {
+        progressFill.style.width = '100%';
+      }, 50);
+      
+      // Update loading text
+      setTimeout(() => {
+        loadingText.textContent = "දත්ත විශ්ලේෂණය කෙරේ...";
+      }, 2000);
+      
+      setTimeout(() => {
+        loadingText.textContent = "ප්‍රතිඵල ගොනු කෙරේ...";
+      }, 4000);
+      
+      // After animation completes, show results
+      setTimeout(() => {
+        overlay.classList.remove('visible');
+        showResults(inputValues);
+        performPatternAnalysis(inputValues);
+      }, 6000);
+    }
+
+    // Show results
+    function showResults(inputValues) {
+      const resultsContainer = document.getElementById("matches");
+      resultsContainer.innerHTML = "";
+      
+      // Check each box
+      for (let i = 0; i < 6; i++) {
+        const boxValue = inputValues[i];
+        if (!boxValue) continue;
+        
+        // Find matches for this box
+        const matches = lotteryData.filter(r => r.last2 === boxValue);
+        
+        // Create box card
+        const boxCard = document.createElement("div");
+        boxCard.className = "box-card";
+        
+        // Box header
+        const boxHeader = document.createElement("div");
+        boxHeader.className = "box-header";
+        boxHeader.innerHTML = `
+          <h3><i class="fas fa-cube"></i> Box ${i+1} <span class="box-badge">${boxValue}</span></h3>
+          <span>${matches.length} ගැලපීම්</span>
+        `;
+        boxCard.appendChild(boxHeader);
+        
+        // Matches list
+        const matchList = document.createElement("div");
+        matchList.className = "match-list";
+        
+        if (matches.length === 0) {
+          matchList.innerHTML = `
+            <div class="no-match">
+              <i class="fas fa-exclamation-circle"></i> ${boxValue} සඳහා ගැලපීම් හමු නොවීය
+            </div>
+          `;
+        } else {
+          matches.forEach(match => {
+            const matchItem = document.createElement("div");
+            matchItem.className = "match-item";
+            
+            // Format the digits with spaces for readability
+            const formattedDigits = match.digits6 ? 
+              match.digits6.match(/.{1}/g).join(' ') : 
+              'N/A';
+            
+            // Get the next draw based on offset (corrected logic)
+            const nextDrawIndex = match._idx - offsets[i];
+            const nextDraw = nextDrawIndex >= 0 ? lotteryData[nextDrawIndex] : null;
+            
+            matchItem.innerHTML = `
+              <div class="match-meta">
+                <b>${match.date || "N/A"}</b>
+                ${match.code || "N/A"}
+              </div>
+              <div class="match-content">
+                <div class="match-digits">${formattedDigits}</div>
+                <div class="match-full">${match.code || ""}${match.digits6 || ""}</div>
+              </div>
+              <div class="match-below ${nextDraw ? 'highlight' : ''}">
+                <div>ඉහළ Draw (${offsets[i]}):</div>
+                <div>${nextDraw ? (nextDraw.date || "N/A") : "N/A"}</div>
+                <div>${nextDraw ? (nextDraw.code || "N/A") + " " + (nextDraw.digits6 || "N/A") : "N/A"}</div>
+              </div>
+            `;
+            
+            matchList.appendChild(matchItem);
+          });
+        }
+        
+        boxCard.appendChild(matchList);
+        resultsContainer.appendChild(boxCard);
+      }
+    }
+
+    // Perform pattern analysis
+    function performPatternAnalysis(inputValues) {
+      const patternAnalysisSection = document.getElementById('patternAnalysisSection');
+      const patternAnalysis = document.getElementById('patternAnalysis');
+      
+      // Clear previous results
+      patternAnalysis.innerHTML = '';
+      
+      // Collect all upper draw results for the entered values
+      const allUpperDraws = [];
+      
+      for (let i = 0; i < 6; i++) {
+        const boxValue = inputValues[i];
+        if (!boxValue) continue;
+        
+        // Find matches for this box
+        const matches = lotteryData.filter(r => r.last2 === boxValue);
+        
+        // For each match, get the upper draw
+        matches.forEach(match => {
+          const nextDrawIndex = match._idx - offsets[i];
+          const nextDraw = nextDrawIndex >= 0 ? lotteryData[nextDrawIndex] : null;
+          
+          if (nextDraw) {
+            allUpperDraws.push({
+              box: i + 1,
+              boxValue: boxValue,
+              originalDate: match.date,
+              upperDraw: nextDraw,
+              upperDrawLastTwo: nextDraw.last2
+            });
+          }
+        });
+      }
+      
+      // Count occurrences of each last two digit
+      const digitCounts = {};
+      
+      allUpperDraws.forEach(item => {
+        const lastTwo = item.upperDrawLastTwo;
+        if (!digitCounts[lastTwo]) {
+          digitCounts[lastTwo] = {
+            count: 0,
+            occurrences: []
+          };
+        }
+        
+        digitCounts[lastTwo].count++;
+        digitCounts[lastTwo].occurrences.push({
+          box: item.box,
+          boxValue: item.boxValue,
+          originalDate: item.originalDate,
+          upperDrawDate: item.upperDraw.date,
+          upperDrawCode: item.upperDraw.code,
+          upperDrawNumbers: item.upperDraw.digits6
+        });
+      });
+      
+      // Filter digits that appear more than once and sort by count
+      const filteredDigits = Object.entries(digitCounts)
+        .filter(([digit, data]) => data.count > 1)
+        .sort((a, b) => b[1].count - a[1].count);
+      
+      if (filteredDigits.length === 0) {
+        patternAnalysis.innerHTML = `
+          <div class="no-match">
+            <i class="fas fa-info-circle"></i> එක් වරකට වඩා පෙනෙන අවසාන අංක යුගල නොමැත.
+          </div>
+        `;
+        patternAnalysisSection.style.display = 'block';
+        return;
+      }
+      
+      // Display pattern analysis results
+      filteredDigits.forEach(([digit, data]) => {
+        const patternItem = document.createElement("div");
+        patternItem.className = "pattern-item";
+        
+        // Get unique source boxes
+        const sourceBoxes = [...new Set(data.occurrences.map(o => `Box ${o.box} (${o.boxValue})`))].join(', ');
+        
+        // Get sample dates (first 3)
+        const sampleDates = data.occurrences.slice(0, 3).map(o => o.upperDrawDate).join(', ');
+        
+        patternItem.innerHTML = `
+          <div>
+            <div class="pattern-number">${digit}</div>
+            <div class="pattern-details">
+              මූලාශ්‍ර: ${sourceBoxes} | 
+              දින: ${sampleDates}${data.occurrences.length > 3 ? ` ... +${data.occurrences.length - 3}` : ''}
+            </div>
+          </div>
+          <div class="pattern-count">${data.count} වතාවක්</div>
+        `;
+        
+        patternAnalysis.appendChild(patternItem);
+      });
+      
+      patternAnalysisSection.style.display = 'block';
+    }
+
+    // Export to Excel
+    function exportToExcel() {
+      const inputValues = getInputValues();
+      if (!inputValues) {
+        showAlert("අවවාදය", "ප්‍රතිඵල නොමැත. පළමුව විශ්ලේෂණය කරන්න.", 3000);
+        return;
+      }
+      
+      // Prepare data for Excel
+      const data = [['Box', 'Input Value', 'Date', 'Code', 'Last Two', 'All Numbers', 'Next Draw Date', 'Next Draw Code', 'Next Draw Numbers']];
+      
+      // Get all match items
+      const matchItems = document.querySelectorAll('.match-item');
+      
+      matchItems.forEach(item => {
+        const box = item.closest('.box-card').querySelector('h3').textContent.replace('Box', '').trim();
+        const inputValue = item.closest('.box-card').querySelector('.box-badge').textContent;
+        const date = item.querySelector('.match-meta b').textContent;
+        const code = item.querySelector('.match-meta div').textContent;
+        const lastTwo = item.querySelector('.match-content .match-full').textContent.slice(-2);
+        const allNumbers = item.querySelector('.match-content .match-full').textContent;
+        
+        const nextDrawSection = item.querySelector('.match-below');
+        const nextDrawDate = nextDrawSection.querySelectorAll('div')[1].textContent;
+        const nextDrawInfo = nextDrawSection.querySelectorAll('div')[2].textContent;
+        
+        data.push([box, inputValue, date, code, lastTwo, allNumbers, nextDrawDate, nextDrawInfo.split(' ')[0], nextDrawInfo.split(' ').slice(1).join(' ')]);
+      });
+      
+      // Create worksheet
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      
+      // Create workbook
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Lottery Results');
+      
+      // Generate Excel file and trigger download
+      XLSX.writeFile(wb, 'lottery_results.xlsx');
+      
+      showAlert('Excel ගොනුව', 'Excel ගොනුව සාර්ථකව බාගත කරන ලදී', 3000);
+    }
+
+    // Copy to clipboard as formatted text
+    function copyToClipboard() {
+      const inputValues = getInputValues();
+      if (!inputValues) {
+        showAlert("අවවාදය", "ප්‍රතිඵල නොමැත. පළමුව විශ්ලේෂණය කරන්න.", 3000);
+        return;
+      }
+      
+      let textContent = '';
+      
+      // Process each box
+      for (let i = 0; i < 6; i++) {
+        const boxValue = inputValues[i];
+        if (!boxValue) continue;
+        
+        // Find matches for this box
+        const matches = lotteryData.filter(r => r.last2 === boxValue);
+        if (matches.length === 0) continue;
+        
+        textContent += `*Box ${i+1}*\n`;
+        textContent += `*ඇතුලත් කළ අංකය* = ${boxValue}\n`;
+        textContent += `*ගැලපීම්* = ${matches.length}\n\n`;
+        
+        // Add each match
+        matches.forEach((match, index) => {
+          textContent += `${index+1}. *දිනය* = ${match.date || "N/A"}\n`;
+          textContent += `*ඉංග්‍රීසි අක්ෂරය* = ${match.code || "N/A"}\n`;
+          
+          // Format numbers with spaces
+          const formattedNumbers = match.digits6 ? 
+            match.digits6.match(/.{1}/g).join(' ') : 
+            'N/A';
+          textContent += `*ජයග්‍රහී අංක* = ${formattedNumbers}\n\n`;
+          
+          // Get the next draw based on offset
+          const nextDrawIndex = match._idx - offsets[i];
+          const nextDraw = nextDrawIndex >= 0 ? lotteryData[nextDrawIndex] : null;
+          
+          textContent += `*ඉහළ Draw (${offsets[i]}):*\n`;
+          if (nextDraw) {
+            textContent += `දිනය = ${nextDraw.date || "N/A"}\n`;
+            textContent += `${nextDraw.code || "N/A"} ${nextDraw.digits6 || "N/A"}\n\n`;
+            textContent += `*ජයග්‍රහී අවසාන අංක යුගලය* =(${nextDraw.last2 || "N/A"})\n\n`;
+          } else {
+            textContent += `දත්ත නොමැත\n\n`;
+          }
+          
+          textContent += '\n';
+        });
+        
+        textContent += '\n';
+      }
+      
+      // Copy to clipboard
+      navigator.clipboard.writeText(textContent).then(() => {
+        showAlert('Clipboard', 'පෙළ clipboard එකට පිටපත් කරන ලදී', 3000);
+      }).catch(err => {
+        showAlert('දෝෂය', 'Clipboard එකට පිටපත් කිරීමට නොහැකි විය', 3000);
+      });
+    }
+
+    // Initialize the app when DOM is loaded
+    document.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>
