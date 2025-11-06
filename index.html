@@ -1270,7 +1270,7 @@
         checkbox.id = checkboxId;
         checkbox.className = 'year-checkbox';
         checkbox.value = year;
-        checkbox.checked = true;
+        checkbox.checked = false; // Default to unchecked
         
         const label = document.createElement('label');
         label.htmlFor = checkboxId;
@@ -1280,11 +1280,45 @@
         yearFilter.appendChild(checkbox);
         yearFilter.appendChild(label);
       });
+      
+      // Add "Select All" option
+      const selectAllId = 'year-all';
+      const selectAllCheckbox = document.createElement('input');
+      selectAllCheckbox.type = 'checkbox';
+      selectAllCheckbox.id = selectAllId;
+      selectAllCheckbox.className = 'year-checkbox';
+      selectAllCheckbox.value = 'all';
+      
+      const selectAllLabel = document.createElement('label');
+      selectAllLabel.htmlFor = selectAllId;
+      selectAllLabel.className = 'year-checkbox-label';
+      selectAllLabel.textContent = 'සියල්ල';
+      
+      yearFilter.appendChild(selectAllCheckbox);
+      yearFilter.appendChild(selectAllLabel);
+      
+      // Add event listener for "Select All" functionality
+      selectAllCheckbox.addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.year-checkbox:not([value="all"])');
+        checkboxes.forEach(cb => {
+          cb.checked = this.checked;
+        });
+      });
+      
+      // Add event listeners for individual checkboxes
+      document.querySelectorAll('.year-checkbox:not([value="all"])').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+          const allCheckboxes = document.querySelectorAll('.year-checkbox:not([value="all"])');
+          const checkedCount = document.querySelectorAll('.year-checkbox:not([value="all"]):checked').length;
+          selectAllCheckbox.checked = checkedCount === allCheckboxes.length;
+          selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < allCheckboxes.length;
+        });
+      });
     }
     
     // Get selected years from filter
     function getSelectedYears() {
-      const checkboxes = document.querySelectorAll('.year-checkbox:checked');
+      const checkboxes = document.querySelectorAll('.year-checkbox:not([value="all"]):checked');
       if (checkboxes.length === 0) {
         return [];
       }
